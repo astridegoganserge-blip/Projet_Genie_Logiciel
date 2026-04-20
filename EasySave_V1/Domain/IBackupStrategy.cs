@@ -2,5 +2,5 @@
 
 public interface IBackupStrategy
 {
-    BackupResult Execute(BackupJob job);
+    void Execute(BackupJob job, StateTracker tracker, EasySave.Application.EasyLog logger);
 }
