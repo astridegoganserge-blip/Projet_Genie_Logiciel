@@ -1,0 +1,113 @@
+###############################
+#   VISUAL STUDIO / DOTNET   #
+###############################
+
+# Build results
+bin/
+obj/
+out/
+[Bb]uild/
+[Ll]og/
+
+# Visual Studio cache
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Dotnet tools
+*.deps.json
+*.runtimeconfig.json
+*.dll
+*.exe
+*.pdb
+
+# Publish output
+publish/
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+
+###############################
+#        OS SPECIFIC         #
+###############################
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+###############################
+#        IDE SETTINGS        #
+###############################
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+*.code-workspace
+
+###############################
+#        TEST RESULTS        #
+###############################
+
+TestResults/
+*.coverage
+*.coveragexml
+
+###############################
+#        LOG / STATE         #
+###############################
+
+# EasySave logs & state files
+**/logs/
+**/state.json
+
+###############################
+#        CONFIG FILES        #
+###############################
+
+# User-specific config
+appsettings.Development.json
+appsettings.Local.json
+
+###############################
+#        BACKUP FILES        #
+###############################
+
+*.bak
+*.tmp
+*.temp
+
+###############################
+#        OTHER FILES         #
+###############################
+
+# Generated files
+*.generated.cs
+
+# Crash dumps
+*.dmp
+
+# Ignore ZIPs or archives
+*.zip
+*.rar
+*.7z
