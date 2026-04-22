@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Name": "luc",
+    "SourcePath": "C:\\Users\\HP\\Desktop\\Mon prems",
+    "TargetPath": "C:\\Users\\HP\\Desktop\\Sauvegarde",
+    "Type": 0,
+    "LastExecutionTime": "2026-04-21T10:56:09.3717876+02:00"
+  },
+  {
+    "Id": 2,
+    "Name": "luc",
+    "SourcePath": "C:\\Users\\HP\\Desktop\\SAUV1",
+    "TargetPath": "C:\\Users\\HP\\Desktop\\Sauvegarde",
+    "Type": 0,
+    "LastExecutionTime": "0001-01-01T00:00:00"
+  },
+  {
+    "Id": 3,
+    "Name": "astride",
+    "SourcePath": "C:\\Users\\HP\\Desktop\\sauve2",
+    "TargetPath": "C:\\Users\\HP\\Desktop\\Sauvegarde",
+    "Type": 0,
+    "LastExecutionTime": "2026-04-21T10:56:09.6782337+02:00"
+  }
+]
