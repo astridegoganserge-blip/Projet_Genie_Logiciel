@@ -1,0 +1,26 @@
+[
+  {
+    "Timestamp": "2026-04-22T22:47:01.2706311+02:00",
+    "BackupName": "TEST",
+    "SourceFile": "C:\\Users\\astri\\OneDrive\\Desktop\\A\\gymniryo.py",
+    "TargetFile": "C:\\Users\\astri\\OneDrive\\Desktop\\B\\gymniryo.py",
+    "FileSize": 3649,
+    "TransferTimeMs": 4
+  },
+  {
+    "Timestamp": "2026-04-22T22:47:01.289414+02:00",
+    "BackupName": "TEST",
+    "SourceFile": "C:\\Users\\astri\\OneDrive\\Desktop\\A\\niryo.py",
+    "TargetFile": "C:\\Users\\astri\\OneDrive\\Desktop\\B\\niryo.py",
+    "FileSize": 1016,
+    "TransferTimeMs": 2
+  },
+  {
+    "Timestamp": "2026-04-22T22:47:01.3035341+02:00",
+    "BackupName": "TEST",
+    "SourceFile": "C:\\Users\\astri\\OneDrive\\Desktop\\A\\trainniryo.py",
+    "TargetFile": "C:\\Users\\astri\\OneDrive\\Desktop\\B\\trainniryo.py",
+    "FileSize": 1874,
+    "TransferTimeMs": 2
+  }
+]

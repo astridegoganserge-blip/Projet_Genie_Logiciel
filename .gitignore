@@ -2,12 +2,6 @@
 #   VISUAL STUDIO / DOTNET   #
 ###############################
 
-# Build results
-bin/
-obj/
-out/
-[Bb]uild/
-[Ll]og/
 
 # Visual Studio cache
 .vs/
@@ -25,12 +19,7 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# Dotnet tools
-*.deps.json
-*.runtimeconfig.json
-*.dll
-*.exe
-*.pdb
+
 
 # Publish output
 publish/
@@ -54,18 +43,6 @@ Desktop.ini
 .LSOverride
 
 ###############################
-#        IDE SETTINGS        #
-###############################
-
-# JetBrains Rider
-.idea/
-*.sln.iml
-
-# VS Code
-.vscode/
-*.code-workspace
-
-###############################
 #        TEST RESULTS        #
 ###############################
 
@@ -73,13 +50,6 @@ TestResults/
 *.coverage
 *.coveragexml
 
-###############################
-#        LOG / STATE         #
-###############################
-
-# EasySave logs & state files
-**/logs/
-**/state.json
 
 ###############################
 #        CONFIG FILES        #
@@ -89,25 +59,4 @@ TestResults/
 appsettings.Development.json
 appsettings.Local.json
 
-###############################
-#        BACKUP FILES        #
-###############################
 
-*.bak
-*.tmp
-*.temp
-
-###############################
-#        OTHER FILES         #
-###############################
-
-# Generated files
-*.generated.cs
-
-# Crash dumps
-*.dmp
-
-# Ignore ZIPs or archives
-*.zip
-*.rar
-*.7z
