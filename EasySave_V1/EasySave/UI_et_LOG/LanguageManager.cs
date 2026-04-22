@@ -14,7 +14,7 @@ public static class LanguageManager
     {
         _currentLanguage = languageCode;
         string fileName = languageCode == "en" ? "en.json" : "fr.json";
-        string filePath = Path.Combine(AppContext.BaseDirectory, "Resources", fileName);
+        string filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
         if (File.Exists(filePath))
         {
