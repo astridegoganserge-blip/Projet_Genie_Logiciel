@@ -1,31 +1,22 @@
-﻿namespace EasySave.Models;
-
-public class BackupJob
+﻿namespace EasySave.Models
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string SourcePath { get; set; }
-    public string TargetPath { get; set; }
-    public BackupType Type { get; set; }
-    public DateTime LastExecutionTime { get; set; }
-    public bool ValidatePaths()
+    public class BackupJob
     {
-        if (string.IsNullOrWhiteSpace(SourcePath)
-            return false;
-        if (string.IsNullOrWhiteSpace(TargetPath))
-            return false;
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string SourcePath { get; set; }
+        public string TargetPath { get; set; }
+        public BackupType Type { get; set; }
+        public DateTime LastExecutionTime { get; set; }
 
-        return Directory.Exists(SourcePath) && Directory.Exists(TargetPath);
-    }
+        public bool ValidatePaths()
+        {
+            return System.IO.Directory.Exists(SourcePath);
+        }
 
-    public string IsExisting()
-    {
-        if (!Directory.Exists(SourcePath))
-            return "Source path does not exist: {SourcePath}.";
-        return "OK";
-    }
-    public override string ToString()
-    {
-        return $"Id: {Id}, Name: {Name}, SourcePath: {SourcePath}, TargetPath: {TargetPath}, Type: {Type}, LastExecutionTime: {LastExecutionTime}";
+        public override string ToString()
+        {
+            return $"[{Id}] {Name} | {Type} | Source: {SourcePath} -> Target: {TargetPath}";
+        }
     }
 }
