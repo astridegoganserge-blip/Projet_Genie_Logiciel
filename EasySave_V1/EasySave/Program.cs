@@ -15,7 +15,7 @@ class Program
         Console.WriteLine("2. English");
         Console.Write("Saisissez votre choix (1/2) :  ");
 
-        string choice = Console.ReadLine();
+        string? choice = Console.ReadLine();
         string lang = choice == "2" ? "en" : "fr";
 
         LanguageManager.LoadLanguage(lang);

@@ -14,7 +14,12 @@ namespace EasySave.Strategies
         // EN: Executes complete backup: copies every file from source to target
         // FR: Exécute la sauvegarde complète : copie chaque fichier de source vers cible
         public void Execute(BackupJob job, EasyLog.EasyLog logger)
+
         {
+            // Sécurisation : éviter un crash si les chemins sont null
+            if (string.IsNullOrWhiteSpace(job.SourcePath) || string.IsNullOrWhiteSpace(job.TargetPath))
+                throw new ArgumentException("SourcePath or TargetPath cannot be null.");
+
             // EN: Get all files recursively from source directory
             // FR: Récupère tous les fichiers récursivement depuis le répertoire source
             var files = Directory.GetFiles(job.SourcePath, "*", SearchOption.AllDirectories);
@@ -30,7 +35,9 @@ namespace EasySave.Strategies
             {
                 string relativePath = file.Substring(job.SourcePath.Length).TrimStart('\\', '/');
                 string destFile = Path.Combine(job.TargetPath, relativePath);
-                string destDir = Path.GetDirectoryName(destFile);
+                string? destDir = Path.GetDirectoryName(destFile);
+                if (string.IsNullOrWhiteSpace(destDir))
+                    continue;
 
                 // EN: Create target directory if it doesn't exist
                 // FR: Crée le répertoire cible s'il n'existe pas

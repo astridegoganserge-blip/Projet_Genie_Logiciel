@@ -15,6 +15,10 @@ namespace EasySave.Strategies
         // FR: Exécute la sauvegarde différentielle : copie uniquement les fichiers modifiés
         public void Execute(BackupJob job, EasyLog.EasyLog logger)
         {
+
+            if (string.IsNullOrWhiteSpace(job.SourcePath) || string.IsNullOrWhiteSpace(job.TargetPath))
+                throw new ArgumentException("SourcePath or TargetPath cannot be null.");
+
             // EN: Get all files from source
             // FR: Récupère tous les fichiers depuis la source
             var allFiles = Directory.GetFiles(job.SourcePath, "*", SearchOption.AllDirectories);
@@ -33,7 +37,9 @@ namespace EasySave.Strategies
             {
                 string relativePath = file.Substring(job.SourcePath.Length).TrimStart('\\', '/');
                 string destFile = Path.Combine(job.TargetPath, relativePath);
-                string destDir = Path.GetDirectoryName(destFile);
+                string? destDir = Path.GetDirectoryName(destFile);
+                if (string.IsNullOrWhiteSpace(destDir))
+                    continue;
 
                 if (!Directory.Exists(destDir))
                     Directory.CreateDirectory(destDir);

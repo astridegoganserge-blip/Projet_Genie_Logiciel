@@ -10,8 +10,8 @@ namespace EasySave.UI
 {
     public class ConsoleInterface
     {
-        private BackupManager _manager;
-        private EasyLog.EasyLog _logger;
+        private readonly BackupManager _manager;
+        private readonly EasyLog.EasyLog _logger;
 
         public ConsoleInterface()
         {
@@ -22,7 +22,7 @@ namespace EasySave.UI
 
         public void Run(string[] args)
         {
-            if (args.Length > 0)
+            if (args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
             {
                 RunCommandLine(args[0]);
                 return;
@@ -31,7 +31,7 @@ namespace EasySave.UI
             while (true)
             {
                 ShowMenu();
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
@@ -54,11 +54,11 @@ namespace EasySave.UI
         {
             bool success = _manager.ExecuteSequential(command, _logger);
 
-            if (success)
-                Console.WriteLine(LanguageManager.GetString("Backup Completed"));
-            else
-                Console.WriteLine(LanguageManager.GetString("Backup Failed"));
+            Console.WriteLine(success
+                ? LanguageManager.GetString("BackupCompleted")
+                : LanguageManager.GetString("BackupFailed"));
         }
+
         private void ShowMenu()
         {
             Console.Clear();
@@ -99,42 +99,44 @@ namespace EasySave.UI
             }
 
             Console.Write(LanguageManager.GetString("EnterName"));
-            string name = Console.ReadLine();
-            Console.Write(LanguageManager.GetString("EnterSource"));
-            string source = Console.ReadLine();
+            string? name = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(name)) name = "Unnamed";
 
-            // EN: Verify source path exists before accepting
-            // FR: Vérifie que le chemin source existe avant d'accepter
-            if (!System.IO.Directory.Exists(source))
+            Console.Write(LanguageManager.GetString("EnterSource"));
+            string? source = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(source) || !Directory.Exists(source))
             {
                 Console.WriteLine(LanguageManager.GetString("SourceNotFound"));
-                Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
                 Console.ReadKey();
                 return;
             }
 
             Console.Write(LanguageManager.GetString("EnterTarget"));
-            string target = Console.ReadLine();
+            string? target = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(target))
+            {
+                Console.WriteLine(LanguageManager.GetString("TargetNotFound"));
+                Console.ReadKey();
+                return;
+            }
 
-            // EN: Verify target path exists or can be created
-            // FR: Vérifie que le chemin cible existe ou peut être créé
-            if (!System.IO.Directory.Exists(target))
+            if (!Directory.Exists(target))
             {
                 try
                 {
-                    System.IO.Directory.CreateDirectory(target);
+                    Directory.CreateDirectory(target);
                     Console.WriteLine(LanguageManager.GetString("TargetCreated"));
                 }
                 catch
                 {
                     Console.WriteLine(LanguageManager.GetString("TargetNotFound"));
-                    Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
                     Console.ReadKey();
                     return;
                 }
             }
+
             Console.Write(LanguageManager.GetString("EnterType"));
-            string typeChoice = Console.ReadLine();
+            string? typeChoice = Console.ReadLine();
 
             var job = new BackupJob
             {
@@ -145,10 +147,9 @@ namespace EasySave.UI
                 Type = typeChoice == "2" ? BackupType.Differential : BackupType.Complete
             };
 
-            if (_manager.AddJob(job))
-                Console.WriteLine(LanguageManager.GetString("JobCreated"));
-            else
-                Console.WriteLine(LanguageManager.GetString("BackupFailed"));
+            Console.WriteLine(_manager.AddJob(job)
+                ? LanguageManager.GetString("JobCreated")
+                : LanguageManager.GetString("BackupFailed"));
 
             Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
             Console.ReadKey();
@@ -158,6 +159,7 @@ namespace EasySave.UI
         {
             ShowJobs();
             Console.Write(LanguageManager.GetString("EnterJobId"));
+
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
                 Console.WriteLine(LanguageManager.GetString("InvalidChoice"));
@@ -165,10 +167,9 @@ namespace EasySave.UI
                 return;
             }
 
-            if (_manager.ExecuteJob(id, _logger))
-                Console.WriteLine(LanguageManager.GetString("BackupCompleted"));
-            else
-                Console.WriteLine(LanguageManager.GetString("BackupFailed"));
+            Console.WriteLine(_manager.ExecuteJob(id, _logger)
+                ? LanguageManager.GetString("BackupCompleted")
+                : LanguageManager.GetString("BackupFailed"));
 
             Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
             Console.ReadKey();
@@ -178,12 +179,18 @@ namespace EasySave.UI
         {
             Console.Write(LanguageManager.GetString("MenuSequential"));
             Console.Write(" ");
-            string command = Console.ReadLine();
 
-            if (_manager.ExecuteSequential(command, _logger))
-                Console.WriteLine(LanguageManager.GetString("SequenceCompleted"));
-            else
+            string? command = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(command))
+            {
                 Console.WriteLine(LanguageManager.GetString("SequenceFailed"));
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine(_manager.ExecuteSequential(command, _logger)
+                ? LanguageManager.GetString("SequenceCompleted")
+                : LanguageManager.GetString("SequenceFailed"));
 
             Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
             Console.ReadKey();
@@ -193,10 +200,10 @@ namespace EasySave.UI
         {
             var jobs = _manager.GetAllJobs();
             Console.WriteLine("\n--- " + LanguageManager.GetString("AppTitle") + " ---");
+
             foreach (var job in jobs)
-            {
-                Console.WriteLine(job.ToString());
-            }
+                Console.WriteLine(job);
+
             Console.WriteLine("-------------------");
             Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
             Console.ReadKey();
@@ -206,6 +213,7 @@ namespace EasySave.UI
         {
             ShowJobs();
             Console.Write(LanguageManager.GetString("EnterJobId"));
+
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
                 Console.WriteLine(LanguageManager.GetString("InvalidChoice"));
@@ -213,10 +221,9 @@ namespace EasySave.UI
                 return;
             }
 
-            if (_manager.RemoveJob(id))
-                Console.WriteLine(LanguageManager.GetString("JobDeleted"));
-            else
-                Console.WriteLine(LanguageManager.GetString("JobNotFound"));
+            Console.WriteLine(_manager.RemoveJob(id)
+                ? LanguageManager.GetString("JobDeleted")
+                : LanguageManager.GetString("JobNotFound"));
 
             Console.WriteLine(LanguageManager.GetString("PressAnyKey"));
             Console.ReadKey();

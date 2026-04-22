@@ -50,7 +50,7 @@ namespace EasySave.Managers
             return true;
         }
 
-        public BackupJob GetJob(int id)
+        public BackupJob? GetJob(int id)
         {
             return _jobs.FirstOrDefault(j => j.Id == id);
         }
