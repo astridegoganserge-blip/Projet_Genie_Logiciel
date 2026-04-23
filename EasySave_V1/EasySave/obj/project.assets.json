@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "EasyLog/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/EasyLog.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EasyLog.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "EasyLog/1.0.0": {
+      "type": "project",
+      "path": "../EasyLog/EasyLog.csproj",
+      "msbuildProject": "../EasyLog/EasyLog.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "EasyLog >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\astri\\.nuget\\packages\\": {},
@@ -38,8 +57,13 @@
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V1\\EasyLog\\EasyLog.csproj": {
+              "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V1\\EasyLog\\EasyLog.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -56,6 +80,7 @@
     },
     "frameworks": {
       "net10.0": {
+        "framework": "net10.0",
         "targetAlias": "net10.0",
         "imports": [
           "net461",

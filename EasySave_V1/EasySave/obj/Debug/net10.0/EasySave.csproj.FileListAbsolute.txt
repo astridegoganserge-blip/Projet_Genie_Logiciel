@@ -15,3 +15,7 @@ C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySav
 C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\obj\Debug\net10.0\ref\EasySave.dll
 C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\bin\Debug\net10.0\languages\en.json
 C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\bin\Debug\net10.0\languages\fr.json
+C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\bin\Debug\net10.0\EasyLog.dll
+C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\bin\Debug\net10.0\EasyLog.pdb
+C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\obj\Debug\net10.0\EasySave.csproj.AssemblyReference.cache
+C:\Users\astri\source\repos\astridegoganserge-blip\Projet_Genie_Logiciel\EasySave_V1\EasySave\obj\Debug\net10.0\EasySave.csproj.Up2Date
