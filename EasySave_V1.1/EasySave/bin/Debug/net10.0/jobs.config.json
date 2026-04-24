@@ -1,18 +1,10 @@
 [
   {
     "Id": 1,
-    "Name": "2",
-    "SourcePath": "C:\\Users\\astri\\OneDrive\\Desktop\\A",
-    "TargetPath": "C:\\Users\\astri\\OneDrive\\Desktop\\C",
-    "Type": 0,
-    "LastExecutionTime": null
-  },
-  {
-    "Id": 2,
     "Name": "TEST",
-    "SourcePath": "C:\\Users\\astri\\OneDrive\\Desktop\\B",
-    "TargetPath": "C:\\Users\\astri\\OneDrive\\Desktop\\D",
-    "Type": 0,
+    "SourcePath": "C:\\Users\\astri\\OneDrive\\Desktop\\A",
+    "TargetPath": "C:\\Users\\astri\\OneDrive\\Desktop\\B",
+    "Type": 1,
     "LastExecutionTime": null
   }
 ]
