@@ -2,14 +2,13 @@
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Models;
-using EasySave.Services;
+using EasySave.Core_et_Model;
 
-namespace EasySave.Strategies
+namespace EasySave.Execution
 {
     // EN: Strategy that copies only new or modified files
     // FR: Stratégie qui copie uniquement les fichiers nouveaux ou modifiés
-    public class DifferentialBackupStrategy : IBackupStrategy
+    public sealed class DifferentialBackupStrategy : IBackupStrategy
     {
         // EN: Executes differential backup: copies only changed files
         // FR: Exécute la sauvegarde différentielle : copie uniquement les fichiers modifiés
@@ -17,7 +16,7 @@ namespace EasySave.Strategies
         {
 
             if (string.IsNullOrWhiteSpace(job.SourcePath) || string.IsNullOrWhiteSpace(job.TargetPath))
-                throw new ArgumentException("SourcePath or TargetPath cannot be null.");
+                throw new ArgumentException("SourcePath or TargetPath cannot be null or empty.");
 
             // EN: Get all files from source
             // FR: Récupère tous les fichiers depuis la source
@@ -64,7 +63,7 @@ namespace EasySave.Strategies
         }
         // EN: Determines if a file should be copied based on modification date
         // FR: Détermine si un fichier doit être copié selon sa date de modification
-        private bool ShouldCopyFile(string sourceFile, string sourcePath, string targetPath)
+        private static bool ShouldCopyFile(string sourceFile, string sourcePath, string targetPath)
         {
             string relativePath = sourceFile.Substring(sourcePath.Length).TrimStart('\\', '/');
             string destFile = Path.Combine(targetPath, relativePath);
@@ -75,6 +74,7 @@ namespace EasySave.Strategies
 
             var sourceInfo = new FileInfo(sourceFile);
             var destInfo = new FileInfo(destFile);
+
             // EN: Copy only if source is newer than target
             // FR: Copie uniquement si la source est plus récente que la cible
             return sourceInfo.LastWriteTime > destInfo.LastWriteTime;
