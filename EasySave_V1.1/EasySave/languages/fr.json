@@ -1,5 +1,5 @@
 {
-	"AppTitle": " EasySave 1.0 ",
+	"AppTitle": " EasySave 1.1 ",
 	"MenuCreate": "1. Créer un travail de sauvegarde",
 	"MenuExecute": "2. Exécuter un travail",
 	"MenuSequential": "3. Exécution séquentielle (ex: 1-3 ou 1;3)",
@@ -25,5 +25,7 @@
 	"BackupFailed": "Échec de la sauvegarde !",
 	"SequenceCompleted": "Séquence de sauvegardes terminée avec succès.",
 	"SequenceFailed": "La séquence de sauvegardes a échoué.",
+	"ChooseLogFormat": "Choisissez le format du log (1=JSON, 2=XML) : ",
+	"SettingsSaved": "Paramètres sauvegardés !",
 	"PressAnyKey": "Appuyez sur une touche..."
 }
