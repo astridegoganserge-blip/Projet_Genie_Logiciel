@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EasyLog")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a08449789d3c1aff8b8c39527be80487c911c51")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a8301982ff5d8df061129e29497eb59fccfe99d1")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasyLog")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasyLog")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

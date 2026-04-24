@@ -1,4 +1,7 @@
-﻿namespace EasySave.Models
+﻿using System;
+using System.IO;
+
+namespace EasySave.Core_et_Model
 {
     public class BackupJob
     {
@@ -11,7 +14,7 @@
 
         public bool ValidatePaths()
         {
-            return Directory.Exists(SourcePath);
+            return Directory.Exists(SourcePath) && Directory.Exists(TargetPath);
         }
 
         public override string ToString()
