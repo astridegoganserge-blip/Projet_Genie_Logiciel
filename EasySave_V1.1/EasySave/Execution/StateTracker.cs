@@ -1,118 +1,127 @@
-﻿using EasySave.Models;
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
-using System.Timers;
+using EasySave.Core_et_Model;
 
-namespace EasySave.Services;
+namespace EasySave.Execution
+{ 
 
-
-public static class StateTracker
-{
-
-
-    private static string _stateFilePath = Path.Combine(AppContext.BaseDirectory, "state.json");
-
-
-    public static string BackupName { get; set; } = "";
-
-    public static DateTime LastActionTime { get; set; }
-
-    // EN: Current status: Active, Completed, or Error
-    // FR: État actuel : Actif, Terminé, ou Erreur
-    public static string Status { get; set; } = "Completed";
-
-    // Si le travail est actif, ces champs sont remplis :
-    public static int TotalFiles { get; set; }
-    public static long TotalSize { get; set; }
-    public static int RemainingFiles { get; set; }
-    public static long RemainingSize { get; set; }
-
-    // EN: Source path of the file currently being copied
-    // FR: Chemin source du fichier en cours de copie
-    public static string CurrentSourceFile { get; set; } = "";
-
-    // EN: Target path of the file currently being copied
-    // FR: Chemin cible du fichier en cours de copie
-    public static string CurrentTargetFile { get; set; } = "";
-
-    // EN: Initializes state at the beginning of a backup operation
-    // FR: Initialise l'état au début d'une opération de sauvegarde
-    public static void Initialize(BackupJob job, int totalFilesCount, long totalSizeBytes)
+    public static class StateTracker
     {
-        BackupName = job.Name;
-        Status = "Actif";
-        LastActionTime = DateTime.Now;
+        private static readonly string StateFilePath = Path.Combine(AppContext.BaseDirectory, "state.json");
+        public static string BackupName { get; set; } = string.Empty;
+        public static DateTime LastActionTime { get; private set; }
 
-        TotalFiles = totalFilesCount;
-        TotalSize = totalSizeBytes;
-        RemainingFiles = totalFilesCount;
-        RemainingSize = totalSizeBytes;
+        // EN: Current status: Active, Completed, or Error
+        // FR: État actuel : Actif, Terminé, ou Erreur
+        public static string Status { get; set; } = "Terminé";
 
-        CurrentSourceFile = "";
-        CurrentTargetFile = "";
+        // Si le travail est actif, ces champs sont remplis :
+        public static int TotalFiles { get; private set; }
+        public static long TotalSize { get; private set; }
+        public static int RemainingFiles { get; private set; }
+        public static long RemainingSize { get; private set; }
 
-        SaveState(); // Écrit immédiatement dans le fichier
-    }
+        // EN: Source path of the file currently being copied
+        // FR: Chemin source du fichier en cours de copie
+        public static string CurrentSourceFile { get; set; } = string.Empty;
 
-    // EN: Updates progress after each file transfer
-    // FR: Met à jour la progression après chaque transfert de fichier
-    public static void UpdateProgress(string sourceFile, string targetFile, long fileSize)
-    {
-        LastActionTime = DateTime.Now;
-        CurrentSourceFile = sourceFile;
-        CurrentTargetFile = targetFile;
+        // EN: Target path of the file currently being copied
+        // FR: Chemin cible du fichier en cours de copie
+        public static string CurrentTargetFile { get; set; } = string.Empty;
 
-        // On décrémente les compteurs
-        RemainingFiles = Math.Max(0, RemainingFiles - 1);
-        RemainingSize = Math.Max(0, RemainingSize - fileSize);
+        public static double Progression { get; private set; }
 
-        SaveState(); // Écrit immédiatement dans le fichier
-    }
-
-    // EN: Marks backup as completed
-    // FR: Marque la sauvegarde comme terminée
-    public static void MarkAsCompleted()
-    {
-        Status = "Completed";
-        LastActionTime = DateTime.Now;
-        CurrentSourceFile = "";
-        CurrentTargetFile = "";
-        SaveState();
-    }
-
-    // EN: Marks backup as completed
-    // FR: Marque la sauvegarde comme terminée
-    public static void MarkAsError(string errorMessage)
-    {
-        Status = "Error";
-        LastActionTime = DateTime.Now;
-        SaveState();
-    }
-
-    // EN: Writes current state to JSON file with indentation for Notepad readability
-    // FR: Écrit l'état actuel dans le fichier JSON avec indentation pour lisibilité Notepad
-    public static void SaveState()
-    {
-        var state = new
+        // EN: Initializes state at the beginning of a backup operation
+        // FR: Initialise l'état au début d'une opération de sauvegarde
+        public static void Initialize(BackupJob job, int totalFilesCount, long totalSizeBytes)
         {
-            BackupName,
-            LastActionTime,
-            Status,
-            TotalFiles,
-            TotalSize,
-            RemainingFiles,
-            RemainingSize,
-            CurrentSourceFile,
-            CurrentTargetFile
-        };
+            BackupName = job.Name;
+            Status = "Actif";
+            LastActionTime = DateTime.Now;
 
-        var options = new JsonSerializerOptions
+            TotalFiles = totalFilesCount;
+            TotalSize = totalSizeBytes;
+            RemainingFiles = totalFilesCount;
+            RemainingSize = totalSizeBytes;
+
+            CurrentSourceFile = string.Empty;
+            CurrentTargetFile = string.Empty;
+            Progression = 0.0;
+
+            SaveState(); // Écrit immédiatement dans le fichier
+        }
+
+            // EN: Updates progress after each file transfer
+            // FR: Met à jour la progression après chaque transfert de fichier
+        public static void UpdateProgress(string sourceFile, string targetFile, long fileSize)
         {
-            WriteIndented = true  // Retours à la ligne pour lisibilité Notepad
-        };
+            LastActionTime = DateTime.Now;
+            CurrentSourceFile = sourceFile;
+            CurrentTargetFile = targetFile;
 
-        string json = JsonSerializer.Serialize(state, options);
-        File.WriteAllText(_stateFilePath, json);
+            // On décrémente les compteurs
+            RemainingFiles = Math.Max(0, RemainingFiles - 1);
+            RemainingSize = Math.Max(0, RemainingSize - fileSize);
+
+            if (TotalFiles > 0)
+            {
+                Progression = Math.Round((TotalFiles - RemainingFiles) * 100.0 / TotalFiles, 1);
+            }
+            else
+                {
+                Progression = 100.0;
+            }
+
+            SaveState(); // Écrit immédiatement dans le fichier
+        }
+
+        // EN: Marks backup as completed
+        // FR: Marque la sauvegarde comme terminée
+        public static void MarkAsCompleted()
+        {
+            Status = "Terminé";
+            LastActionTime = DateTime.Now;
+            CurrentSourceFile = string.Empty;
+            CurrentTargetFile = string.Empty;
+            Progression = 100.0;
+            SaveState();
+        }
+
+        // EN: Marks backup as completed
+        // FR: Marque la sauvegarde comme terminée
+        public static void MarkAsError(string errorMessage)
+        {
+            Status = "Erreur";
+            LastActionTime = DateTime.Now;
+            SaveState();
+        }
+
+        // EN: Writes current state to JSON file with indentation for Notepad readability
+        // FR: Écrit l'état actuel dans le fichier JSON avec indentation pour lisibilité Notepad
+        public static void SaveState()
+        {
+            var state = new
+            {
+                BackupName,
+                LastActionTime,
+                Status,
+                TotalFiles,
+                TotalSize,
+                RemainingFiles,
+                RemainingSize,
+                CurrentSourceFile,
+                CurrentTargetFile,
+                Progression
+            };
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true  // Retours à la ligne pour lisibilité Notepad
+            };
+
+            string json = JsonSerializer.Serialize(state, options);
+            File.WriteAllText(StateFilePath, json);
     }
+        }
 }

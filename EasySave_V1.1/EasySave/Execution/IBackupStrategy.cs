@@ -1,10 +1,10 @@
 ﻿using EasyLog;
-using EasySave.Models;
-using EasySave.Services;
+using EasySave.Core_et_Model;
 
-namespace EasySave.Strategies;
-
-public interface IBackupStrategy
+namespace EasySave.Execution
 {
-    void Execute(BackupJob job, EasyLog.EasyLog logger);
+    public interface IBackupStrategy
+    {
+        void Execute(BackupJob job, EasyLog.EasyLog logger);
+    }
 }
