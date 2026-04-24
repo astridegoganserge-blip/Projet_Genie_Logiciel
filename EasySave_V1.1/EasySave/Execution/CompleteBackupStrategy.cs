@@ -2,14 +2,14 @@
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Models;
-using EasySave.Services;
+using EasySave.Core_et_Model;
 
-namespace EasySave.Strategies
+
+namespace EasySave.Execution
 {
     // EN: Strategy that copies all files regardless of previous state
     // FR: Stratégie qui copie tous les fichiers indépendamment de l'état précédent
-    public class CompleteBackupStrategy : IBackupStrategy
+    public sealed class CompleteBackupStrategy : IBackupStrategy
     {
         // EN: Executes complete backup: copies every file from source to target
         // FR: Exécute la sauvegarde complète : copie chaque fichier de source vers cible
@@ -18,7 +18,7 @@ namespace EasySave.Strategies
         {
             // Sécurisation : éviter un crash si les chemins sont null
             if (string.IsNullOrWhiteSpace(job.SourcePath) || string.IsNullOrWhiteSpace(job.TargetPath))
-                throw new ArgumentException("SourcePath or TargetPath cannot be null.");
+                throw new ArgumentException("SourcePath or TargetPath cannot be null or empty.");
 
             // EN: Get all files recursively from source directory
             // FR: Récupère tous les fichiers récursivement depuis le répertoire source
