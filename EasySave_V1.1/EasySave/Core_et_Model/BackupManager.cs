@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EasySave.Models;
-using EasySave.Services;
-using EasySave.Strategies;
+using EasyLog;
+using EasySave.Core_et_Model;
+using EasySave.Execution;
 
 namespace EasySave.Managers
 {
+  
     public class BackupManager
     {
-        private List<BackupJob> _jobs = new List<BackupJob>();
+        private List<BackupJob> _jobs = new();
         private const int MAX_JOBS = 5;
 
         public List<BackupJob> Jobs => _jobs;
@@ -65,19 +66,22 @@ namespace EasySave.Managers
             var job = GetJob(id);
             if (job == null) return false;
 
-            IBackupStrategy strategy = job.Type == BackupType.Complete
-                ? new CompleteBackupStrategy()
-                : new DifferentialBackupStrategy();
+            IBackupStrategy strategy = job.Type switch
+            {
+                BackupType.Differential => new DifferentialBackupStrategy(),
+                _ => new CompleteBackupStrategy()
+            };
 
             strategy.Execute(job, logger);
             job.LastExecutionTime = DateTime.Now;
+
             SaveJobs();
             return true;
         }
 
         public bool ExecuteSequential(string command, EasyLog.EasyLog logger)
         {
-            var parser = new CommandLineParser(command);
+            var parser = new CommandLineParser(new[] { command });
             var ids = parser.ParseJobIds();
 
             if (ids == null || ids.Count == 0) return false;
@@ -87,6 +91,7 @@ namespace EasySave.Managers
                 if (!ExecuteJob(id, logger))
                     return false;
             }
+
             return true;
         }
 
