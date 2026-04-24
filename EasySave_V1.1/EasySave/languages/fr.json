@@ -7,26 +7,33 @@
 	"MenuDelete": "5. Supprimer un travail",
 	"MenuSettings": "6. Paramètres",
 	"MenuExit": "0. Quitter l'application",
+
 	"ChoicePrompt": "Saisissez votre choix :  ",
 	"InvalidChoice": "Option non reconnue. Veuillez sélectionner une entrée valide.",
-	"PressAnyKey": "Appuyez sur une touche...",
+	"PressAnyKey": "Appuyez sur une touche pour continuer...",
+
 	"MaxJobsReached": "La limite de 5 travaux de sauvegarde est atteinte. Supprimez un travail existant avant d'en créer un nouveau.",
 	"EnterJobId": "Identifiant du travail (1 à 5) : ",
 	"IdUsed": "Cet identifiant est déjà attribué à un travail existant.",
+
 	"EnterName": "Nom du travail :",
 	"EnterSource": "Répertoire source (chemin local, externe ou UNC) : ",
 	"EnterTarget": "Répertoire cible (chemin local, externe ou UNC) : ",
 	"SourceNotFound": "Chemin source introuvable !",
 	"TargetNotFound": "Chemin cible introuvable !",
 	"TargetCreated": "Répertoire cible créé.",
+
 	"EnterType": "Type de sauvegarde (1=Complète, 2=Différentielle) : ",
 	"JobCreated": "Travail de sauvegarde créé avec succès !",
 	"JobDeleted": "Travail de sauvegarde supprimé !",
 	"JobNotFound": "Aucun travail ne correspond à cet identifiant.",
+
 	"BackupCompleted": "Sauvegarde terminée !",
 	"BackupFailed": "Échec de la sauvegarde !",
+
 	"SequenceCompleted": "Séquence de sauvegardes terminée avec succès.",
 	"SequenceFailed": "La séquence de sauvegardes a échoué.",
+
 	"ChooseLogFormat": "Choisissez le format du log (1=JSON, 2=XML) : ",
 	"SettingsSaved": "Paramètres sauvegardés !"
 }
