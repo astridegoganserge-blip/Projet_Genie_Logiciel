@@ -2,29 +2,31 @@ using System;
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Managers;
-using EasySave.Models;
-using EasySave.Services;
+using EasySave.Core_et_Model;
+using EasySave.Execution;
+using EasySave.UI_et_LOG;
 
-namespace EasySave.UI
+namespace EasySave.UI_et_LOG
 {
     public class ConsoleInterface
     {
-        private readonly BackupManager _manager;
-        private readonly EasyLog.EasyLog _logger;
+        private AppSettings _settings;
+        private readonly string _logDirectory;
 
         public ConsoleInterface()
         {
-            string logPath = Path.Combine(AppContext.BaseDirectory, "logs");
-            _logger = new EasyLog.EasyLog(logPath);
-            _manager = new BackupManager();
+            _settings = ConfigurationManager.LoadSettings();
+            _logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+
+            // Load language at startup
+            LanguageManager.LoadLanguage(_settings.Language ?? "fr");
         }
 
         public void Run(string[] args)
         {
             if (args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
             {
-                RunCommandLine(args[0]);
+                ExecuteSequential(args[0]);
                 return;
             }
 
@@ -36,49 +38,42 @@ namespace EasySave.UI
                 switch (choice)
                 {
                     case "1": CreateJob(); break;
-                    case "2": ExecuteJob(); break;
-                    case "3": ExecuteSequential(); break;
+                    case "2": ExecuteSingleJob(); break;
+                    case "3": ExecuteSequentialPrompt(); break;
                     case "4": ShowJobs(); break;
                     case "5": DeleteJob(); break;
+                    case "6": SettingsMenu(); break;
                     case "0": return;
                     default:
                         Console.WriteLine(LanguageManager.T("InvalidChoice"));
-                        Console.WriteLine(LanguageManager.T("PressAnyKey"));
-                        Console.ReadKey();
+                        Pause();
                         break;
                 }
             }
-        }
-
-        private void RunCommandLine(string command)
-        {
-            bool success = _manager.ExecuteSequential(command, _logger);
-
-            Console.WriteLine(success
-                ? LanguageManager.T("BackupCompleted")
-                : LanguageManager.T("BackupFailed"));
         }
 
         private void ShowMenu()
         {
             Console.Clear();
             Console.WriteLine(LanguageManager.T("AppTitle"));
-            Console.WriteLine(LanguageManager.T("MenuCreate"));
-            Console.WriteLine(LanguageManager.T("MenuExecute"));
-            Console.WriteLine(LanguageManager.T("MenuSequential"));
-            Console.WriteLine(LanguageManager.T("MenuShow"));
-            Console.WriteLine(LanguageManager.T("MenuDelete"));
-            Console.WriteLine(LanguageManager.T("MenuExit"));
+            Console.WriteLine("1. " + LanguageManager.T("MenuCreate"));
+            Console.WriteLine("2. " + LanguageManager.T("MenuExecute"));
+            Console.WriteLine("3. " + LanguageManager.T("MenuSequential"));
+            Console.WriteLine("4. " + LanguageManager.T("MenuShow"));
+            Console.WriteLine("5. " + LanguageManager.T("MenuDelete"));
+            Console.WriteLine("6. " + LanguageManager.T("MenuSettings"));
+            Console.WriteLine("0. " + LanguageManager.T("MenuExit"));
             Console.Write(LanguageManager.T("ChoicePrompt"));
         }
 
         private void CreateJob()
         {
-            if (_manager.Jobs.Count >= 5)
+            var jobs = ConfigurationManager.LoadJobs();
+
+            if (jobs.Count >= 5)
             {
                 Console.WriteLine(LanguageManager.T("MaxJobsReached"));
-                Console.WriteLine(LanguageManager.T("PressAnyKey"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
@@ -86,15 +81,14 @@ namespace EasySave.UI
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
                 Console.WriteLine(LanguageManager.T("InvalidChoice"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
-            if (!_manager.IsJobIdAvailable(id))
+            if (jobs.Any(j => j.Id == id))
             {
                 Console.WriteLine(LanguageManager.T("IdUsed"));
-                Console.WriteLine(LanguageManager.T("PressAnyKey"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
@@ -107,7 +101,7 @@ namespace EasySave.UI
             if (string.IsNullOrWhiteSpace(source) || !Directory.Exists(source))
             {
                 Console.WriteLine(LanguageManager.T("SourceNotFound"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
@@ -116,24 +110,12 @@ namespace EasySave.UI
             if (string.IsNullOrWhiteSpace(target))
             {
                 Console.WriteLine(LanguageManager.T("TargetNotFound"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
             if (!Directory.Exists(target))
-            {
-                try
-                {
-                    Directory.CreateDirectory(target);
-                    Console.WriteLine(LanguageManager.T("TargetCreated"));
-                }
-                catch
-                {
-                    Console.WriteLine(LanguageManager.T("TargetNotFound"));
-                    Console.ReadKey();
-                    return;
-                }
-            }
+                Directory.CreateDirectory(target);
 
             Console.Write(LanguageManager.T("EnterType"));
             string? typeChoice = Console.ReadLine();
@@ -147,84 +129,156 @@ namespace EasySave.UI
                 Type = typeChoice == "2" ? BackupType.Differential : BackupType.Complete
             };
 
-            Console.WriteLine(_manager.AddJob(job)
-                ? LanguageManager.T("JobCreated")
-                : LanguageManager.T("BackupFailed"));
+            jobs.Add(job);
+            ConfigurationManager.SaveJobs(jobs);
 
-            Console.WriteLine(LanguageManager.T("PressAnyKey"));
-            Console.ReadKey();
+            Console.WriteLine(LanguageManager.T("JobCreated"));
+            Pause();
         }
 
-        private void ExecuteJob()
+        private void ExecuteSingleJob()
         {
+            var jobs = ConfigurationManager.LoadJobs();
             ShowJobs();
-            Console.Write(LanguageManager.T("EnterJobId"));
 
+            Console.Write(LanguageManager.T("EnterJobId"));
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
                 Console.WriteLine(LanguageManager.T("InvalidChoice"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
-            Console.WriteLine(_manager.ExecuteJob(id, _logger)
+            var job = jobs.FirstOrDefault(j => j.Id == id);
+            if (job == null)
+            {
+                Console.WriteLine(LanguageManager.T("JobNotFound"));
+                Pause();
+                return;
+            }
+
+            bool success = ExecuteJob(job);
+            Console.WriteLine(success
                 ? LanguageManager.T("BackupCompleted")
                 : LanguageManager.T("BackupFailed"));
 
-            Console.WriteLine(LanguageManager.T("PressAnyKey"));
-            Console.ReadKey();
+            Pause();
         }
 
-        private void ExecuteSequential()
+        private void ExecuteSequentialPrompt()
         {
-            Console.Write(LanguageManager.T("MenuSequential"));
-            Console.Write(" ");
-
+            Console.Write(LanguageManager.T("MenuSequential") + " ");
             string? command = Console.ReadLine();
+
             if (string.IsNullOrWhiteSpace(command))
             {
                 Console.WriteLine(LanguageManager.T("SequenceFailed"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
-            Console.WriteLine(_manager.ExecuteSequential(command, _logger)
+            ExecuteSequential(command);
+            Pause();
+        }
+
+        private void ExecuteSequential(string command)
+        {
+            var jobs = ConfigurationManager.LoadJobs();
+            var parser = new CommandLineParser(new[] { command });
+            var ids = parser.ParseJobIds();
+
+            bool allSuccess = true;
+
+            foreach (var id in ids)
+            {
+                var job = jobs.FirstOrDefault(j => j.Id == id);
+                if (job == null)
+                {
+                    allSuccess = false;
+                    continue;
+                }
+
+                if (!ExecuteJob(job))
+                    allSuccess = false;
+            }
+
+            Console.WriteLine(allSuccess
                 ? LanguageManager.T("SequenceCompleted")
                 : LanguageManager.T("SequenceFailed"));
-
-            Console.WriteLine(LanguageManager.T("PressAnyKey"));
-            Console.ReadKey();
         }
+
+        private bool ExecuteJob(BackupJob job)
+        {
+            var logger = new EasyLog.EasyLog(_logDirectory, _settings.LogFormat);
+
+            IBackupStrategy strategy = job.Type switch
+            {
+                BackupType.Differential => new DifferentialBackupStrategy(),
+                _ => new CompleteBackupStrategy()
+            };
+
+            try
+            {
+                strategy.Execute(job, logger);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
         private void ShowJobs()
         {
-            var jobs = _manager.GetAllJobs();
-            Console.WriteLine("\n--- " + LanguageManager.T("AppTitle") + " ---");
+            var jobs = ConfigurationManager.LoadJobs();
 
+            Console.WriteLine("\n--- " + LanguageManager.T("AppTitle") + " ---");
             foreach (var job in jobs)
                 Console.WriteLine(job);
 
             Console.WriteLine("-------------------");
-            Console.WriteLine(LanguageManager.T("PressAnyKey"));
-            Console.ReadKey();
         }
 
         private void DeleteJob()
         {
+            var jobs = ConfigurationManager.LoadJobs();
             ShowJobs();
-            Console.Write(LanguageManager.T("EnterJobId"));
 
+            Console.Write(LanguageManager.T("EnterJobId"));
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
                 Console.WriteLine(LanguageManager.T("InvalidChoice"));
-                Console.ReadKey();
+                Pause();
                 return;
             }
 
-            Console.WriteLine(_manager.RemoveJob(id)
+            int removed = jobs.RemoveAll(j => j.Id == id);
+            ConfigurationManager.SaveJobs(jobs);
+
+            Console.WriteLine(removed > 0
                 ? LanguageManager.T("JobDeleted")
                 : LanguageManager.T("JobNotFound"));
 
+            Pause();
+        }
+
+        private void SettingsMenu()
+        {
+            Console.Clear();
+            Console.WriteLine(LanguageManager.T("ChooseLogFormat"));
+            Console.Write("1 = JSON, 2 = XML : ");
+
+            string? choice = Console.ReadLine();
+            _settings.LogFormat = choice == "2" ? LogFormat.Xml : LogFormat.Json;
+
+            ConfigurationManager.SaveSettings(_settings);
+
+            Console.WriteLine(LanguageManager.T("SettingsSaved"));
+            Pause();
+        }
+        private static void Pause()
+        {
             Console.WriteLine(LanguageManager.T("PressAnyKey"));
             Console.ReadKey();
         }
