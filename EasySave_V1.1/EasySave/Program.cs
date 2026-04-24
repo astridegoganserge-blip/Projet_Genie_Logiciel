@@ -1,25 +1,23 @@
 using System;
-using EasySave.Services;
-using EasySave.UI;
+using EasySave.Core_et_Model;
+using EasySave.UI_et_LOG;
 
-namespace EasySave;
-
-class Program
+namespace EasySave
 {
-    static void Main(string[] args)
+    internal class Program
     {
-        Console.WriteLine("\t \t Bienvenue sur le logiciel EasySave 1.0\n");
-        Console.WriteLine("Veuillez sélectionner la langue d'affichage / Please select your display language: ");
-        Console.WriteLine("1. Français");
-        Console.WriteLine("2. English");
-        Console.Write("Saisissez votre choix (1/2) :  ");
+        static void Main(string[] args)
+        {
+            // Load application settings
+            AppSettings settings = ConfigurationManager.LoadSettings();
 
-        string? choice = Console.ReadLine();
-        string lang = choice == "2" ? "en" : "fr";
+            // Load selected language (default: fr)
+            string language = settings.Language ?? "fr";
+            LanguageManager.LoadLanguage(language);
 
-        LanguageManager.LoadLanguage(lang);
-
-        var ui = new ConsoleInterface();
-        ui.Run(args);
+            // Start the console interface
+            var ui = new ConsoleInterface();
+            ui.Run(args);
+        }
     }
 }
