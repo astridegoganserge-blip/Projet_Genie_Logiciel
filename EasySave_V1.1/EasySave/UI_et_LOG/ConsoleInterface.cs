@@ -17,9 +17,6 @@ namespace EasySave.UI_et_LOG
         {
             _settings = ConfigurationManager.LoadSettings();
             _logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-
-            // Load language at startup
-            LanguageManager.LoadLanguage(_settings.Language ?? "fr");
         }
 
         public void Run(string[] args)
@@ -139,7 +136,7 @@ namespace EasySave.UI_et_LOG
         private void ExecuteSingleJob()
         {
             var jobs = ConfigurationManager.LoadJobs();
-            ShowJobs();
+            DisplayJobs();
 
             Console.Write(LanguageManager.T("EnterJobId"));
             if (!int.TryParse(Console.ReadLine(), out int id))
@@ -228,22 +225,28 @@ namespace EasySave.UI_et_LOG
             }
         }
 
-
-        private void ShowJobs()
+        private void DisplayJobs()
         {
             var jobs = ConfigurationManager.LoadJobs();
 
             Console.WriteLine("\n--- " + LanguageManager.T("AppTitle") + " ---");
             foreach (var job in jobs)
                 Console.WriteLine(job);
-
             Console.WriteLine("-------------------");
+        }
+
+        // EN: Displays job list with pause - used from main menu option 4
+        // FR: Affiche la liste avec pause - utilisé depuis l'option 4 du menu
+        private void ShowJobs()
+        {
+            DisplayJobs();
+            Pause();
         }
 
         private void DeleteJob()
         {
             var jobs = ConfigurationManager.LoadJobs();
-            ShowJobs();
+            DisplayJobs();
 
             Console.Write(LanguageManager.T("EnterJobId"));
             if (!int.TryParse(Console.ReadLine(), out int id))
@@ -277,6 +280,7 @@ namespace EasySave.UI_et_LOG
             Console.WriteLine(LanguageManager.T("SettingsSaved"));
             Pause();
         }
+
         private static void Pause()
         {
             Console.WriteLine(LanguageManager.T("PressAnyKey"));
