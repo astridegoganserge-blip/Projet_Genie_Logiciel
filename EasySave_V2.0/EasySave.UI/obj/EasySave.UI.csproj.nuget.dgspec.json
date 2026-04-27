@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj": {}
+    "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj": {
+    "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj",
         "projectName": "EasyLog",
-        "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj",
-        "packagesPath": "C:\\Users\\astri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\obj\\",
+        "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\astri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -346,20 +345,20 @@
         }
       }
     },
-    "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
+    "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj",
         "projectName": "EasySave.Core",
-        "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj",
-        "packagesPath": "C:\\Users\\astri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\obj\\",
+        "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\astri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -368,7 +367,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -376,8 +374,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj": {
-                "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj"
+              "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj": {
+                "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasyLog\\EasyLog.csproj"
               }
             }
           }
@@ -692,20 +690,20 @@
         }
       }
     },
-    "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj": {
+    "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
         "projectName": "EasySave.UI",
-        "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
-        "packagesPath": "C:\\Users\\astri\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\obj\\",
+        "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\astri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -714,7 +712,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -722,8 +719,8 @@
             "framework": "net10.0-windows7.0",
             "targetAlias": "net10.0-windows",
             "projectReferences": {
-              "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
-                "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj"
+              "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
+                "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj"
               }
             }
           }

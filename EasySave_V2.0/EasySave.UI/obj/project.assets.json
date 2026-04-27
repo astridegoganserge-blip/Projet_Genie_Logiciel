@@ -45,23 +45,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\astri\\.nuget\\packages\\": {},
+    "C:\\Users\\HP\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
+      "projectUniqueName": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
       "projectName": "EasySave.UI",
-      "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
-      "packagesPath": "C:\\Users\\astri\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\obj\\",
+      "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\EasySave.UI.csproj",
+      "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.UI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\astri\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -70,7 +70,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -78,8 +77,8 @@
           "framework": "net10.0-windows7.0",
           "targetAlias": "net10.0-windows",
           "projectReferences": {
-            "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
-              "projectPath": "C:\\Users\\astri\\source\\repos\\astridegoganserge-blip\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj"
+            "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj": {
+              "projectPath": "C:\\Users\\HP\\source\\repos\\Projet_Genie_Logiciel\\EasySave_V2.0\\EasySave.Core\\EasySave.Core.csproj"
             }
           }
         }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EasySave.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c6838499124fe511f9fb1af57ea9c693da45f6d2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93e5f4de002325f79ab89a229997e56ba8ab133a")]
 [assembly: System.Reflection.AssemblyProductAttribute("EasySave.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EasySave.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
