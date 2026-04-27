@@ -16,10 +16,8 @@ obj/
 # Visual Studio user/cache files
 *.user
 *.suo
-*.userosscache
-*.sln.docstates
 *.cache
-*.tmp
+
 
 # NuGet
 *.nupkg
