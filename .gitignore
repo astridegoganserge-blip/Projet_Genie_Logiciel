@@ -2,13 +2,18 @@
 #   VISUAL STUDIO / DOTNET   #
 ###############################
 
-
-# Visual Studio cache
+# Build outputs
+bin/
+obj/
 .vs/
+
+# Visual Studio user/cache files
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
+*.cache
+*.tmp
 
 # NuGet
 *.nupkg
@@ -18,8 +23,6 @@ packages/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-
-
 
 # Publish output
 publish/
@@ -50,13 +53,22 @@ TestResults/
 *.coverage
 *.coveragexml
 
+###############################
+#   EASYSAVE RUNTIME FILES   #
+###############################
+
+logs/
+state.json
+jobs.config.json
+settings.json
+*.log
 
 ###############################
-#        CONFIG FILES        #
+#     BUILD ARTIFACTS        #
 ###############################
 
-# User-specific config
-appsettings.Development.json
-appsettings.Local.json
+*.exe
+*.pdb
 
-
+# Keep required external libraries if explicitly committed
+!libs/CryptoSoft.dll
