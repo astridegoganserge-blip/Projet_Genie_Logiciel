@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="EasyLog/EasyLog.csproj" />
-  <Project Path="EasySave.Core/EasySave.Core.csproj" />
-  <Project Path="EasySave.UI/EasySave.UI.csproj" />
-</Solution>
