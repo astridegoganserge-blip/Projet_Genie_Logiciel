@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Core_et_Model;
+using EasySave.Models;
 
 
-namespace EasySave.Execution
+namespace EasySave.Strategies
 {
     // EN: Strategy that copies all files regardless of previous state
     // FR: Stratégie qui copie tous les fichiers indépendamment de l'état précédent

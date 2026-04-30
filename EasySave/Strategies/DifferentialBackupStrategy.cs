@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Core_et_Model;
+using EasySave.Models;
 
-namespace EasySave.Execution
+namespace EasySave.Strategies
 {
     // EN: Strategy that copies only new or modified files
     // FR: Stratégie qui copie uniquement les fichiers nouveaux ou modifiés

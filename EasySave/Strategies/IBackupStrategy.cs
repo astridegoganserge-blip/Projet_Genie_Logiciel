@@ -1,7 +1,7 @@
 ﻿using EasyLog;
-using EasySave.Core_et_Model;
+using EasySave.Models;
 
-namespace EasySave.Execution
+namespace EasySave.Strategies
 {
     public interface IBackupStrategy
     {
