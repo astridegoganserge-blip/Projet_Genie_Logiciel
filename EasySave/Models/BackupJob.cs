@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace EasySave.Core_et_Model
+namespace EasySave.Models
 {
     public class BackupJob
     {
