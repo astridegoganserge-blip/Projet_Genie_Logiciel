@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using EasyLog;
-using EasySave.Core_et_Model;
-using EasySave.Execution;
+using EasySave.Models;
+using EasySave.Strategies;
 
-namespace EasySave.Managers
+namespace EasySave.Services
 {
   
     public class BackupManager

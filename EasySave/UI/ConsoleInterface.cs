@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using System.Linq;
 using EasyLog;
-using EasySave.Core_et_Model;
-using EasySave.Execution;
-using EasySave.UI_et_LOG;
+using EasySave.Models;
+using EasySave.Services;
+using EasySave.Strategies;
 
-namespace EasySave.UI_et_LOG
+namespace EasySave.UI
 {
     public class ConsoleInterface
     {

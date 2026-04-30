@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using EasyLog;
 
-namespace EasySave.Core_et_Model
+namespace EasySave.Services
 {
     public static class ConfigurationManager
     {
