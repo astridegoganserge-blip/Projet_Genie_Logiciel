@@ -1,6 +1,6 @@
 ﻿using EasyLog;
 
-namespace EasySave.Core_et_Model
+namespace EasySave.Models
 {
 
     public class AppSettings

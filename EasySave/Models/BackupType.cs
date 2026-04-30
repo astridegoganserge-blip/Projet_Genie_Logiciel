@@ -1,4 +1,4 @@
-﻿namespace EasySave.Core_et_Model
+﻿namespace EasySave.Models
 {
     public enum BackupType
     {
