@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using EasySave.Core_et_Model;
+using EasySave.Models;
 
-namespace EasySave.Execution
+namespace EasySave.Services
 { 
 
     public static class StateTracker

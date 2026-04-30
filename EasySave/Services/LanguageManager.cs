@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace EasySave.UI_et_LOG
+namespace EasySave.Services
 { 
     public static class LanguageManager
     {
