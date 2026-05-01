@@ -1,5 +1,6 @@
 using System;
 using EasySave.Models;
+using EasySave.Services;
 using EasySave.UI;
 
 namespace EasySave
@@ -8,7 +9,6 @@ namespace EasySave
     {
         static void Main(string[] args)
         {
-            // Ask user to choose language at startup
             Console.WriteLine("Choose language / Choisissez la langue :");
             Console.WriteLine("1. Français");
             Console.WriteLine("2. English");
@@ -17,15 +17,12 @@ namespace EasySave
             string? choice = Console.ReadLine();
             string language = choice == "2" ? "en" : "fr";
 
-            // Save the chosen language in settings
             AppSettings settings = ConfigurationManager.LoadSettings();
             settings.Language = language;
             ConfigurationManager.SaveSettings(settings);
 
-            // Load selected language
             LanguageManager.LoadLanguage(language);
 
-            // Start the console interface
             var ui = new ConsoleInterface();
             ui.Run(args);
         }
