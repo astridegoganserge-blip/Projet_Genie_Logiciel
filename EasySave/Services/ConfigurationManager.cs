@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using EasyLog;
+using EasySave.Models;
 
 namespace EasySave.Services
 {
@@ -13,7 +13,11 @@ namespace EasySave.Services
 
         public static void SaveJobs(List<BackupJob> jobs)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
             string json = JsonSerializer.Serialize(jobs, options);
             File.WriteAllText(JobsConfigPath, json);
         }
@@ -21,18 +25,27 @@ namespace EasySave.Services
         public static List<BackupJob> LoadJobs()
         {
             if (!File.Exists(JobsConfigPath))
+            {
                 return new List<BackupJob>();
+            }
 
             string json = File.ReadAllText(JobsConfigPath);
+
             if (string.IsNullOrWhiteSpace(json))
+            {
                 return new List<BackupJob>();
+            }
 
             return JsonSerializer.Deserialize<List<BackupJob>>(json) ?? new List<BackupJob>();
         }
 
         public static void SaveSettings(AppSettings settings)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
             string json = JsonSerializer.Serialize(settings, options);
             File.WriteAllText(SettingsPath, json);
         }
@@ -40,11 +53,16 @@ namespace EasySave.Services
         public static AppSettings LoadSettings()
         {
             if (!File.Exists(SettingsPath))
+            {
                 return new AppSettings();
+            }
 
             string json = File.ReadAllText(SettingsPath);
+
             if (string.IsNullOrWhiteSpace(json))
+            {
                 return new AppSettings();
+            }
 
             return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
         }
