@@ -1,6 +1,6 @@
 using System;
-using EasySave.Core_et_Model;
-using EasySave.UI_et_LOG;
+using EasySave.Models;
+using EasySave.UI;
 
 namespace EasySave
 {
