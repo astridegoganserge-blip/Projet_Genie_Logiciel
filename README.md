@@ -16,7 +16,7 @@ Cette première version couvre les besoins de base : créer des travaux de sauve
 
 ## Stack technique
 
-- C# / .NET 8.0
+- C# / .NET 10.0
 - Application console
 - Sérialisation JSON via `System.Text.Json`
 - Bibliothèque externe `EasyLog.dll` (développée à part) pour l'écriture des logs journaliers
@@ -25,25 +25,35 @@ Cette première version couvre les besoins de base : créer des travaux de sauve
 
 ```
 EasySave/
-├── Managers/
-│   └── BackupManager.cs       -> gestion des travaux (CRUD, exécution)
+├── Controllers/
+│   ├── JobController.cs
+│   └── SettingsController.cs
 ├── Models/
-│   ├── BackupJob.cs           -> représente un travail de sauvegarde
-│   └── BackupTypes.cs         -> enum Complete / Differential
+│   ├── AppSettings.cs
+│   ├── BackupJob.cs
+│   ├── BackupType.cs
+│   └── JobState.cs
+├── Repositories/
+│   ├── IJobRepository.cs
+│   ├── JsonJobRepository.cs
+│   ├── ISettingsRepository.cs
+│   └── JsonSettingsRepository.cs
 ├── Services/
-│   ├── ConfigurationManager.cs-> lecture/écriture de jobs.config.json
-│   ├── StateTracker.cs        -> écriture du state.json temps réel
-│   ├── LanguageManager.cs     -> chargement des traductions
-│   └── CommandLineParser.cs   -> parsing des arguments "1-3" ou "1;3"
+│   ├── CommandLineParser.cs
+│   ├── ConfigurationManager.cs
+│   ├── LanguageManager.cs
+│   └── StateTracker.cs
 ├── Strategies/
 │   ├── IBackupStrategy.cs
 │   ├── CompleteBackupStrategy.cs
 │   └── DifferentialBackupStrategy.cs
-├── UI/
-│   └── ConsoleInterface.cs    -> menu et interactions console
-├── Resources/
-│   ├── fr.json                -> traductions françaises
-│   └── en.json                -> traductions anglaises
+├── Views/
+│   ├── JobView.cs
+│   ├── LanguageView.cs
+│   └── SettingsView.cs
+├── languages/
+│   ├── fr.json
+│   └── en.json
 └── Program.cs
 ```
 
@@ -51,9 +61,9 @@ Le pattern Strategy a été retenu pour les deux types de sauvegarde. L'idée c'
 
 ## Installation
 
-Pré-requis : **.NET 8.0 SDK** minimum, Windows 10/11.
+Pré-requis : **.NET 10.0 SDK** minimum, Windows 10/11.
 
-Cloner le dépôt puis ouvrir `EasySave.slnx` dans Visual Studio 2022. Faire un build en Release. L'exécutable se retrouve dans `EasySave/bin/Release/net8.0/EasySave.exe`.
+Cloner le dépôt puis ouvrir `EasySave.slnx` dans Visual Studio 2026. Faire un build en Release. L'exécutable se retrouve dans `EasySave/bin/Release/net8.0/EasySave.exe`.
 
 En ligne de commande :
 
@@ -167,7 +177,7 @@ Application console bilingue (français / anglais) permettant de créer, gérer 
 
 ## Prérequis
 
-- **.NET 8.0 SDK** ou runtime équivalent
+- **.NET 10.0 SDK** ou runtime équivalent
 - Système : Windows, Linux ou macOS
 - Le projet dépend d'un projet frère `EasyLog` (référencé via `..\EasyLog\EasyLog.csproj`)
 
@@ -177,35 +187,36 @@ Application console bilingue (français / anglais) permettant de créer, gérer 
 
 ```
 EasySave/
-├── Program.cs                         # Point d'entrée, sélection de la langue
-├── EasySave.csproj
-├── EasySave.slnx                      # Solution (inclut EasyLog)
-│
-├── Managers/
-│   └── BackupManager.cs              # Gestion CRUD + exécution des travaux
-│
+├── Controllers/
+│   ├── JobController.cs
+│   └── SettingsController.cs
 ├── Models/
-│   ├── BackupJob.cs                  # Modèle d'un travail de sauvegarde
-│   └── BackupTypes.cs                # Enum : Complete / Differential
-│
+│   ├── AppSettings.cs
+│   ├── BackupJob.cs
+│   ├── BackupType.cs
+│   └── JobState.cs
+├── Repositories/
+│   ├── IJobRepository.cs
+│   ├── JsonJobRepository.cs
+│   ├── ISettingsRepository.cs
+│   └── JsonSettingsRepository.cs
 ├── Services/
-│   ├── CommandLineParser.cs          # Analyse des commandes (1, 1-3, 1;3;5)
-│   ├── ConfigurationManager.cs       # Persistance JSON des travaux
-│   ├── LanguageManager.cs            # Chargement des traductions
-│   └── StateTracker.cs               # Écriture temps réel de state.json
-│
+│   ├── CommandLineParser.cs
+│   ├── ConfigurationManager.cs
+│   ├── LanguageManager.cs
+│   └── StateTracker.cs
 ├── Strategies/
-│   ├── IBackupStrategy.cs            # Interface commune (pattern Strategy)
-│   ├── CompleteBackupStrategy.cs     # Sauvegarde complète
-│   └── DifferentialBackupStrategy.cs # Sauvegarde différentielle
-│
-├── UI/
-│   └── ConsoleInterface.cs           # Menu console et saisies utilisateur
-│
-└── Resources/
-    ├── fr.json                       # Traductions françaises
-    └── en.json                       # Traductions anglaises
-```
+│   ├── IBackupStrategy.cs
+│   ├── CompleteBackupStrategy.cs
+│   └── DifferentialBackupStrategy.cs
+├── Views/
+│   ├── JobView.cs
+│   ├── LanguageView.cs
+│   └── SettingsView.cs
+├── languages/
+│   ├── fr.json
+│   └── en.json
+└── Program.cs
 
 Le projet applique le **pattern Strategy** pour découpler les types de sauvegarde, ce qui permet d'ajouter facilement de nouvelles stratégies sans modifier `BackupManager`.
 
@@ -327,15 +338,27 @@ Un journal par jour, listant chaque transfert de fichier.
 
 ## Internationalisation
 
-Les libellés du menu et des messages sont définis dans `Resources/fr.json` et `Resources/en.json`.
-Pour ajouter une langue, créer un nouveau fichier JSON à la racine `Resources/` et adapter `LanguageManager.cs`.
+Les libellés du menu et des messages sont définis dans `Languages/fr.json` et `Languages/en.json`.
+Pour ajouter une langue, créer un nouveau fichier JSON à la racine `Languages/` et adapter `LanguageManager.cs`.
 
 ---
 
+## Ajouts EasySave 1.1
+
+EasySave 1.1 conserve le fonctionnement console de la version 1.0 et ajoute :
+
+- la possibilité de choisir le format du fichier log journalier : JSON ou XML ;
+- la persistance des paramètres utilisateur dans `settings.json` ;
+- l’uniformisation des statuts du fichier d’état en français : `Actif`, `Terminé`, `Erreur` ;
+- l’ajout du champ `Progression` dans `state.json` ;
+- la compatibilité d’EasyLog avec le suivi futur du temps de chiffrement grâce au champ `EncryptionTimeMs`.
+
 ## Auteurs
 
-Projet réalisé dans le cadre d'un projet école (CESI).
+Anelka MAPA
+Astride Gogan
+Luc Dai
 
 ## Version
 
-**EasySave 1.0** — Avril 2026
+**EasySave 1.1** — Avril 2026

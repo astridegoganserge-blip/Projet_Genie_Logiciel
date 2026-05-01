@@ -4,7 +4,7 @@ using System.Text.Json;
 using EasySave.Models;
 
 namespace EasySave.Services
-{ 
+{
 
     public static class StateTracker
     {
@@ -52,8 +52,8 @@ namespace EasySave.Services
             SaveState(); // Écrit immédiatement dans le fichier
         }
 
-            // EN: Updates progress after each file transfer
-            // FR: Met à jour la progression après chaque transfert de fichier
+        // EN: Updates progress after each file transfer
+        // FR: Met à jour la progression après chaque transfert de fichier
         public static void UpdateProgress(string sourceFile, string targetFile, long fileSize)
         {
             LastActionTime = DateTime.Now;
@@ -69,7 +69,7 @@ namespace EasySave.Services
                 Progression = Math.Round((TotalFiles - RemainingFiles) * 100.0 / TotalFiles, 1);
             }
             else
-                {
+            {
                 Progression = 100.0;
             }
 
@@ -122,6 +122,6 @@ namespace EasySave.Services
 
             string json = JsonSerializer.Serialize(state, options);
             File.WriteAllText(StateFilePath, json);
-    }
         }
+    }
 }
