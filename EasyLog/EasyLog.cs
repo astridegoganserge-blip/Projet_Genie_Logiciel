@@ -28,6 +28,23 @@ namespace EasyLog
 
         public void LogFileTransfer(string backupName, string sourceFile, string targetFile, long fileSize, long transferTimeMs)
         {
+            LogFileTransfer(
+                backupName,
+                sourceFile,
+                targetFile,
+                fileSize,
+                transferTimeMs,
+                0);
+        }
+
+        public void LogFileTransfer(
+            string backupName,
+            string sourceFile,
+            string targetFile,
+            long fileSize,
+            long transferTimeMs,
+            long encryptionTimeMs)
+        {
             var entry = new LogEntry
             {
                 Timestamp = DateTime.Now,
@@ -35,7 +52,8 @@ namespace EasyLog
                 SourceFile = sourceFile,
                 TargetFile = targetFile,
                 FileSize = fileSize,
-                TransferTimeMs = transferTimeMs
+                TransferTimeMs = transferTimeMs,
+                EncryptionTimeMs = encryptionTimeMs
             };
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -43,9 +61,7 @@ namespace EasyLog
             string filePath = Path.Combine(_logDirectory, $"{date}.{extension}");
 
             List<LogEntry> entries = LoadExistingEntries(filePath);
-
             entries.Add(entry);
-
 
             SaveEntries(filePath, entries);
         }
