@@ -18,13 +18,10 @@ namespace EasySave
             settingsController.UpdateLanguage(language);
             LanguageView.ShowLanguageSelected(language);
 
-            var settings = settingsController.GetSettings();
-
             string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-            var logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
 
             var jobRepository = new JsonJobRepository();
-            var jobController = new JobController(jobRepository, logger);
+            var jobController = new JobController(jobRepository, settingsRepository, logDirectory);
 
             if (args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
             {
