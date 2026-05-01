@@ -44,22 +44,23 @@ namespace EasySave.Strategies
                 if (!Directory.Exists(destDir))
                     Directory.CreateDirectory(destDir);
 
-                // EN: Measure transfer time
-                // FR: Mesure le temps de transfert
-                var startTime = DateTime.Now;
-                File.Copy(file, destFile, true);
-                var transferTime = (long)(DateTime.Now - startTime).TotalMilliseconds;
-
                 var fileInfo = new FileInfo(file);
 
+                try
+                {
+                    var startTime = DateTime.Now;
+                    File.Copy(file, destFile, true);
+                    var transferTime = (long)(DateTime.Now - startTime).TotalMilliseconds;
 
-                // EN: Log the file transfer to daily JSON log
-                // FR: Journalise le transfert de fichier dans le log JSON journalier
-                logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, transferTime);
-
-                // EN: Update real-time progress state
-                // FR: Met à jour l'état de progression temps réel
-                StateTracker.UpdateProgress(file, destFile, fileInfo.Length);
+                    logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, transferTime);
+                    StateTracker.UpdateProgress(file, destFile, fileInfo.Length);
+                }
+                catch
+                {
+                    logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, -1);
+                    StateTracker.MarkAsError("File transfer failed");
+                    throw;
+                }
             }
 
             // EN: Mark backup as completed

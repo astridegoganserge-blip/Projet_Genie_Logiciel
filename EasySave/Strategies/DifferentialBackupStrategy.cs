@@ -44,19 +44,23 @@ namespace EasySave.Strategies
                 if (!Directory.Exists(destDir))
                     Directory.CreateDirectory(destDir);
 
-                var startTime = DateTime.Now;
-                File.Copy(file, destFile, true);
-                var transferTime = (long)(DateTime.Now - startTime).TotalMilliseconds;
-
                 var fileInfo = new FileInfo(file);
 
-                // EN:Logger
-                // FR:Logger
-                logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, transferTime);
+                try
+                {
+                    var startTime = DateTime.Now;
+                    File.Copy(file, destFile, true);
+                    var transferTime = (long)(DateTime.Now - startTime).TotalMilliseconds;
 
-                // EN: Update
-                // FR:Mettre à jour l'état
-                StateTracker.UpdateProgress(file, destFile, fileInfo.Length);
+                    logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, transferTime);
+                    StateTracker.UpdateProgress(file, destFile, fileInfo.Length);
+                }
+                catch
+                {
+                    logger.LogFileTransfer(job.Name, file, destFile, fileInfo.Length, -1);
+                    StateTracker.MarkAsError("File transfer failed");
+                    throw;
+                }
             }
             // EN: Completed
             // FR: Terminer
