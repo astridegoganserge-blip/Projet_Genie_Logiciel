@@ -12,15 +12,17 @@ namespace EasySave.Controllers
     public class JobController
     {
         private readonly IJobRepository _jobRepository;
-        private readonly EasyLog.EasyLog _logger;
+        private readonly ISettingsRepository _settingsRepository;
+        private readonly string _logDirectory;
         private const int MaxJobs = 5;
 
 
 
-        public JobController(IJobRepository jobRepository, EasyLog.EasyLog logger)
+        public JobController(IJobRepository jobRepository, ISettingsRepository settingsRepository, string logDirectory)
         {
             _jobRepository = jobRepository;
-            _logger = logger;
+            _settingsRepository = settingsRepository;
+            _logDirectory = logDirectory;
         }
 
 
@@ -117,12 +119,13 @@ namespace EasySave.Controllers
 
 
             IBackupStrategy strategy = SelectStrategy(job.Type);
+            EasyLog.EasyLog logger = CreateLogger();
 
 
 
             try
             {
-                strategy.Execute(job, _logger);
+                strategy.Execute(job, logger);
                 job.LastExecutionTime = System.DateTime.Now;
 
 
@@ -183,6 +186,11 @@ namespace EasySave.Controllers
         }
 
 
+        private EasyLog.EasyLog CreateLogger()
+        {
+            AppSettings settings = _settingsRepository.Load();
+            return new EasyLog.EasyLog(_logDirectory, settings.LogFormat);
+        }
 
         private static IBackupStrategy SelectStrategy(BackupType type)
         {
