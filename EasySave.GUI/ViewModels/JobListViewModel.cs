@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using EasySave.Models;
+using EasySave.Repositories;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -6,26 +8,27 @@ namespace EasySave.GUI.ViewModels
     {
         private string _statusMessage = "Ready";
         private bool _isExecuting;
+        private readonly IJobRepository _jobRepository;
 
         public JobListViewModel()
         {
-            Jobs = new ObservableCollection<string>
-            {
-                "Job 1 - Complete backup",
-                "Job 2 - Differential backup"
-            };
+            _jobRepository = new JsonJobRepository();
+
+            Jobs = new ObservableCollection<BackupJob>();
 
             RefreshCommand = new RelayCommand(_ => RefreshJobs());
             ExecuteJobCommand = new RelayCommand(_ => ExecuteSelectedJob(), _ => SelectedJob != null && !IsExecuting);
             DeleteJobCommand = new RelayCommand(_ => DeleteSelectedJob(), _ => SelectedJob != null && !IsExecuting);
             CreateJobCommand = new RelayCommand(_ => CreateJob(), _ => !IsExecuting);
+
+            LoadJobs();
         }
 
-        public ObservableCollection<string> Jobs { get; }
+        public ObservableCollection<BackupJob> Jobs { get; }
 
-        private string? _selectedJob;
+        private BackupJob? _selectedJob;
 
-        public string? SelectedJob
+        public BackupJob? SelectedJob
         {
             get => _selectedJob;
             set
@@ -68,9 +71,21 @@ namespace EasySave.GUI.ViewModels
 
         public RelayCommand CreateJobCommand { get; }
 
+        private void LoadJobs()
+        {
+            Jobs.Clear();
+
+            foreach (BackupJob job in _jobRepository.GetAll())
+            {
+                Jobs.Add(job);
+            }
+
+            StatusMessage = $"{Jobs.Count} job(s) loaded.";
+        }
+
         private void RefreshJobs()
         {
-            StatusMessage = "Job list refreshed.";
+            LoadJobs();
         }
 
         private void ExecuteSelectedJob()
@@ -81,7 +96,7 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            StatusMessage = $"Execution requested for: {SelectedJob}";
+            StatusMessage = $"Execution requested for: {SelectedJob.Name}";
         }
 
         private void DeleteSelectedJob()
@@ -92,15 +107,14 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            Jobs.Remove(SelectedJob);
-            StatusMessage = "Job removed from the list.";
+            _jobRepository.Delete(SelectedJob.Id);
+            LoadJobs();
+            StatusMessage = "Job deleted.";
         }
 
         private void CreateJob()
         {
-            int nextIndex = Jobs.Count + 1;
-            Jobs.Add($"Job {nextIndex} - New backup job");
-            StatusMessage = "New job added.";
+            StatusMessage = "Job creation form will be implemented in the next step.";
         }
     }
 }
