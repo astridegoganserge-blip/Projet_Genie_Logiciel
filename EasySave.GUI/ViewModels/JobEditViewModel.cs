@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using EasySave.Core.Models;
+using EasySave.Core.Managers;
 using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
 {
     public class JobEditViewModel : BaseViewModel
     {
-        private readonly IJobRepository _jobRepository;
+        private readonly BackupManager _backupManager;
 
         private string _jobName = string.Empty;
         private string _sourcePath = string.Empty;
@@ -17,7 +18,7 @@ namespace EasySave.GUI.ViewModels
 
         public JobEditViewModel()
         {
-            _jobRepository = new JsonJobRepository();
+            _backupManager = new BackupManager(new JsonJobRepository(), new JsonSettingsRepository());
 
             AvailableTypes = new List<BackupType>
             {
@@ -105,19 +106,14 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            List<BackupJob> jobs = _jobRepository.GetAll();
 
-            var job = new BackupJob
+            bool created = _backupManager.AddJob(job);
+
+            if (!created)
             {
-                Id = System.Guid.NewGuid(),
-                Name = JobName,
-                SourcePath = SourcePath,
-                TargetPath = TargetPath,
-                Type = SelectedType
-            };
-
-            jobs.Add(job);
-            _jobRepository.Save(jobs);
+                ErrorMessage = "Unable to create backup job. Check source and target paths.";
+                return;
+            }
 
             SuccessMessage = "Backup job created successfully.";
             ClearFormFieldsOnly();

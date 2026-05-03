@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using EasySave.Core.Models;
+using EasySave.Core.Managers;
 using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
@@ -8,11 +9,11 @@ namespace EasySave.GUI.ViewModels
     {
         private string _statusMessage = "Ready";
         private bool _isExecuting;
-        private readonly IJobRepository _jobRepository;
+        private readonly BackupManager _backupManager;
 
         public JobListViewModel()
         {
-            _jobRepository = new JsonJobRepository();
+            _backupManager = new BackupManager(new JsonJobRepository(), new JsonSettingsRepository());
 
             Jobs = new ObservableCollection<BackupJob>();
 
@@ -75,12 +76,9 @@ namespace EasySave.GUI.ViewModels
         {
             Jobs.Clear();
 
-            foreach (BackupJob job in _jobRepository.GetAll())
-            {
-                Jobs.Add(job);
-            }
+            foreach (BackupJob job in _backupManager.GetAllJobs())
 
-            StatusMessage = $"{Jobs.Count} job(s) loaded.";
+                StatusMessage = $"{Jobs.Count} job(s) loaded.";
         }
 
         private void RefreshJobs()
@@ -107,7 +105,7 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            _jobRepository.Delete(SelectedJob.Id);
+            _backupManager.RemoveJob(SelectedJob.Id);
             LoadJobs();
             StatusMessage = "Job deleted.";
         }
