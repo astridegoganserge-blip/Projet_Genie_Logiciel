@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
-using EasySave.Models;
-using EasySave.Repositories;
+using EasySave.Core.Models;
+using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -108,13 +107,9 @@ namespace EasySave.GUI.ViewModels
 
             List<BackupJob> jobs = _jobRepository.GetAll();
 
-            int nextId = jobs.Count == 0
-                ? 1
-                : jobs.Max(job => job.Id) + 1;
-
             var job = new BackupJob
             {
-                Id = nextId,
+                Id = System.Guid.NewGuid(),
                 Name = JobName,
                 SourcePath = SourcePath,
                 TargetPath = TargetPath,

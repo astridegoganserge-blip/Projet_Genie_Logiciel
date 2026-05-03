@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
-using EasySave.Models;
-using EasySave.Repositories;
+using EasySave.Core.Models;
+using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
 {
