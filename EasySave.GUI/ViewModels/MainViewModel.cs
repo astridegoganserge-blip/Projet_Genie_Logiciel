@@ -54,7 +54,7 @@ namespace EasySave.GUI.ViewModels
 
         private void ShowExecution()
         {
-            CurrentView = "Execution monitoring view will be implemented later.";
+            CurrentView = new JobExecutionView();
         }
     }
 }
