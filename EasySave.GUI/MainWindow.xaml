@@ -22,6 +22,11 @@
                         Width="120"
                         Margin="0,0,8,0"
                         Command="{Binding ShowJobsCommand}" />
+                        
+                <Button Content="Create job"
+                        Width="120"
+                        Margin="0,0,8,0"
+                    Command="{Binding ShowCreateJobCommand}" />
 
                 <Button Content="Settings"
                         Width="120"

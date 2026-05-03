@@ -12,6 +12,7 @@ namespace EasySave.GUI.ViewModels
             ShowJobsCommand = new RelayCommand(_ => ShowJobs());
             ShowSettingsCommand = new RelayCommand(_ => ShowSettings());
             ShowExecutionCommand = new RelayCommand(_ => ShowExecution());
+            ShowCreateJobCommand = new RelayCommand(_ => ShowCreateJob());
 
             CurrentView = new JobListView();
         }
@@ -42,6 +43,8 @@ namespace EasySave.GUI.ViewModels
 
         public RelayCommand ShowExecutionCommand { get; }
 
+        public RelayCommand ShowCreateJobCommand { get; }
+
         private void ShowJobs()
         {
             CurrentView = new JobListView();
@@ -55,6 +58,11 @@ namespace EasySave.GUI.ViewModels
         private void ShowExecution()
         {
             CurrentView = new JobExecutionView();
+        }
+
+        private void ShowCreateJob()
+        {
+            CurrentView = new JobEditView();
         }
     }
 }

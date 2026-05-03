@@ -114,7 +114,7 @@ namespace EasySave.GUI.ViewModels
 
         private void CreateJob()
         {
-            StatusMessage = "Job creation form will be implemented in the next step.";
+            StatusMessage = "Use the Create job menu to add a new backup job.";
         }
     }
 }
