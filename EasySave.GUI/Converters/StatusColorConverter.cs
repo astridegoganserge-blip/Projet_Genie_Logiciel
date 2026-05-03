@@ -1,0 +1,37 @@
+using System;
+using System.Globalization;
+using System.Windows.Data;
+using System.Windows.Media;
+
+namespace EasySave.GUI.Converters
+{
+    public class StatusColorConverter : IValueConverter
+    {
+        public object Convert(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture)
+        {
+            string status = value?.ToString() ?? string.Empty;
+
+            return status switch
+            {
+                "Actif" => Brushes.Green,
+                "Terminé" => Brushes.Gray,
+                "Erreur" => Brushes.Red,
+                "Interrompu" => Brushes.Orange,
+                _ => Brushes.Black
+            };
+        }
+
+        public object ConvertBack(
+            object value,
+            Type targetType,
+            object parameter,
+            CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+}
