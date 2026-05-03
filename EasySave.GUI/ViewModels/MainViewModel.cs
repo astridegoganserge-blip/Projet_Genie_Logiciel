@@ -1,3 +1,5 @@
+using EasySave.GUI.Views;
+
 namespace EasySave.GUI.ViewModels
 {
     public class MainViewModel : BaseViewModel
@@ -11,7 +13,7 @@ namespace EasySave.GUI.ViewModels
             ShowSettingsCommand = new RelayCommand(_ => ShowSettings());
             ShowExecutionCommand = new RelayCommand(_ => ShowExecution());
 
-            CurrentView = "Jobs view will be implemented in the next step.";
+            CurrentView = new JobListView();
         }
 
         public object? CurrentView
@@ -42,7 +44,7 @@ namespace EasySave.GUI.ViewModels
 
         private void ShowJobs()
         {
-            CurrentView = "Jobs view will be implemented in the next step.";
+            CurrentView = new JobListView();
         }
 
         private void ShowSettings()
