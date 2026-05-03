@@ -49,7 +49,7 @@ namespace EasySave.GUI.ViewModels
 
         private void ShowSettings()
         {
-            CurrentView = "Settings view will be implemented later.";
+            CurrentView = new SettingsView();
         }
 
         private void ShowExecution()
