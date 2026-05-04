@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using EasySave.Core.Models;
 using System.Text.Json.Serialization;
+using EasySave.Core.Models;
+
 
 namespace EasySave.Core.Services
 {
@@ -131,6 +132,7 @@ namespace EasySave.Core.Services
             };
 
             options.Converters.Add(new JsonStringEnumConverter());
+
             List<JobState> states = States.Values.ToList();
             string json = JsonSerializer.Serialize(states, options);
             File.WriteAllText(StateFilePath, json);
