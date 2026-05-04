@@ -1,6 +1,10 @@
+using System;
 using System.Collections.ObjectModel;
-using EasySave.Core.Models;
+using System.IO;
+using System.Threading.Tasks;
+using EasyLog;
 using EasySave.Core.Managers;
+using EasySave.Core.Models;
 using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
@@ -86,7 +90,7 @@ namespace EasySave.GUI.ViewModels
             LoadJobs();
         }
 
-        private void ExecuteSelectedJob()
+        private async void ExecuteSelectedJob()
         {
             if (SelectedJob == null)
             {
@@ -94,7 +98,34 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            StatusMessage = $"Execution requested for: {SelectedJob.Name}";
+            IsExecuting = true;
+            StatusMessage = $"Executing: {SelectedJob.Name}";
+
+            try
+            {
+                bool success = await Task.Run(() =>
+                {
+                    var settings = _backupManager.GetSettings();
+                    string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+                    var logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+
+                    return _backupManager.ExecuteJob(SelectedJob.Id, logger);
+                });
+
+                StatusMessage = success
+                    ? $"Execution completed: {SelectedJob.Name}"
+                    : $"Execution failed or interrupted: {SelectedJob.Name}";
+
+                LoadJobs();
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Execution error: {ex.Message}";
+            }
+            finally
+            {
+                IsExecuting = false;
+            }
         }
 
         private void DeleteSelectedJob()
