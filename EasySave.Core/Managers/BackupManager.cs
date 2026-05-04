@@ -4,8 +4,8 @@ using System.Linq;
 using EasyLog;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
-using EasySave.Core.Strategies;
 using EasySave.Core.Services;
+using EasySave.Core.Strategies;
 
 namespace EasySave.Core.Managers
 {
@@ -44,6 +44,11 @@ namespace EasySave.Core.Managers
             if (job.Id == Guid.Empty)
             {
                 job.Id = Guid.NewGuid();
+            }
+
+            if (job.Number <= 0)
+            {
+                job.Number = GetNextJobNumber(jobs);
             }
 
             if (jobs.Any(existingJob => existingJob.Id == job.Id))
@@ -151,6 +156,13 @@ namespace EasySave.Core.Managers
         public void SaveSettings(AppSettings settings)
         {
             _settingsRepository.Save(settings);
+        }
+
+        private static int GetNextJobNumber(List<BackupJob> jobs)
+        {
+            return jobs.Count == 0
+                ? 1
+                : jobs.Max(job => job.Number) + 1;
         }
 
         private static IBackupStrategy SelectStrategy(BackupType type)

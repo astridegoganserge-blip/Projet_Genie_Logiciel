@@ -7,6 +7,8 @@ namespace EasySave.Core.Models
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
+        public int Number { get; set; }
+
         public required string Name { get; set; }
 
         public required string SourcePath { get; set; }
