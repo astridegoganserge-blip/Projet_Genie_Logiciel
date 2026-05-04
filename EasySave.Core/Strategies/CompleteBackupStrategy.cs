@@ -26,6 +26,8 @@ namespace EasySave.Core.Strategies
             }
 
             string[] files = Directory.GetFiles(job.SourcePath, "*", SearchOption.AllDirectories);
+            long totalSize = files.Sum(file => new FileInfo(file).Length);
+            StateTracker.Initialize(job, files.Length, totalSize);
 
             foreach (string file in files)
             {
@@ -55,6 +57,7 @@ namespace EasySave.Core.Strategies
                         fileSize,
                         transferTimeMs,
                         encryptionTimeMs);
+                    StateTracker.UpdateProgress(job.Name, file, targetFile, fileSize);
                 }
                 catch
                 {
@@ -67,6 +70,7 @@ namespace EasySave.Core.Strategies
                         fileSize,
                         -1,
                         0);
+                    StateTracker.MarkAsError(job.Name);
 
                     return false;
                 }
@@ -74,9 +78,12 @@ namespace EasySave.Core.Strategies
                 if (BusinessSoftwareWatcher.IsRunning(settings.BusinessSoftware))
                 {
                     logger.LogFileTransfer(job.Name, file, targetFile, 0, -1, 0);
+                    StateTracker.MarkAsInterrupted(job.Name);
                     return false;
                 }
             }
+
+            StateTracker.MarkAsCompleted(job.Name);
 
             return true;
         }
