@@ -3,6 +3,7 @@ using EasyLog;
 using EasySave.Core.Managers;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
+using EasySave.GUI.Services;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -129,6 +130,7 @@ namespace EasySave.GUI.ViewModels
             };
 
             _backupManager.SaveSettings(settings);
+            LocalizationService.ApplyLanguage(SelectedLanguage);
 
             SuccessMessage = "Settings saved successfully.";
         }

@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <sys:String x:Key="AppTitle">EasySave v2.0</sys:String>
+
+    <sys:String x:Key="NavBackupJobs">Travaux</sys:String>
+    <sys:String x:Key="NavCreateJob">Créer un job</sys:String>
+    <sys:String x:Key="NavSettings">Paramètres</sys:String>
+    <sys:String x:Key="NavExecution">Exécution</sys:String>
+
+    <sys:String x:Key="BtnCreate">Créer</sys:String>
+    <sys:String x:Key="BtnExecute">Exécuter</sys:String>
+    <sys:String x:Key="BtnDelete">Supprimer</sys:String>
+    <sys:String x:Key="BtnRefresh">Actualiser</sys:String>
+    <sys:String x:Key="BtnSave">Enregistrer</sys:String>
+    <sys:String x:Key="BtnCancel">Annuler</sys:String>
+    <sys:String x:Key="BtnAdd">Ajouter</sys:String>
+    <sys:String x:Key="BtnRemove">Retirer</sys:String>
+    <sys:String x:Key="BtnStartMonitoring">Démarrer le suivi</sys:String>
+    <sys:String x:Key="BtnStopMonitoring">Arrêter le suivi</sys:String>
+
+    <sys:String x:Key="HeaderId">Id</sys:String>
+    <sys:String x:Key="HeaderName">Nom</sys:String>
+    <sys:String x:Key="HeaderSource">Source</sys:String>
+    <sys:String x:Key="HeaderTarget">Cible</sys:String>
+    <sys:String x:Key="HeaderType">Type</sys:String>
+    <sys:String x:Key="HeaderLastExecution">Dernière exécution</sys:String>
+
+    <sys:String x:Key="SettingsLanguage">Langue</sys:String>
+    <sys:String x:Key="SettingsApplicationLanguage">Langue de l’application :</sys:String>
+    <sys:String x:Key="SettingsLogFormat">Format du log</sys:String>
+    <sys:String x:Key="SettingsDailyLogFormat">Format du log journalier :</sys:String>
+    <sys:String x:Key="SettingsBusinessSoftware">Logiciel métier</sys:String>
+    <sys:String x:Key="SettingsProcessName">Nom du processus à surveiller :</sys:String>
+    <sys:String x:Key="SettingsExample">Exemple : CalculatorApp</sys:String>
+    <sys:String x:Key="SettingsExtensions">Extensions à chiffrer</sys:String>
+    <sys:String x:Key="SettingsSave">Enregistrer les paramètres</sys:String>
+
+    <sys:String x:Key="CreateBackupJob">Créer un travail de sauvegarde</sys:String>
+    <sys:String x:Key="JobName">Nom du job :</sys:String>
+    <sys:String x:Key="SourcePath">Chemin source :</sys:String>
+    <sys:String x:Key="TargetPath">Chemin cible :</sys:String>
+    <sys:String x:Key="BackupType">Type de sauvegarde :</sys:String>
+
+    <sys:String x:Key="ExecutionJobStates">États des travaux</sys:String>
+    <sys:String x:Key="ExecutionInfo">Cet écran lit les données temps réel depuis StateTracker.</sys:String>
+    <sys:String x:Key="ExecutionBackup">Sauvegarde</sys:String>
+    <sys:String x:Key="ExecutionStatus">Statut</sys:String>
+    <sys:String x:Key="ExecutionProgress">Progression</sys:String>
+    <sys:String x:Key="ExecutionRemainingFiles">Fichiers restants</sys:String>
+    <sys:String x:Key="ExecutionRemainingSize">Taille restante</sys:String>
+    <sys:String x:Key="ExecutionCurrentSource">Source en cours</sys:String>
+    <sys:String x:Key="ExecutionCurrentTarget">Cible en cours</sys:String>
+
+</ResourceDictionary>

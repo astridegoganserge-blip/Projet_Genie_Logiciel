@@ -16,12 +16,12 @@
 
         <StackPanel Orientation="Horizontal"
                     Margin="0,0,0,12">
-            <Button Content="Start monitoring"
+            <Button Content="{DynamicResource BtnStartMonitoring}"
                     Width="140"
                     Margin="0,0,8,0"
                     Command="{Binding StartMonitoringCommand}" />
 
-            <Button Content="Stop monitoring"
+            <Button Content="{DynamicResource BtnStopMonitoring}"
                     Width="140"
                     Command="{Binding StopMonitoringCommand}" />
         </StackPanel>
@@ -36,44 +36,55 @@
                          Height="22"
                          Value="{Binding GlobalProgression}" />
 
-            <TextBlock Text="{Binding GlobalProgression, StringFormat=Global progression: {0}%}"
-                       Margin="0,6,0,0" />
+            <TextBlock Margin="0,6,0,0">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Progression globale : {0}%">
+                        <Binding Path="GlobalProgression" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
         </StackPanel>
 
-    <GroupBox Grid.Row="2"
-          Header="Job states"
-          Padding="12">
-                <DataGrid ItemsSource="{Binding JobStates}"
-              AutoGenerateColumns="False"
-              IsReadOnly="True">
+        <GroupBox Grid.Row="2"
+                  Header="{DynamicResource ExecutionJobStates}"
+                  Padding="12">
+            <DataGrid ItemsSource="{Binding JobStates}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True">
                 <DataGrid.Columns>
-                            <DataGridTextColumn Header="Backup"
-                                Binding="{Binding BackupName}"
-                                Width="*" />
-                                <DataGridTextColumn Header="Status"
-                                Binding="{Binding Status}"
-                                Width="120" />
-                <DataGridTextColumn Header="Progress"
-                                Binding="{Binding Progression}"
-                                Width="100" />
-            <DataGridTextColumn Header="Remaining files"
-                                Binding="{Binding RemainingFiles}"
-                                Width="120" />
-            <DataGridTextColumn Header="Remaining size"
-                                Binding="{Binding RemainingSize}"
-                                Width="120" />
-            <DataGridTextColumn Header="Current source"
-                                Binding="{Binding CurrentSourceFile}"
-                                Width="2*" />
-            <DataGridTextColumn Header="Current target"
-                                Binding="{Binding CurrentTargetFile}"
-                                Width="2*" />
-        </DataGrid.Columns>
-    </DataGrid>
-    </GroupBox>
+                    <DataGridTextColumn Header="{StaticResource ExecutionBackup}"
+                                        Binding="{Binding BackupName}"
+                                        Width="*" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionStatus}"
+                                        Binding="{Binding Status}"
+                                        Width="120" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionProgress}"
+                                        Binding="{Binding Progression}"
+                                        Width="100" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionRemainingFiles}"
+                                        Binding="{Binding RemainingFiles}"
+                                        Width="120" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionRemainingSize}"
+                                        Binding="{Binding RemainingSize}"
+                                        Width="120" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionCurrentSource}"
+                                        Binding="{Binding CurrentSourceFile}"
+                                        Width="2*" />
+
+                    <DataGridTextColumn Header="{StaticResource ExecutionCurrentTarget}"
+                                        Binding="{Binding CurrentTargetFile}"
+                                        Width="2*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
 
         <TextBlock Grid.Row="3"
                    Margin="0,12,0,0"
-                   Text="This screen will later read real-time data from StateTracker." />
+                   Text="{DynamicResource ExecutionInfo}" />
     </Grid>
 </UserControl>

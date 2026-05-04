@@ -15,38 +15,26 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Language"
-          Padding="12"
-          Margin="0,0,0,12">
-    <StackPanel>
-        <TextBlock Text="Application language:" />
-        <ComboBox ItemsSource="{Binding AvailableLanguages}"
-                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
-                  Width="180"
-                  HorizontalAlignment="Left"
-                  Margin="0,6,0,0" />
-    </StackPanel>
-</GroupBox>
-
-        <GroupBox Header="Language"
-                    Padding="12"
-                    Margin="0,0,0,12">
+        <GroupBox Grid.Row="0"
+                  Header="{DynamicResource SettingsLanguage}"
+                  Padding="12"
+                  Margin="0,0,0,12">
             <StackPanel>
-                <TextBlock Text="Application language:" />
+                <TextBlock Text="{DynamicResource SettingsApplicationLanguage}" />
                 <ComboBox ItemsSource="{Binding AvailableLanguages}"
-                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
-                  Width="180"
-                  HorizontalAlignment="Left"
-                  Margin="0,6,0,0" />
+                          SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                          Width="180"
+                          HorizontalAlignment="Left"
+                          Margin="0,6,0,0" />
             </StackPanel>
         </GroupBox>
 
         <GroupBox Grid.Row="1"
-                Header="Log format"
-                Padding="12"
-                 Margin="0,0,0,12">
+                  Header="{DynamicResource SettingsLogFormat}"
+                  Padding="12"
+                  Margin="0,0,0,12">
             <StackPanel>
-                <TextBlock Text="Daily log format:" />
+                <TextBlock Text="{DynamicResource SettingsDailyLogFormat}" />
                 <ComboBox ItemsSource="{Binding AvailableFormats}"
                           SelectedItem="{Binding SelectedLogFormat, Mode=TwoWay}"
                           Width="180"
@@ -56,23 +44,23 @@
         </GroupBox>
 
         <GroupBox Grid.Row="2"
-                  Header="Business software"
+                  Header="{DynamicResource SettingsBusinessSoftware}"
                   Padding="12"
                   Margin="0,0,0,12">
             <StackPanel>
-                <TextBlock Text="Process name to monitor:" />
+                <TextBlock Text="{DynamicResource SettingsProcessName}" />
                 <TextBox Text="{Binding BusinessSoftware, UpdateSourceTrigger=PropertyChanged}"
                          Width="250"
                          HorizontalAlignment="Left"
                          Margin="0,6,0,0" />
-                <TextBlock Text="Example: calc"
+                <TextBlock Text="{DynamicResource SettingsExample}"
                            FontStyle="Italic"
                            Margin="0,4,0,0" />
             </StackPanel>
         </GroupBox>
 
         <GroupBox Grid.Row="3"
-                  Header="Extensions to encrypt"
+                  Header="{DynamicResource SettingsExtensions}"
                   Padding="12"
                   Margin="0,0,0,12">
             <Grid>
@@ -86,7 +74,7 @@
                              Width="160"
                              Margin="0,0,8,0" />
 
-                    <Button Content="Add"
+                    <Button Content="{DynamicResource BtnAdd}"
                             Width="80"
                             Command="{Binding AddExtensionCommand}" />
                 </StackPanel>
@@ -97,7 +85,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <DockPanel>
-                                <Button Content="Remove"
+                                <Button Content="{DynamicResource BtnRemove}"
                                         DockPanel.Dock="Right"
                                         Margin="8,0,0,0"
                                         Command="{Binding DataContext.RemoveExtensionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
@@ -112,8 +100,8 @@
 
         <StackPanel Grid.Row="4"
                     Orientation="Horizontal">
-            <Button Content="Save settings"
-                    Width="130"
+            <Button Content="{DynamicResource SettingsSave}"
+                    Width="150"
                     Command="{Binding SaveCommand}" />
 
             <TextBlock Text="{Binding SuccessMessage}"
