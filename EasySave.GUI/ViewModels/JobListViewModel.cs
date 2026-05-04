@@ -6,6 +6,7 @@ using EasyLog;
 using EasySave.Core.Managers;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
+using EasySave.Core.Services;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -22,7 +23,7 @@ namespace EasySave.GUI.ViewModels
             Jobs = new ObservableCollection<BackupJob>();
 
             RefreshCommand = new RelayCommand(_ => RefreshJobs());
-            ExecuteJobCommand = new RelayCommand(_ => ExecuteSelectedJob(), _ => SelectedJob != null && !IsExecuting);
+            ExecuteJobCommand = new RelayCommand(parameter => ExecuteSelectedJob(parameter), _ => !IsExecuting);
             DeleteJobCommand = new RelayCommand(_ => DeleteSelectedJob(), _ => SelectedJob != null && !IsExecuting);
             CreateJobCommand = new RelayCommand(_ => CreateJob(), _ => !IsExecuting);
 
@@ -97,31 +98,53 @@ namespace EasySave.GUI.ViewModels
             StatusMessage = $"{Jobs.Count} job(s) refreshed.";
         }
 
-        private async void ExecuteSelectedJob()
+        private async void ExecuteSelectedJob(object? parameter)
         {
-            if (SelectedJob == null)
+            BackupJob? jobToExecute = parameter as BackupJob ?? SelectedJob;
+
+            if (jobToExecute == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = "Please select a backup job before execution.";
+                return;
+            }
+
+            SelectedJob = jobToExecute;
+
+            var settings = _backupManager.GetSettings();
+
+            if (BusinessSoftwareWatcher.IsRunning(settings.BusinessSoftware))
+            {
+                string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+                var logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+
+                logger.LogFileTransfer(
+                    jobToExecute.Name,
+                    $"Business software detected: {settings.BusinessSoftware}",
+                    string.Empty,
+                    0,
+                    -1,
+                    0);
+
+                StatusMessage = $"Execution blocked: business software is running ({settings.BusinessSoftware})";
                 return;
             }
 
             IsExecuting = true;
-            StatusMessage = $"Executing: {SelectedJob.Name}";
+            StatusMessage = $"Executing: {jobToExecute.Name}";
 
             try
             {
                 bool success = await Task.Run(() =>
                 {
-                    var settings = _backupManager.GetSettings();
                     string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
                     var logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
 
-                    return _backupManager.ExecuteJob(SelectedJob.Id, logger);
+                    return _backupManager.ExecuteJob(jobToExecute.Id, logger);
                 });
 
                 StatusMessage = success
-                    ? $"Execution completed: {SelectedJob.Name}"
-                    : $"Execution failed or interrupted: {SelectedJob.Name}";
+                    ? $"Execution completed: {jobToExecute.Name}"
+                    : $"Execution failed or interrupted: {jobToExecute.Name}";
 
                 LoadJobs();
             }

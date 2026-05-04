@@ -5,6 +5,7 @@ using EasyLog;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
 using EasySave.Core.Strategies;
+using EasySave.Core.Services;
 
 namespace EasySave.Core.Managers
 {
@@ -100,6 +101,20 @@ namespace EasySave.Core.Managers
             }
 
             AppSettings settings = _settingsRepository.Load();
+
+            if (BusinessSoftwareWatcher.IsRunning(settings.BusinessSoftware))
+            {
+                logger.LogFileTransfer(
+                    job.Name,
+                    $"Business software detected: {settings.BusinessSoftware}",
+                    string.Empty,
+                    0,
+                    -1,
+                    0);
+
+                return false;
+            }
+
             IBackupStrategy strategy = SelectStrategy(job.Type);
 
             bool success = strategy.Execute(job, logger, settings);

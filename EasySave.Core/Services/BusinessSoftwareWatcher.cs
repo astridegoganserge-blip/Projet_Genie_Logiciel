@@ -17,9 +17,30 @@ namespace EasySave.Core.Services
 
             try
             {
-                return Process
-                    .GetProcessesByName(normalizedProcessName)
-                    .Any();
+                Process[] processes = Process.GetProcesses();
+
+                return processes.Any(process =>
+                {
+                    try
+                    {
+                        string currentProcessName = process.ProcessName;
+
+                        return string.Equals(
+                                   currentProcessName,
+                                   normalizedProcessName,
+                                   StringComparison.OrdinalIgnoreCase)
+                               || currentProcessName.Contains(
+                                   normalizedProcessName,
+                                   StringComparison.OrdinalIgnoreCase)
+                               || normalizedProcessName.Contains(
+                                   currentProcessName,
+                                   StringComparison.OrdinalIgnoreCase);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                });
             }
             catch
             {
