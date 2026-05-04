@@ -4,6 +4,7 @@ using System.Linq;
 using EasyLog;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
+using EasySave.Core.Strategies;
 
 namespace EasySave.Core.Managers
 {
@@ -98,11 +99,18 @@ namespace EasySave.Core.Managers
                 return false;
             }
 
-            // Execution strategies will be plugged in during the next step.
-            job.LastExecutionTime = DateTime.Now;
-            UpdateJob(job);
+            AppSettings settings = _settingsRepository.Load();
+            IBackupStrategy strategy = SelectStrategy(job.Type);
 
-            return true;
+            bool success = strategy.Execute(job, logger, settings);
+
+            if (success)
+            {
+                job.LastExecutionTime = DateTime.Now;
+                UpdateJob(job);
+            }
+
+            return success;
         }
 
         public bool ExecuteSequential(IEnumerable<Guid> ids, EasyLog.EasyLog logger)
@@ -128,6 +136,15 @@ namespace EasySave.Core.Managers
         public void SaveSettings(AppSettings settings)
         {
             _settingsRepository.Save(settings);
+        }
+
+        private static IBackupStrategy SelectStrategy(BackupType type)
+        {
+            return type switch
+            {
+                BackupType.Differential => new DifferentialBackupStrategy(),
+                _ => new CompleteBackupStrategy()
+            };
         }
     }
 }

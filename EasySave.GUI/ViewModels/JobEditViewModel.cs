@@ -106,6 +106,14 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
+            var job = new BackupJob
+            {
+                Id = System.Guid.NewGuid(),
+                Name = JobName,
+                SourcePath = SourcePath,
+                TargetPath = TargetPath,
+                Type = SelectedType
+            };
 
             bool created = _backupManager.AddJob(job);
 
