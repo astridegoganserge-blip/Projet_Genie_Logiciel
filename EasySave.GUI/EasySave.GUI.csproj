@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
@@ -11,5 +7,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyCryptoSoftToOutput" AfterTargets="Build">
+    <ItemGroup>
+      <CryptoSoftOutput Include="..\CryptoSoft\bin\$(Configuration)\net10.0\win-x64\**\*.*" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(CryptoSoftOutput)"
+          DestinationFiles="@(CryptoSoftOutput->'$(OutputPath)CryptoSoft\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="Exists('..\CryptoSoft\bin\$(Configuration)\net10.0\win-x64')" />
+  </Target>
 
 </Project>

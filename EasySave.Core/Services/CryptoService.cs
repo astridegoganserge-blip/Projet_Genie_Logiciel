@@ -8,6 +8,8 @@ namespace EasySave.Core.Services
 {
     public static class CryptoService
     {
+        private const string EncryptionKey = "ProSoftEasySave";
+
         public static long Encrypt(string filePath, List<string> extensionsToEncrypt)
         {
             if (string.IsNullOrWhiteSpace(filePath))
@@ -25,19 +27,40 @@ namespace EasySave.Core.Services
                 return 0;
             }
 
+            string? cryptoSoftPath = FindCryptoSoftExecutable();
+
+            if (string.IsNullOrWhiteSpace(cryptoSoftPath))
+            {
+                return -1;
+            }
+
             try
             {
-                var stopwatch = Stopwatch.StartNew();
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = cryptoSoftPath,
+                    Arguments = $"\"{filePath}\" \"{EncryptionKey}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
 
-                // TODO V2: replace this simulation with the external CryptoSoft call.
-                // Expected behavior:
-                // - return encryption duration in milliseconds if successful;
-                // - return a negative value if CryptoSoft fails.
-                SimulateEncryption(filePath);
+                using Process? process = Process.Start(processStartInfo);
 
-                stopwatch.Stop();
+                if (process == null)
+                {
+                    return -1;
+                }
 
-                return Math.Max(1, stopwatch.ElapsedMilliseconds);
+                process.WaitForExit();
+
+                if (process.ExitCode < 0)
+                {
+                    return process.ExitCode;
+                }
+
+                return Math.Max(1, process.ExitCode);
             }
             catch
             {
@@ -78,11 +101,23 @@ namespace EasySave.Core.Services
             return normalized;
         }
 
-        private static void SimulateEncryption(string filePath)
+        private static string? FindCryptoSoftExecutable()
         {
-            // Minimal non-destructive placeholder.
-            // The file is not modified at this stage.
-            _ = new FileInfo(filePath).Length;
+            string baseDirectory = AppContext.BaseDirectory;
+
+            string[] candidatePaths =
+            {
+                Path.Combine(baseDirectory, "CryptoSoft", "CryptoSoft.exe"),
+                Path.Combine(baseDirectory, "CryptoSoft.exe"),
+
+                Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "CryptoSoft", "bin", "Debug", "net10.0", "win-x64", "CryptoSoft.exe")),
+                Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "CryptoSoft", "bin", "Release", "net10.0", "win-x64", "CryptoSoft.exe")),
+
+                Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "CryptoSoft", "bin", "Debug", "net10.0", "CryptoSoft.exe")),
+                Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "CryptoSoft", "bin", "Release", "net10.0", "CryptoSoft.exe"))
+            };
+
+            return candidatePaths.FirstOrDefault(File.Exists);
         }
     }
 }
