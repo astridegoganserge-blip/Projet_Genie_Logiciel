@@ -1,39 +1,46 @@
 using System.Collections.ObjectModel;
+using EasyLog;
+using EasySave.Core.Managers;
+using EasySave.Core.Models;
+using EasySave.Core.Repositories;
 
 namespace EasySave.GUI.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        private string _selectedLogFormat = "JSON";
+        private LogFormat _selectedLogFormat = LogFormat.Json;
         private string _businessSoftware = string.Empty;
         private string _newExtensionInput = string.Empty;
         private string _successMessage = string.Empty;
         private string _errorMessage = string.Empty;
+        private readonly BackupManager _backupManager;
 
         public SettingsViewModel()
         {
-            AvailableFormats = new ObservableCollection<string>
-            {
-                "JSON",
-                "XML"
-            };
+            _backupManager = new BackupManager(
+                new JsonJobRepository(),
+                new JsonSettingsRepository());
 
-            ExtensionsToEncrypt = new ObservableCollection<string>
-            {
-                ".txt",
-                ".pdf"
-            };
+            AvailableFormats = new ObservableCollection<LogFormat>
+    {
+        LogFormat.Json,
+        LogFormat.Xml
+    };
+
+            ExtensionsToEncrypt = new ObservableCollection<string>();
 
             SaveCommand = new RelayCommand(_ => SaveSettings());
             AddExtensionCommand = new RelayCommand(_ => AddExtension(), _ => !string.IsNullOrWhiteSpace(NewExtensionInput));
             RemoveExtensionCommand = new RelayCommand(extension => RemoveExtension(extension as string));
+
+            LoadSettings();
         }
 
-        public ObservableCollection<string> AvailableFormats { get; }
+        public ObservableCollection<LogFormat> AvailableFormats { get; }
 
         public ObservableCollection<string> ExtensionsToEncrypt { get; }
 
-        public string SelectedLogFormat
+        public LogFormat SelectedLogFormat
         {
             get => _selectedLogFormat;
             set
@@ -93,6 +100,18 @@ namespace EasySave.GUI.ViewModels
         private void SaveSettings()
         {
             ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
+
+            var settings = new AppSettings
+            {
+                LogFormat = SelectedLogFormat,
+                Language = "fr",
+                BusinessSoftware = BusinessSoftware,
+                ExtensionsToEncrypt = new System.Collections.Generic.List<string>(ExtensionsToEncrypt)
+            };
+
+            _backupManager.SaveSettings(settings);
+
             SuccessMessage = "Settings saved successfully.";
         }
 
@@ -128,6 +147,21 @@ namespace EasySave.GUI.ViewModels
 
             ExtensionsToEncrypt.Remove(extension);
             SuccessMessage = "Extension removed.";
+        }
+
+        private void LoadSettings()
+        {
+            AppSettings settings = _backupManager.GetSettings();
+
+            SelectedLogFormat = settings.LogFormat;
+            BusinessSoftware = settings.BusinessSoftware;
+
+            ExtensionsToEncrypt.Clear();
+
+            foreach (string extension in settings.ExtensionsToEncrypt)
+            {
+                ExtensionsToEncrypt.Add(extension);
+            }
         }
     }
 }
