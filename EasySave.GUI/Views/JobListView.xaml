@@ -26,6 +26,11 @@
                     Command="{Binding ExecuteJobCommand}"
                     CommandParameter="{Binding SelectedItem, ElementName=JobsDataGrid}" />
 
+           <Button Content="{DynamicResource BtnExecuteAll}"
+                   Width="100"
+                   Margin="0,0,8,0"
+                   Command="{Binding ExecuteAllCommand}" />
+
             <Button Content="{DynamicResource BtnDelete}"
                     Width="100"
                     Margin="0,0,8,0"
