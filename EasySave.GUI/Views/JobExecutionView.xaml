@@ -40,11 +40,37 @@
                        Margin="0,6,0,0" />
         </StackPanel>
 
-        <GroupBox Grid.Row="2"
-                  Header="Job states"
-                  Padding="12">
-            <ListBox ItemsSource="{Binding JobStates}" />
-        </GroupBox>
+    <GroupBox Grid.Row="2"
+          Header="Job states"
+          Padding="12">
+                <DataGrid ItemsSource="{Binding JobStates}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True">
+                <DataGrid.Columns>
+                            <DataGridTextColumn Header="Backup"
+                                Binding="{Binding BackupName}"
+                                Width="*" />
+                                <DataGridTextColumn Header="Status"
+                                Binding="{Binding Status}"
+                                Width="120" />
+                <DataGridTextColumn Header="Progress"
+                                Binding="{Binding Progression}"
+                                Width="100" />
+            <DataGridTextColumn Header="Remaining files"
+                                Binding="{Binding RemainingFiles}"
+                                Width="120" />
+            <DataGridTextColumn Header="Remaining size"
+                                Binding="{Binding RemainingSize}"
+                                Width="120" />
+            <DataGridTextColumn Header="Current source"
+                                Binding="{Binding CurrentSourceFile}"
+                                Width="2*" />
+            <DataGridTextColumn Header="Current target"
+                                Binding="{Binding CurrentTargetFile}"
+                                Width="2*" />
+        </DataGrid.Columns>
+    </DataGrid>
+    </GroupBox>
 
         <TextBlock Grid.Row="3"
                    Margin="0,12,0,0"

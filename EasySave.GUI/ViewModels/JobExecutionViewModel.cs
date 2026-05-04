@@ -2,6 +2,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using EasySave.Core.Models;
+using EasySave.Core.Services;
 
 namespace EasySave.GUI.ViewModels
 {
@@ -13,11 +15,7 @@ namespace EasySave.GUI.ViewModels
 
         public JobExecutionViewModel()
         {
-            JobStates = new ObservableCollection<string>
-            {
-                "Test_Backup | Terminé | 100%",
-                "Daily_Backup | Actif | 45%"
-            };
+            JobStates = new ObservableCollection<JobState>();
 
             StartMonitoringCommand = new RelayCommand(_ => StartMonitoring());
             StopMonitoringCommand = new RelayCommand(_ => StopMonitoring());
@@ -26,7 +24,7 @@ namespace EasySave.GUI.ViewModels
             _refreshTimer.Elapsed += (_, _) => RefreshStates();
         }
 
-        public ObservableCollection<string> JobStates { get; }
+        public ObservableCollection<JobState> JobStates { get; }
 
         public double GlobalProgression
         {
@@ -55,6 +53,7 @@ namespace EasySave.GUI.ViewModels
         private void StartMonitoring()
         {
             MonitoringStatus = "Monitoring started";
+            RefreshStates();
             _refreshTimer.Start();
         }
 
@@ -68,21 +67,18 @@ namespace EasySave.GUI.ViewModels
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (GlobalProgression >= 100)
+                JobStates.Clear();
+
+                foreach (JobState state in StateTracker.GetAllStates())
                 {
-                    GlobalProgression = 0;
+                    JobStates.Add(state);
                 }
-                else
-                {
-                    GlobalProgression += 5;
-                }
+
+                GlobalProgression = JobStates.Count == 0
+                    ? 0
+                    : Math.Round(JobStates.Average(state => state.Progression), 2);
 
                 MonitoringStatus = $"Last refresh: {DateTime.Now:HH:mm:ss}";
-
-                if (JobStates.Any())
-                {
-                    JobStates[0] = $"Test_Backup | Actif | {GlobalProgression}%";
-                }
             });
         }
     }
