@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using EasySave.Core.Models;
+using System.Text.Json.Serialization;
 
 namespace EasySave.Core.Services
 {
@@ -129,6 +130,7 @@ namespace EasySave.Core.Services
                 WriteIndented = true
             };
 
+            options.Converters.Add(new JsonStringEnumConverter());
             List<JobState> states = States.Values.ToList();
             string json = JsonSerializer.Serialize(states, options);
             File.WriteAllText(StateFilePath, json);
@@ -148,7 +150,10 @@ namespace EasySave.Core.Services
                 return new List<JobState>();
             }
 
-            return JsonSerializer.Deserialize<List<JobState>>(json) ?? new List<JobState>();
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter());
+
+            return JsonSerializer.Deserialize<List<JobState>>(json, options) ?? new List<JobState>();
         }
     }
 }
