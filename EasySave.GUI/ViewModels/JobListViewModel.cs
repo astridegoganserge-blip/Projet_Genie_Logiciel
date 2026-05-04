@@ -80,14 +80,21 @@ namespace EasySave.GUI.ViewModels
         {
             Jobs.Clear();
 
-            foreach (BackupJob job in _backupManager.GetAllJobs())
+            var jobs = _backupManager.GetAllJobs();
 
-                StatusMessage = $"{Jobs.Count} job(s) loaded.";
+            foreach (BackupJob job in jobs)
+            {
+                Jobs.Add(job);
+            }
+
+            StatusMessage = $"{Jobs.Count} job(s) loaded from {AppContext.BaseDirectory}";
         }
 
         private void RefreshJobs()
         {
             LoadJobs();
+            SelectedJob = null;
+            StatusMessage = $"{Jobs.Count} job(s) refreshed.";
         }
 
         private async void ExecuteSelectedJob()

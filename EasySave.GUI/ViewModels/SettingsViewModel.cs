@@ -13,6 +13,7 @@ namespace EasySave.GUI.ViewModels
         private string _newExtensionInput = string.Empty;
         private string _successMessage = string.Empty;
         private string _errorMessage = string.Empty;
+        private string _selectedLanguage = "fr";
         private readonly BackupManager _backupManager;
 
         public SettingsViewModel()
@@ -22,11 +23,16 @@ namespace EasySave.GUI.ViewModels
                 new JsonSettingsRepository());
 
             AvailableFormats = new ObservableCollection<LogFormat>
-    {
-        LogFormat.Json,
-        LogFormat.Xml
-    };
+            {
+                LogFormat.Json,
+                LogFormat.Xml
+            };
 
+                AvailableLanguages = new ObservableCollection<string>
+                {
+                    "fr",
+                    "en"
+                };
             ExtensionsToEncrypt = new ObservableCollection<string>();
 
             SaveCommand = new RelayCommand(_ => SaveSettings());
@@ -39,6 +45,8 @@ namespace EasySave.GUI.ViewModels
         public ObservableCollection<LogFormat> AvailableFormats { get; }
 
         public ObservableCollection<string> ExtensionsToEncrypt { get; }
+
+        public ObservableCollection<string> AvailableLanguages { get; }
 
         public LogFormat SelectedLogFormat
         {
@@ -91,6 +99,16 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        public string SelectedLanguage
+        {
+            get => _selectedLanguage;
+            set
+            {
+                _selectedLanguage = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand SaveCommand { get; }
 
         public RelayCommand AddExtensionCommand { get; }
@@ -105,7 +123,7 @@ namespace EasySave.GUI.ViewModels
             var settings = new AppSettings
             {
                 LogFormat = SelectedLogFormat,
-                Language = "fr",
+                Language = SelectedLanguage,
                 BusinessSoftware = BusinessSoftware,
                 ExtensionsToEncrypt = new System.Collections.Generic.List<string>(ExtensionsToEncrypt)
             };
@@ -155,6 +173,7 @@ namespace EasySave.GUI.ViewModels
 
             SelectedLogFormat = settings.LogFormat;
             BusinessSoftware = settings.BusinessSoftware;
+            SelectedLanguage = settings.Language;
 
             ExtensionsToEncrypt.Clear();
 

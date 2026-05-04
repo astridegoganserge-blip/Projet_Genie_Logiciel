@@ -10,13 +10,41 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Log format"
-                  Padding="12"
-                  Margin="0,0,0,12">
+        <GroupBox Header="Language"
+          Padding="12"
+          Margin="0,0,0,12">
+    <StackPanel>
+        <TextBlock Text="Application language:" />
+        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                  Width="180"
+                  HorizontalAlignment="Left"
+                  Margin="0,6,0,0" />
+    </StackPanel>
+</GroupBox>
+
+        <GroupBox Header="Language"
+                    Padding="12"
+                    Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="Application language:" />
+                <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                  Width="180"
+                  HorizontalAlignment="Left"
+                  Margin="0,6,0,0" />
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1"
+                Header="Log format"
+                Padding="12"
+                 Margin="0,0,0,12">
             <StackPanel>
                 <TextBlock Text="Daily log format:" />
                 <ComboBox ItemsSource="{Binding AvailableFormats}"
@@ -27,7 +55,7 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Grid.Row="1"
+        <GroupBox Grid.Row="2"
                   Header="Business software"
                   Padding="12"
                   Margin="0,0,0,12">
@@ -43,7 +71,7 @@
             </StackPanel>
         </GroupBox>
 
-        <GroupBox Grid.Row="2"
+        <GroupBox Grid.Row="3"
                   Header="Extensions to encrypt"
                   Padding="12"
                   Margin="0,0,0,12">
@@ -82,7 +110,7 @@
             </Grid>
         </GroupBox>
 
-        <StackPanel Grid.Row="3"
+        <StackPanel Grid.Row="4"
                     Orientation="Horizontal">
             <Button Content="Save settings"
                     Width="130"

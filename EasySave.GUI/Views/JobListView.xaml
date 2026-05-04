@@ -41,6 +41,7 @@
                 AutoGenerateColumns="False"
                 IsReadOnly="True">
         <DataGrid.Columns>
+                
                 <DataGridTextColumn Header="Id"
                                 Binding="{Binding Id}"
                                 Width="220" />
