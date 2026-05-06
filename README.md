@@ -1,364 +1,560 @@
-# EasySave 1.0
+# EasySave
 
-Logiciel de sauvegarde en ligne de commande développé pour ProSoft dans le cadre du projet fil rouge EasySave.
+EasySave est un logiciel de sauvegarde développé en C# dans le cadre du projet fil rouge ProSoft.
 
-Cette première version couvre les besoins de base : créer des travaux de sauvegarde, les lancer à la demande, tracer ce qui se passe dans des fichiers de log journaliers, et garder un état temps réel de ce qui tourne.
+Le projet contient plusieurs versions évolutives :
 
-## Ce que fait le logiciel
+- **EasySave v1.0 / v1.1** : application console ;
+- **EasySave v2.0** : interface graphique WPF fondée sur une architecture MVVM.
 
-- Jusqu'à 5 travaux de sauvegarde configurables, identifiés par un numéro de 1 à 5
-- Deux modes de copie : sauvegarde complète ou différentielle
-- Interface console en français et en anglais (choix de la langue au démarrage)
-- Exécution via menu interactif **ou** via argument en ligne de commande
-- Un log journalier au format JSON, un par jour, qui consigne chaque fichier transféré
-- Un fichier `state.json` unique qui reflète en temps réel l'avancement du travail en cours
-- Support des disques locaux, externes et des lecteurs réseau (via chemins UNC)
+La version actuelle du projet est :
 
-## Stack technique
-
-- C# / .NET 10.0
-- Application console
-- Sérialisation JSON via `System.Text.Json`
-- Bibliothèque externe `EasyLog.dll` (développée à part) pour l'écriture des logs journaliers
-
-## Arborescence du projet
-
+```text
+EasySave v2.0.0
 ```
-EasySave/
-├── Controllers/
-│   ├── JobController.cs
-│   └── SettingsController.cs
-├── Models/
-│   ├── AppSettings.cs
-│   ├── BackupJob.cs
-│   ├── BackupType.cs
-│   └── JobState.cs
-├── Repositories/
-│   ├── IJobRepository.cs
-│   ├── JsonJobRepository.cs
-│   ├── ISettingsRepository.cs
-│   └── JsonSettingsRepository.cs
-├── Services/
-│   ├── CommandLineParser.cs
-│   ├── ConfigurationManager.cs
-│   ├── LanguageManager.cs
-│   └── StateTracker.cs
-├── Strategies/
-│   ├── IBackupStrategy.cs
-│   ├── CompleteBackupStrategy.cs
-│   └── DifferentialBackupStrategy.cs
-├── Views/
-│   ├── JobView.cs
-│   ├── LanguageView.cs
-│   └── SettingsView.cs
-├── languages/
-│   ├── fr.json
-│   └── en.json
-└── Program.cs
-```
-
-Le pattern Strategy a été retenu pour les deux types de sauvegarde. L'idée c'est de pouvoir ajouter un troisième type plus tard (incrémental par exemple) sans toucher au `BackupManager`.
-
-## Installation
-
-Pré-requis : **.NET 10.0 SDK** minimum, Windows 10/11.
-
-Cloner le dépôt puis ouvrir `EasySave.slnx` dans Visual Studio 2026. Faire un build en Release. L'exécutable se retrouve dans `EasySave/bin/Release/net8.0/EasySave.exe`.
-
-En ligne de commande :
-
-```
-dotnet build -c Release
-```
-
-## Utilisation
-
-### Mode interactif
-
-Double-clic sur l'exécutable, ou depuis un terminal :
-
-```
-EasySave.exe
-```
-
-Au lancement le logiciel demande la langue puis affiche un menu avec les actions disponibles : créer un travail, exécuter un travail, exécution séquentielle, voir la liste, supprimer.
-
-### Mode ligne de commande
-
-On passe en argument les numéros des travaux à lancer. Deux syntaxes sont acceptées :
-
-Plage de travaux (1 à 3 inclus) :
-```
-EasySave.exe 1-3
-```
-
-Liste de travaux (1 et 3 uniquement) :
-```
-EasySave.exe "1;3"
-```
-
-Un travail unique fonctionne aussi :
-```
-EasySave.exe 2
-```
-
-## Fichiers générés
-
-### jobs.config.json
-Stocke la configuration des travaux. Il est créé automatiquement à côté de l'exécutable dès que vous créez un premier job.
-
-### logs/AAAA-MM-JJ.json
-Un fichier par jour, dans un sous-dossier `logs/`. Chaque ligne de transfert contient :
-
-- l'horodatage
-- le nom du travail de sauvegarde
-- le chemin source complet (format UNC)
-- le chemin cible complet (format UNC)
-- la taille du fichier en octets
-- le temps de transfert en millisecondes (valeur négative en cas d'erreur)
-
-### state.json
-Fichier unique qui reflète l'état courant. Il est réécrit après chaque fichier copié et contient le nom du travail, son statut, le nombre total de fichiers, ce qu'il reste à faire, et les chemins source/cible du fichier en cours.
-
-Les fichiers JSON sont écrits avec `WriteIndented = true` pour rester lisibles dans un simple Notepad, comme demandé dans le cahier des charges.
-
-## Sauvegarde complète vs différentielle
-
-La **complète** copie systématiquement tous les fichiers du répertoire source, qu'ils aient changé ou non.
-
-La **différentielle** compare la date de dernière modification entre la source et la cible. Un fichier est copié uniquement s'il est absent côté cible, ou si la version source est plus récente. Pratique pour les sauvegardes quotidiennes où on ne veut pas recopier 200 Go à chaque fois.
-
-## Choix d'architecture
-
-Quelques décisions qui méritent d'être expliquées pour la reprise du projet par une autre équipe :
-
-- **EasyLog en DLL séparée** : comme le cahier des charges le précise, la partie logging est isolée dans sa propre bibliothèque, versionnée dans un repo Git distinct. Les futures versions d'EasySave doivent pouvoir réutiliser la même DLL sans la modifier (sinon on casse la compatibilité promise).
-- **Classes statiques pour StateTracker, ConfigurationManager et LanguageManager** : il n'y a qu'une instance logique de chacun pendant la vie du programme, on évite de les trimballer partout via injection. Ce choix sera peut-être revu en v2 avec l'arrivée du MVVM.
-- **Ressources JSON pour les traductions** plutôt que des fichiers `.resx` classiques. C'est plus simple à éditer manuellement, et l'utilisateur final peut rajouter une langue sans recompiler.
-- **Validation des chemins au moment de la création** du job et non à l'exécution, pour échouer vite.
-
-## Limitations connues (v1.0)
-
-- Le logiciel ne gère pas la parallélisation des travaux, ils s'exécutent un par un dans l'ordre demandé.
-- Pas d'interface graphique (prévue pour la v2.0 en MVVM).
-- Si un fichier source est verrouillé pendant la copie, le travail s'arrête. Pas de mécanisme de retry pour le moment.
-- Le status dans `state.json` mélange un peu les langues (`"Actif"` en FR et `"Completed"` en EN selon l'état), à uniformiser.
-
-## Équipe
-
-Anelka MAPA
-Astride Gogan
-Luc Dai
-
-## Licence
-
-Projet académique, propriété ProSoft dans le cadre de la fiction pédagogique.
-Projet réalisé dans le cadre du parcours CESI
-=======
-Logiciel de sauvegarde en ligne de commande développé en **C# / .NET 8**.
-Application console bilingue (français / anglais) permettant de créer, gérer et exécuter jusqu'à 5 travaux de sauvegarde complets ou différentiels.
 
 ---
 
-## Fonctionnalités
+## Objectif du projet
 
-- Gestion de **5 travaux de sauvegarde** maximum, identifiés par un ID unique (1 à 5).
-- Deux stratégies de sauvegarde :
-  - **Complète** : copie intégrale des fichiers de la source vers la cible.
-  - **Différentielle** : copie uniquement des fichiers nouveaux ou modifiés depuis la dernière sauvegarde.
-- Prise en charge des chemins **locaux, externes et UNC** (réseau).
-- Interface console **bilingue FR / EN** (choix de la langue au lancement).
-- **Journalisation temps réel** de chaque transfert de fichier (librairie `EasyLog`) : un fichier JSON par jour dans `logs/`.
-- **Suivi d'état en temps réel** (`state.json`) : nom du travail en cours, statut, nombre et taille des fichiers restants, fichier source / cible en cours.
-- **Persistance** des travaux configurés dans `jobs.config.json`.
-- **Exécution en ligne de commande** : possibilité de lancer un ou plusieurs travaux directement au démarrage de l'application.
+EasySave permet de créer, configurer et exécuter des travaux de sauvegarde complets ou différentiels.
+
+Le logiciel permet notamment :
+
+- de sauvegarder des dossiers sources vers des dossiers cibles ;
+- de gérer plusieurs travaux de sauvegarde ;
+- d’exécuter un travail individuellement ;
+- d’exécuter plusieurs travaux de manière séquentielle ;
+- de suivre l’état d’exécution ;
+- de générer des logs journaliers ;
+- de choisir le format JSON ou XML pour les logs ;
+- de chiffrer certains fichiers avec CryptoSoft ;
+- de bloquer l’exécution si un logiciel métier est détecté ;
+- d’utiliser l’application en français ou en anglais.
+
+---
+
+## Versions disponibles
+
+### EasySave v1.1 — Console
+
+La version console permet :
+
+- de créer jusqu’à 5 travaux de sauvegarde ;
+- d’exécuter un travail depuis un menu interactif ;
+- d’exécuter un ou plusieurs travaux en ligne de commande ;
+- de choisir la langue au démarrage ;
+- de générer des logs JSON ou XML ;
+- de produire un fichier `state.json`.
+
+### EasySave v2.0 — Interface graphique
+
+La version graphique ajoute :
+
+- une interface WPF ;
+- une architecture MVVM ;
+- un projet métier séparé `EasySave.Core` ;
+- un nombre illimité de travaux ;
+- une numérotation visible auto-incrémentée : `01`, `02`, `03` ;
+- des identifiants techniques en `Guid` ;
+- l’exécution séquentielle depuis la GUI ;
+- le changement dynamique de langue FR/EN ;
+- l’intégration de CryptoSoft ;
+- la détection d’un logiciel métier bloquant ;
+- un suivi d’état enrichi ;
+- une interface graphique modernisée.
+
+---
+
+## Stack technique
+
+- C#
+- .NET 10.0
+- WPF
+- MVVM
+- JSON avec `System.Text.Json`
+- XML avec `XmlSerializer`
+- EasyLog pour la journalisation
+- CryptoSoft pour le chiffrement externe
+
+---
+
+## Arborescence principale
+
+```text
+Projet_Genie_Logiciel/
+├── EasySave/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   ├── Strategies/
+│   ├── Views/
+│   ├── docs/
+│   └── Program.cs
+│
+├── EasySave.Core/
+│   ├── Managers/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Strategies/
+│
+├── EasySave.GUI/
+│   ├── Resources/
+│   ├── Services/
+│   ├── ViewModels/
+│   ├── Views/
+│   ├── App.xaml
+│   └── MainWindow.xaml
+│
+├── EasyLog/
+├── CryptoSoft/
+└── README.md
+```
+
+---
+
+## Rôle des projets
+
+| Projet | Rôle |
+|---|---|
+| `EasySave` | Application console historique V1/V1.1 |
+| `EasySave.Core` | Cœur métier de la V2 |
+| `EasySave.GUI` | Interface graphique WPF V2 |
+| `EasyLog` | Bibliothèque de journalisation |
+| `CryptoSoft` | Outil externe de chiffrement |
+
+---
+
+## Architecture V2
+
+La version 2.0 applique une organisation de type MVVM côté interface graphique.
+
+```text
+EasySave.GUI
+    ↓
+Views
+    ↓
+ViewModels
+    ↓
+EasySave.Core.Managers.BackupManager
+    ↓
+Repositories + Services + Strategies
+    ↓
+EasyLog + CryptoSoft
+```
+
+### Rôle des couches
+
+| Couche | Rôle |
+|---|---|
+| Views | Affichage WPF |
+| ViewModels | État écran et commandes |
+| Managers | Orchestration métier |
+| Repositories | Persistance JSON |
+| Services | CryptoSoft, StateTracker, BusinessSoftwareWatcher |
+| Strategies | Sauvegarde complète et différentielle |
+| EasyLog | Logs journaliers |
+| CryptoSoft | Chiffrement externe |
 
 ---
 
 ## Prérequis
 
-- **.NET 10.0 SDK** ou runtime équivalent
-- Système : Windows, Linux ou macOS
-- Le projet dépend d'un projet frère `EasyLog` (référencé via `..\EasyLog\EasyLog.csproj`)
-
----
-
-## Architecture du projet
-
-```
-EasySave/
-├── Controllers/
-│   ├── JobController.cs
-│   └── SettingsController.cs
-├── Models/
-│   ├── AppSettings.cs
-│   ├── BackupJob.cs
-│   ├── BackupType.cs
-│   └── JobState.cs
-├── Repositories/
-│   ├── IJobRepository.cs
-│   ├── JsonJobRepository.cs
-│   ├── ISettingsRepository.cs
-│   └── JsonSettingsRepository.cs
-├── Services/
-│   ├── CommandLineParser.cs
-│   ├── ConfigurationManager.cs
-│   ├── LanguageManager.cs
-│   └── StateTracker.cs
-├── Strategies/
-│   ├── IBackupStrategy.cs
-│   ├── CompleteBackupStrategy.cs
-│   └── DifferentialBackupStrategy.cs
-├── Views/
-│   ├── JobView.cs
-│   ├── LanguageView.cs
-│   └── SettingsView.cs
-├── languages/
-│   ├── fr.json
-│   └── en.json
-└── Program.cs
-
-Le projet applique le **pattern Strategy** pour découpler les types de sauvegarde, ce qui permet d'ajouter facilement de nouvelles stratégies sans modifier `BackupManager`.
+- Windows 10 ou supérieur
+- .NET 10.0 SDK
+- Visual Studio ou Visual Studio Code
+- Droits de lecture sur les dossiers sources
+- Droits d’écriture sur les dossiers cibles
+- Droits d’exécution pour `CryptoSoft.exe`
 
 ---
 
 ## Compilation
 
-Depuis le dossier `EasySave/` :
+Depuis la racine du dépôt :
 
 ```bash
-dotnet build
+dotnet build CryptoSoft/CryptoSoft.csproj
+dotnet build EasySave.Core/EasySave.Core.csproj
+dotnet build EasySave.GUI/EasySave.GUI.csproj
 ```
 
-Le binaire est généré dans `bin/Debug/net8.0/` (ou `bin/Release/net8.0/` en release).
-
-Pour une build de release :
+Pour compiler uniquement la version console :
 
 ```bash
-dotnet build -c Release
+dotnet build EasySave/EasySave.csproj
 ```
 
 ---
 
-## Utilisation
+## Lancer EasySave v2.0
 
-### Mode interactif (menu console)
+Depuis la racine du dépôt :
 
 ```bash
-dotnet run
+dotnet run --project EasySave.GUI/EasySave.GUI.csproj
 ```
 
-Au lancement, l'utilisateur choisit la langue (FR / EN), puis accède au menu principal :
+L’application graphique s’ouvre avec les sections suivantes :
 
+- Backup jobs / Travaux ;
+- Create job / Créer un job ;
+- Settings / Paramètres ;
+- Execution / Exécution.
+
+---
+
+## Lancer EasySave v1.1 console
+
+Depuis la racine :
+
+```bash
+dotnet run --project EasySave/EasySave.csproj
 ```
-**** EasySave 1.0 ****
-1. Créer un travail de sauvegarde
-2. Exécuter un travail
-3. Exécution séquentielle (ex: 1-3 ou 1;3)
-4. Liste des travaux configurés
-5. Supprimer un travail
-0. Quitter l'application
+
+Ou après build, depuis le dossier de sortie :
+
+```bash
+EasySave.exe
 ```
 
-### Mode ligne de commande
-
-Il est possible de lancer directement un ou plusieurs travaux via un argument :
-
-| Syntaxe       | Effet                                                    |
-|---------------|----------------------------------------------------------|
-| `1`           | Exécute le travail n°1                                   |
-| `1-3`         | Exécute les travaux 1 à 3 (plage)                        |
-| `1;3;5`       | Exécute les travaux 1, 3 et 5 (sélection)                |
-
-Exemples :
+La version console accepte aussi des arguments :
 
 ```bash
 EasySave.exe 1
 EasySave.exe 1-3
-EasySave.exe 1;3;5
+EasySave.exe "1;3"
 ```
 
 ---
 
-## Fichiers générés à l'exécution
+## Fonctionnalités V2 principales
 
-Tous les fichiers sont écrits à côté de l'exécutable (`AppContext.BaseDirectory`).
+### Gestion illimitée des travaux
 
-### `jobs.config.json`
-Liste persistée des travaux configurés.
+La V2 ne limite plus le nombre de travaux à 5.
+
+Chaque travail contient :
+
+- un `Guid` technique ;
+- un numéro visible ;
+- un nom ;
+- un chemin source ;
+- un chemin cible ;
+- un type de sauvegarde ;
+- une date de dernière exécution.
+
+Exemple de numérotation visible :
+
+```text
+01
+02
+03
+```
+
+---
+
+### Types de sauvegarde
+
+EasySave prend en charge deux types de sauvegarde.
+
+| Type | Description |
+|---|---|
+| Complète | Copie tous les fichiers du dossier source |
+| Différentielle | Copie uniquement les fichiers nouveaux ou modifiés |
+
+---
+
+### Exécution séquentielle
+
+La V2 permet d’exécuter tous les travaux dans l’ordre de leur numéro visible.
+
+Exemple :
+
+```text
+01 → 02 → 03
+```
+
+À la fin, l’interface affiche :
+
+```text
+Sequential execution completed.
+```
+
+---
+
+### Logs JSON/XML
+
+Le format des logs est configurable depuis l’interface graphique.
+
+Les logs sont générés dans :
+
+```text
+logs/
+```
+
+Exemples :
+
+```text
+2026-05-04.json
+2026-05-04.xml
+```
+
+Chaque entrée contient :
+
+- horodatage ;
+- nom du travail ;
+- fichier source ;
+- fichier cible ;
+- taille du fichier ;
+- temps de transfert ;
+- temps de chiffrement.
+
+---
+
+### Chiffrement CryptoSoft
+
+CryptoSoft est intégré à EasySave v2.0.
+
+Seuls les fichiers dont l’extension est configurée sont chiffrés.
+
+Exemple :
+
+```json
+"ExtensionsToEncrypt": [
+  ".txt"
+]
+```
+
+Dans les logs :
+
+```text
+EncryptionTimeMs = 0   → aucun chiffrement
+EncryptionTimeMs > 0   → chiffrement effectué
+EncryptionTimeMs < 0   → erreur de chiffrement
+```
+
+---
+
+### Logiciel métier bloquant
+
+EasySave peut bloquer l’exécution si un logiciel métier est ouvert.
+
+Exemple avec la calculatrice Windows :
+
+```json
+"BusinessSoftware": "CalculatorApp"
+```
+
+Pour trouver le nom du processus :
+
+```powershell
+Get-Process | Where-Object { $_.ProcessName -like "*calc*" -or $_.ProcessName -like "*calculator*" } | Select-Object ProcessName, Id
+```
+
+Si le logiciel métier est détecté, EasySave bloque la sauvegarde et ajoute une entrée dans les logs.
+
+---
+
+### Interface bilingue
+
+La V2 permet de choisir la langue de l’interface :
+
+```text
+fr
+en
+```
+
+La langue est sauvegardée dans :
+
+```text
+settings.json
+```
+
+---
+
+## Fichiers générés
+
+Les fichiers runtime sont générés dans le dossier d’exécution.
+
+Pour la GUI :
+
+```text
+EasySave.GUI/bin/Debug/net10.0-windows/
+```
+
+Fichiers principaux :
+
+| Fichier | Rôle |
+|---|---|
+| `jobs.config.json` | Liste des travaux |
+| `settings.json` | Paramètres utilisateur |
+| `state.json` | État d’exécution |
+| `logs/` | Logs journaliers |
+| `CryptoSoft/` | Exécutable de chiffrement copié en sortie |
+
+---
+
+## Exemple de jobs.config.json
 
 ```json
 [
   {
-    "Id": 1,
-    "Name": "backup_docs",
-    "SourcePath": "C:\\Users\\HP\\Desktop\\SAUV1",
-    "TargetPath": "C:\\Users\\HP\\Desktop\\Backup",
+    "Id": "4cec67d2-7c5e-4e81-986d-f976df470f2b",
+    "Number": 1,
+    "Name": "test1",
+    "SourcePath": "C:\\Users\\astri\\Desktop\\A",
+    "TargetPath": "C:\\Users\\astri\\Desktop\\I",
     "Type": 0,
-    "LastExecutionTime": "2026-04-22T01:02:55.53+02:00"
+    "LastExecutionTime": "2026-05-04T23:55:33.7322882+02:00"
   }
 ]
 ```
-> `Type` : `0` = Complète, `1` = Différentielle.
 
-### `state.json`
-État temps réel du travail en cours (mis à jour après chaque fichier copié).
+Interprétation du champ `Type` :
+
+```text
+0 = sauvegarde complète
+1 = sauvegarde différentielle
+```
+
+---
+
+## Exemple de settings.json
 
 ```json
 {
-  "BackupName": "backup_docs",
-  "LastActionTime": "2026-04-22T07:55:11+02:00",
-  "Status": "Completed",
-  "TotalFiles": 29,
-  "TotalSize": 27345,
-  "RemainingFiles": 0,
-  "RemainingSize": 0,
-  "CurrentSourceFile": "",
-  "CurrentTargetFile": ""
+  "LogFormat": 1,
+  "Language": "fr",
+  "ExtensionsToEncrypt": [
+    ".txt"
+  ],
+  "BusinessSoftware": ""
 }
 ```
 
-### `logs/YYYY-MM-DD.json`
-Un journal par jour, listant chaque transfert de fichier.
+Interprétation de `LogFormat` :
+
+```text
+0 = JSON
+1 = XML
+```
+
+---
+
+## Exemple de state.json
 
 ```json
 [
   {
-    "Timestamp": "2026-04-22T01:02:42+02:00",
-    "BackupName": "backup_docs",
-    "SourceFile": "C:\\...\\document.pdf",
-    "TargetFile": "C:\\...\\Backup\\document.pdf",
-    "FileSize": 81237,
-    "TransferTimeMs": 1
+    "BackupName": "test1",
+    "LastActionTime": "2026-05-04T23:55:33+02:00",
+    "Status": "Terminé",
+    "TotalFiles": 4,
+    "TotalSize": 6614,
+    "RemainingFiles": 0,
+    "RemainingSize": 0,
+    "Progression": 100,
+    "CurrentSourceFile": "",
+    "CurrentTargetFile": ""
   }
 ]
 ```
 
+Statuts possibles :
+
+```text
+Actif
+Terminé
+Erreur
+Interrompu
+```
+
 ---
 
-## Internationalisation
+## Documentation
 
-Les libellés du menu et des messages sont définis dans `Languages/fr.json` et `Languages/en.json`.
-Pour ajouter une langue, créer un nouveau fichier JSON à la racine `Languages/` et adapter `LanguageManager.cs`.
+La documentation est disponible dans :
+
+```text
+EasySave/docs/
+```
+
+### Release notes
+
+```text
+EasySave/docs/release-notes/RELEASE_v1.1.0.md
+EasySave/docs/release-notes/RELEASE_v1.1.0_EN.md
+EasySave/docs/release-notes/RELEASE_v2.0.0.md
+EasySave/docs/release-notes/RELEASE_v2.0.0_EN.md
+```
+
+### Manuels utilisateur
+
+```text
+EasySave/docs/user-manual/EasySave_User_Manual_v1.1.md
+EasySave/docs/user-manual/EasySave_User_Manual_v1.1_EN.md
+EasySave/docs/user-manual/EasySave_User_Manual_v2.0.md
+EasySave/docs/user-manual/EasySave_User_Manual_v2.0_EN.md
+```
+
+### Support technique
+
+```text
+EasySave/docs/support/EasySave_Support_Info.md
+EasySave/docs/support/EasySave_Support_Info_EN.md
+EasySave/docs/support/EasySave_Support_Info_v2.0.md
+EasySave/docs/support/EasySave_Support_Info_v2.0_EN.md
+```
 
 ---
 
-## Ajouts EasySave 1.1
+## Validation V2 effectuée
 
-EasySave 1.1 conserve le fonctionnement console de la version 1.0 et ajoute :
+Les points suivants ont été validés :
 
-- la possibilité de choisir le format du fichier log journalier : JSON ou XML ;
-- la persistance des paramètres utilisateur dans `settings.json` ;
-- l’uniformisation des statuts du fichier d’état en français : `Actif`, `Terminé`, `Erreur` ;
-- l’ajout du champ `Progression` dans `state.json` ;
-- la compatibilité d’EasyLog avec le suivi futur du temps de chiffrement grâce au champ `EncryptionTimeMs`.
+- build complet ;
+- interface graphique WPF ;
+- architecture MVVM ;
+- interface bilingue FR/EN ;
+- création de plus de 5 travaux ;
+- numérotation visible des travaux ;
+- exécution individuelle ;
+- exécution séquentielle ;
+- message de fin d’exécution séquentielle ;
+- génération de logs XML ;
+- chiffrement CryptoSoft ;
+- `EncryptionTimeMs > 0` sur les fichiers `.txt` ;
+- suivi `state.json` ;
+- statut textuel dans `state.json` ;
+- progression à 100 % ;
+- blocage par logiciel métier ;
+- interface graphique améliorée.
 
-## Auteurs
+---
 
-Anelka MAPA
-Astride Gogan
-Luc Dai
+## Limites connues
 
-## Version
+- CryptoSoft chiffre directement les fichiers copiés.
+- Le nom du logiciel métier doit correspondre au nom réel du processus Windows.
+- Certains messages internes restent techniques.
+- L’interface pourra encore être enrichie dans une version future.
+- Le packaging installable n’est pas encore fourni.
 
-**EasySave 1.1** — Avril 2026
+---
+
+## Équipe
+
+- Anelka MAPA
+- Astride Gogan
+- Luc Dai
+
+---
+
+## Licence
+
+Projet académique réalisé dans le cadre du parcours CESI.
+
+Projet développé pour ProSoft dans le cadre de la fiction pédagogique EasySave.
