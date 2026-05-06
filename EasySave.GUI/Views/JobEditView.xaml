@@ -1,0 +1,100 @@
+<UserControl x:Class="EasySave.GUI.Views.JobEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:EasySave.GUI.ViewModels">
+    <UserControl.DataContext>
+        <viewModels:JobEditViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="{DynamicResource CreateBackupJob}"
+                  Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{DynamicResource JobName}"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,10" />
+
+                <TextBox Text="{Binding JobName, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="0,0,0,10" />
+
+                <TextBlock Text="{DynamicResource SourcePath}"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,10" />
+
+                <TextBox Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="0,0,0,10" />
+
+                <TextBlock Text="{DynamicResource TargetPath}"
+                           Grid.Row="2"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,10" />
+
+                <TextBox Text="{Binding TargetPath, UpdateSourceTrigger=PropertyChanged}"
+                         Grid.Row="2"
+                         Grid.Column="1"
+                         Margin="0,0,0,10" />
+
+                <TextBlock Text="{DynamicResource BackupType}"
+                           Grid.Row="3"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,10" />
+
+                <ComboBox ItemsSource="{Binding AvailableTypes}"
+                          SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                          Grid.Row="3"
+                          Grid.Column="1"
+                          Width="180"
+                          HorizontalAlignment="Left"
+                          Margin="0,0,0,10" />
+
+                <StackPanel Grid.Row="4"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            Margin="0,10,0,0">
+                    <Button Content="{DynamicResource BtnSave}"
+                            Width="100"
+                            Margin="0,0,8,0"
+                            Command="{Binding SaveCommand}" />
+
+                    <Button Content="{DynamicResource BtnCancel}"
+                            Width="100"
+                            Command="{Binding CancelCommand}" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,12,0,0">
+            <TextBlock Text="{Binding SuccessMessage}" />
+            <TextBlock Text="{Binding ErrorMessage}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
