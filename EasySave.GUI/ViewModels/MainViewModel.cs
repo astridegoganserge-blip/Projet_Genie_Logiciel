@@ -1,21 +1,26 @@
-using EasySave.GUI.Views;
-
 namespace EasySave.GUI.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
         private object? _currentView;
-        private string _applicationTitle = "EasySave v2.0";
+        private string _applicationTitle = "EasySave v3.0";
+
+
 
         public MainViewModel()
         {
             ShowJobsCommand = new RelayCommand(_ => ShowJobs());
+            ShowHistoryCommand = new RelayCommand(_ => ShowHistory());
             ShowSettingsCommand = new RelayCommand(_ => ShowSettings());
             ShowExecutionCommand = new RelayCommand(_ => ShowExecution());
             ShowCreateJobCommand = new RelayCommand(_ => ShowCreateJob());
 
-            CurrentView = new JobListView();
+
+
+            CurrentView = new JobListViewModel();
         }
+
+
 
         public object? CurrentView
         {
@@ -27,6 +32,8 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+
+
         public string ApplicationTitle
         {
             get => _applicationTitle;
@@ -37,32 +44,59 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+
+
         public RelayCommand ShowJobsCommand { get; }
+
+
+
+        public RelayCommand ShowHistoryCommand { get; }
+
+
 
         public RelayCommand ShowSettingsCommand { get; }
 
+
+
         public RelayCommand ShowExecutionCommand { get; }
+
+
 
         public RelayCommand ShowCreateJobCommand { get; }
 
+
+
         private void ShowJobs()
         {
-            CurrentView = new JobListView();
+            CurrentView = new JobListViewModel();
         }
+
+
+
+        private void ShowHistory()
+        {
+            CurrentView = new JobHistoryViewModel();
+        }
+
+
 
         private void ShowSettings()
         {
-            CurrentView = new SettingsView();
+            CurrentView = new SettingsViewModel();
         }
+
+
 
         private void ShowExecution()
         {
-            CurrentView = new JobExecutionView();
+            CurrentView = new JobExecutionViewModel();
         }
+
+
 
         private void ShowCreateJob()
         {
-            CurrentView = new JobEditView();
+            CurrentView = new JobEditViewModel(isCreation: true);
         }
     }
 }
