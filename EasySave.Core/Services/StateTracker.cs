@@ -1,22 +1,42 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using EasySave.Core.Models;
+
 
 
 namespace EasySave.Core.Services
 {
     public static class StateTracker
     {
-        private static readonly Dictionary<string, JobState> States = new();
+        private static readonly ConcurrentDictionary<string, JobState> States = new();
+        private static readonly ReaderWriterLockSlim FileLock = new();
         private static readonly string StateFilePath = Path.Combine(AppContext.BaseDirectory, "state.json");
+
+
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            WriteIndented = true
+        };
+
+
+
+        static StateTracker()
+        {
+            JsonOptions.Converters.Add(new JsonStringEnumConverter());
+        }
+
+
 
         public static void Initialize(BackupJob job, int totalFiles, long totalSize)
         {
-            States[job.Name] = new JobState
+            var state = new JobState
             {
                 BackupName = job.Name,
                 LastActionTime = DateTime.Now,
@@ -25,137 +45,294 @@ namespace EasySave.Core.Services
                 TotalSize = totalSize,
                 RemainingFiles = totalFiles,
                 RemainingSize = totalSize,
-                Progression = 0,
+                Progression = totalFiles == 0 ? 100 : 0,
                 CurrentSourceFile = string.Empty,
-                CurrentTargetFile = string.Empty
+                CurrentTargetFile = string.Empty,
+                IsPaused = false
             };
 
+
+
+            States.AddOrUpdate(job.Name, state, (_, _) => state);
             SaveState();
         }
+
+
 
         public static void UpdateProgress(
-            string jobName,
-            string sourceFile,
-            string targetFile,
-            long transferredSize)
+        string jobName,
+        string sourceFile,
+        string targetFile,
+        long transferredSize)
         {
-            if (!States.TryGetValue(jobName, out JobState? state))
+            UpdateState(jobName, state =>
             {
-                return;
-            }
+                state.LastActionTime = DateTime.Now;
+                state.CurrentSourceFile = sourceFile;
+                state.CurrentTargetFile = targetFile;
+                state.RemainingFiles = Math.Max(0, state.RemainingFiles - 1);
+                state.RemainingSize = Math.Max(0, state.RemainingSize - transferredSize);
 
-            state.LastActionTime = DateTime.Now;
-            state.CurrentSourceFile = sourceFile;
-            state.CurrentTargetFile = targetFile;
-            state.RemainingFiles = Math.Max(0, state.RemainingFiles - 1);
-            state.RemainingSize = Math.Max(0, state.RemainingSize - transferredSize);
 
-            if (state.TotalFiles > 0)
-            {
-                int completedFiles = state.TotalFiles - state.RemainingFiles;
-                state.Progression = Math.Round((double)completedFiles / state.TotalFiles * 100, 2);
-            }
-            else
-            {
-                state.Progression = 100;
-            }
 
-            SaveState();
+                if (state.TotalFiles > 0)
+                {
+                    int completedFiles = state.TotalFiles - state.RemainingFiles;
+                    state.Progression = Math.Round((double)completedFiles / state.TotalFiles * 100, 2);
+                }
+                else
+                {
+                    state.Progression = 100;
+                }
+
+
+
+                return state;
+            });
         }
+
+
 
         public static void MarkAsCompleted(string jobName)
         {
-            if (!States.TryGetValue(jobName, out JobState? state))
+            UpdateState(jobName, state =>
             {
-                return;
-            }
+                state.LastActionTime = DateTime.Now;
+                state.Status = JobStatus.Terminé;
+                state.RemainingFiles = 0;
+                state.RemainingSize = 0;
+                state.Progression = 100;
+                state.CurrentSourceFile = string.Empty;
+                state.CurrentTargetFile = string.Empty;
+                state.IsPaused = false;
 
-            state.LastActionTime = DateTime.Now;
-            state.Status = JobStatus.Terminé;
-            state.RemainingFiles = 0;
-            state.RemainingSize = 0;
-            state.Progression = 100;
-            state.CurrentSourceFile = string.Empty;
-            state.CurrentTargetFile = string.Empty;
 
-            SaveState();
+
+                return state;
+            });
         }
+
+
 
         public static void MarkAsError(string jobName)
         {
-            if (!States.TryGetValue(jobName, out JobState? state))
+            UpdateState(jobName, state =>
             {
-                return;
-            }
+                state.LastActionTime = DateTime.Now;
+                state.Status = JobStatus.Erreur;
+                state.IsPaused = false;
 
-            state.LastActionTime = DateTime.Now;
-            state.Status = JobStatus.Erreur;
 
-            SaveState();
+
+                return state;
+            });
         }
+
+
 
         public static void MarkAsInterrupted(string jobName)
         {
-            if (!States.TryGetValue(jobName, out JobState? state))
+            UpdateState(jobName, state =>
             {
-                return;
+                state.LastActionTime = DateTime.Now;
+                state.Status = JobStatus.Interrompu;
+                state.IsPaused = false;
+                state.CurrentSourceFile = string.Empty;
+                state.CurrentTargetFile = string.Empty;
+
+
+
+                return state;
+            });
+        }
+
+
+
+        public static void MarkAsPaused(string jobName)
+        {
+            UpdateState(jobName, state =>
+            {
+                state.LastActionTime = DateTime.Now;
+                state.Status = JobStatus.EnPause;
+                state.IsPaused = true;
+
+
+
+                return state;
+            });
+        }
+
+
+
+        public static void MarkAsResumed(string jobName)
+        {
+            UpdateState(jobName, state =>
+            {
+                state.LastActionTime = DateTime.Now;
+                state.Status = JobStatus.Actif;
+                state.IsPaused = false;
+
+
+
+                return state;
+            });
+        }
+
+
+
+        public static JobState? GetState(string jobName)
+        {
+            EnsureStatesLoaded();
+
+
+
+            return States.TryGetValue(jobName, out JobState? state)
+            ? CloneState(state)
+            : null;
+        }
+
+
+
+        public static List<JobState> GetAllStates()
+        {
+            EnsureStatesLoaded();
+
+
+
+            return States.Values
+            .Select(CloneState)
+            .OrderBy(state => state.BackupName)
+            .ToList();
+        }
+
+
+
+        private static void UpdateState(string jobName, Func<JobState, JobState> updateAction)
+        {
+            if (!States.TryGetValue(jobName, out JobState? currentState))
+            {
+                EnsureStatesLoaded();
+
+
+
+                if (!States.TryGetValue(jobName, out currentState))
+                {
+                    return;
+                }
             }
 
-            state.LastActionTime = DateTime.Now;
-            state.Status = JobStatus.Interrompu;
+
+
+            JobState updatedState = updateAction(CloneState(currentState));
+            States.AddOrUpdate(jobName, updatedState, (_, _) => updatedState);
+
+
 
             SaveState();
         }
 
-        public static JobState? GetState(string jobName)
-        {
-            return States.TryGetValue(jobName, out JobState? state)
-                ? state
-                : null;
-        }
 
-        public static List<JobState> GetAllStates()
-        {
-            if (States.Count > 0)
-            {
-                return States.Values.ToList();
-            }
-
-            return LoadStatesFromFile();
-        }
 
         private static void SaveState()
         {
-            var options = new JsonSerializerOptions
+            FileLock.EnterWriteLock();
+
+
+
+            try
             {
-                WriteIndented = true
-            };
+                List<JobState> states = States.Values
+                .Select(CloneState)
+                .OrderBy(state => state.BackupName)
+                .ToList();
 
-            options.Converters.Add(new JsonStringEnumConverter());
 
-            List<JobState> states = States.Values.ToList();
-            string json = JsonSerializer.Serialize(states, options);
-            File.WriteAllText(StateFilePath, json);
+
+                string json = JsonSerializer.Serialize(states, JsonOptions);
+                File.WriteAllText(StateFilePath, json);
+            }
+            finally
+            {
+                FileLock.ExitWriteLock();
+            }
         }
+
+
+
+        private static void EnsureStatesLoaded()
+        {
+            if (!States.IsEmpty)
+            {
+                return;
+            }
+
+
+
+            List<JobState> loadedStates = LoadStatesFromFile();
+
+
+
+            foreach (JobState state in loadedStates)
+            {
+                States.TryAdd(state.BackupName, state);
+            }
+        }
+
+
 
         private static List<JobState> LoadStatesFromFile()
         {
-            if (!File.Exists(StateFilePath))
+            FileLock.EnterReadLock();
+
+
+
+            try
             {
-                return new List<JobState>();
+                if (!File.Exists(StateFilePath))
+                {
+                    return new List<JobState>();
+                }
+
+
+
+                string json = File.ReadAllText(StateFilePath);
+
+
+
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return new List<JobState>();
+                }
+
+
+
+                return JsonSerializer.Deserialize<List<JobState>>(json, JsonOptions)
+                ?? new List<JobState>();
             }
-
-            string json = File.ReadAllText(StateFilePath);
-
-            if (string.IsNullOrWhiteSpace(json))
+            finally
             {
-                return new List<JobState>();
+                FileLock.ExitReadLock();
             }
+        }
 
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new JsonStringEnumConverter());
 
-            return JsonSerializer.Deserialize<List<JobState>>(json, options) ?? new List<JobState>();
+
+        private static JobState CloneState(JobState state)
+        {
+            return new JobState
+            {
+                BackupName = state.BackupName,
+                LastActionTime = state.LastActionTime,
+                Status = state.Status,
+                TotalFiles = state.TotalFiles,
+                TotalSize = state.TotalSize,
+                RemainingFiles = state.RemainingFiles,
+                RemainingSize = state.RemainingSize,
+                Progression = state.Progression,
+                CurrentSourceFile = state.CurrentSourceFile,
+                CurrentTargetFile = state.CurrentTargetFile,
+                IsPaused = state.IsPaused
+            };
         }
     }
 }
