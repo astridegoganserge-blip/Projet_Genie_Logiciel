@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using EasyLog;
 using EasySave.Core.Managers;
@@ -5,49 +6,117 @@ using EasySave.Core.Models;
 using EasySave.Core.Repositories;
 using EasySave.GUI.Services;
 
+
+
 namespace EasySave.GUI.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
+        private readonly BackupManager _backupManager;
+
+
+
         private LogFormat _selectedLogFormat = LogFormat.Json;
         private string _businessSoftware = string.Empty;
         private string _newExtensionInput = string.Empty;
+        private string _newPriorityExtensionInput = string.Empty;
+        private long _maxFileSizeKb;
+        private LogMode _selectedLogMode = LogMode.Local;
+        private string _dockerLogServerUrl = string.Empty;
         private string _successMessage = string.Empty;
         private string _errorMessage = string.Empty;
         private string _selectedLanguage = "fr";
-        private readonly BackupManager _backupManager;
+
+
 
         public SettingsViewModel()
         {
             _backupManager = new BackupManager(
-                new JsonJobRepository(),
-                new JsonSettingsRepository());
+            new JsonJobRepository(),
+            new JsonSettingsRepository());
+
+
 
             AvailableFormats = new ObservableCollection<LogFormat>
-            {
-                LogFormat.Json,
-                LogFormat.Xml
-            };
+ {
+ LogFormat.Json,
+ LogFormat.Xml
+ };
 
-                AvailableLanguages = new ObservableCollection<string>
-                {
-                    "fr",
-                    "en"
-                };
+
+
+            AvailableLanguages = new ObservableCollection<string>
+ {
+ "fr",
+ "en"
+ };
+
+
+
+            AvailableLogModes = new ObservableCollection<LogMode>
+ {
+ LogMode.Local,
+ LogMode.Docker,
+ LogMode.Both
+ };
+
+
+
             ExtensionsToEncrypt = new ObservableCollection<string>();
+            PriorityExtensions = new ObservableCollection<string>();
+
+
 
             SaveCommand = new RelayCommand(_ => SaveSettings());
-            AddExtensionCommand = new RelayCommand(_ => AddExtension(), _ => !string.IsNullOrWhiteSpace(NewExtensionInput));
-            RemoveExtensionCommand = new RelayCommand(extension => RemoveExtension(extension as string));
+
+
+
+            AddExtensionCommand = new RelayCommand(
+            _ => AddExtension(),
+            _ => !string.IsNullOrWhiteSpace(NewExtensionInput));
+
+
+
+            RemoveExtensionCommand = new RelayCommand(
+            extension => RemoveExtension(extension as string));
+
+
+
+            AddPriorityExtensionCommand = new RelayCommand(
+            _ => AddPriorityExtension(),
+            _ => !string.IsNullOrWhiteSpace(NewPriorityExtensionInput));
+
+
+
+            RemovePriorityExtensionCommand = new RelayCommand(
+            extension => RemovePriorityExtension(extension as string));
+
+
 
             LoadSettings();
         }
 
+
+
         public ObservableCollection<LogFormat> AvailableFormats { get; }
+
+
+
+        public ObservableCollection<string> AvailableLanguages { get; }
+
+
+
+        public ObservableCollection<LogMode> AvailableLogModes { get; }
+
+
 
         public ObservableCollection<string> ExtensionsToEncrypt { get; }
 
-        public ObservableCollection<string> AvailableLanguages { get; }
+
+
+        public ObservableCollection<string> PriorityExtensions { get; }
+
+
 
         public LogFormat SelectedLogFormat
         {
@@ -59,6 +128,8 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+
+
         public string BusinessSoftware
         {
             get => _businessSoftware;
@@ -68,6 +139,8 @@ namespace EasySave.GUI.ViewModels
                 OnPropertyChanged();
             }
         }
+
+
 
         public string NewExtensionInput
         {
@@ -80,25 +153,61 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
-        public string SuccessMessage
+
+
+        public string NewPriorityExtensionInput
         {
-            get => _successMessage;
+            get => _newPriorityExtensionInput;
             set
             {
-                _successMessage = value;
+                _newPriorityExtensionInput = value;
+                OnPropertyChanged();
+                AddPriorityExtensionCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+
+
+        public long MaxFileSizeKb
+        {
+            get => _maxFileSizeKb;
+            set
+            {
+                _maxFileSizeKb = value < 0 ? 0 : value;
                 OnPropertyChanged();
             }
         }
 
-        public string ErrorMessage
+
+
+        public LogMode SelectedLogMode
         {
-            get => _errorMessage;
+            get => _selectedLogMode;
             set
             {
-                _errorMessage = value;
+                _selectedLogMode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowDockerUrl));
+            }
+        }
+
+
+
+        public string DockerLogServerUrl
+        {
+            get => _dockerLogServerUrl;
+            set
+            {
+                _dockerLogServerUrl = value;
                 OnPropertyChanged();
             }
         }
+
+
+
+        public bool ShowDockerUrl => SelectedLogMode != LogMode.Local;
+
+
 
         public string SelectedLanguage
         {
@@ -110,79 +219,283 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+
+
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set
+            {
+                _successMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         public RelayCommand SaveCommand { get; }
+
+
 
         public RelayCommand AddExtensionCommand { get; }
 
+
+
         public RelayCommand RemoveExtensionCommand { get; }
+
+
+
+        public RelayCommand AddPriorityExtensionCommand { get; }
+
+
+
+        public RelayCommand RemovePriorityExtensionCommand { get; }
+
+
 
         private void SaveSettings()
         {
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
 
+
+
+            if (!ValidateSettings())
+            {
+                return;
+            }
+
+
+
             var settings = new AppSettings
             {
                 LogFormat = SelectedLogFormat,
                 Language = SelectedLanguage,
-                BusinessSoftware = BusinessSoftware,
-                ExtensionsToEncrypt = new System.Collections.Generic.List<string>(ExtensionsToEncrypt)
+                BusinessSoftware = BusinessSoftware.Trim(),
+                ExtensionsToEncrypt = new List<string>(ExtensionsToEncrypt),
+                PriorityExtensions = new List<string>(PriorityExtensions),
+                MaxFileSizeKb = MaxFileSizeKb,
+                LogMode = SelectedLogMode,
+                DockerLogServerUrl = DockerLogServerUrl.Trim()
             };
+
+
 
             _backupManager.SaveSettings(settings);
             LocalizationService.ApplyLanguage(SelectedLanguage);
 
+
+
             SuccessMessage = "Settings saved successfully.";
         }
 
+
+
+        private bool ValidateSettings()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedLanguage))
+            {
+                ErrorMessage = "Language is required.";
+                return false;
+            }
+
+
+
+            if (SelectedLogMode != LogMode.Local && string.IsNullOrWhiteSpace(DockerLogServerUrl))
+            {
+                ErrorMessage = "Docker log server URL is required when Docker log mode is enabled.";
+                return false;
+            }
+
+
+
+            return true;
+        }
+
+
+
         private void AddExtension()
+        {
+            AddNormalizedExtension(
+            NewExtensionInput,
+            ExtensionsToEncrypt,
+            () => NewExtensionInput = string.Empty,
+            "Encryption extension added.");
+        }
+
+
+
+        private void RemoveExtension(string? extension)
+        {
+            RemoveExtensionFromCollection(
+            extension,
+            ExtensionsToEncrypt,
+            "Encryption extension removed.");
+        }
+
+
+
+        private void AddPriorityExtension()
+        {
+            AddNormalizedExtension(
+            NewPriorityExtensionInput,
+            PriorityExtensions,
+            () => NewPriorityExtensionInput = string.Empty,
+            "Priority extension added.");
+        }
+
+
+
+        private void RemovePriorityExtension(string? extension)
+        {
+            RemoveExtensionFromCollection(
+            extension,
+            PriorityExtensions,
+            "Priority extension removed.");
+        }
+
+
+
+        private void AddNormalizedExtension(
+        string input,
+        ObservableCollection<string> targetCollection,
+        System.Action clearInput,
+        string successMessage)
         {
             ErrorMessage = string.Empty;
             SuccessMessage = string.Empty;
 
-            string extension = NewExtensionInput.Trim();
 
-            if (!extension.StartsWith("."))
+
+            string extension = NormalizeExtension(input);
+
+
+
+            if (string.IsNullOrWhiteSpace(extension))
             {
-                extension = "." + extension;
+                ErrorMessage = "Extension is required.";
+                return;
             }
 
-            if (ExtensionsToEncrypt.Contains(extension))
+
+
+            if (targetCollection.Contains(extension))
             {
                 ErrorMessage = "This extension already exists.";
                 return;
             }
 
-            ExtensionsToEncrypt.Add(extension);
-            NewExtensionInput = string.Empty;
-            SuccessMessage = "Extension added.";
+
+
+            targetCollection.Add(extension);
+            clearInput();
+
+
+
+            SuccessMessage = successMessage;
         }
 
-        private void RemoveExtension(string? extension)
+
+
+        private void RemoveExtensionFromCollection(
+        string? extension,
+        ObservableCollection<string> targetCollection,
+        string successMessage)
         {
+            ErrorMessage = string.Empty;
+            SuccessMessage = string.Empty;
+
+
+
             if (string.IsNullOrWhiteSpace(extension))
             {
                 return;
             }
 
-            ExtensionsToEncrypt.Remove(extension);
-            SuccessMessage = "Extension removed.";
+
+
+            targetCollection.Remove(extension);
+            SuccessMessage = successMessage;
         }
+
+
 
         private void LoadSettings()
         {
             AppSettings settings = _backupManager.GetSettings();
 
+
+
             SelectedLogFormat = settings.LogFormat;
             BusinessSoftware = settings.BusinessSoftware;
-            SelectedLanguage = settings.Language;
+            SelectedLanguage = string.IsNullOrWhiteSpace(settings.Language)
+            ? "fr"
+            : settings.Language;
+
+
+
+            MaxFileSizeKb = settings.MaxFileSizeKb;
+            SelectedLogMode = settings.LogMode;
+            DockerLogServerUrl = settings.DockerLogServerUrl;
+
+
 
             ExtensionsToEncrypt.Clear();
 
+
+
             foreach (string extension in settings.ExtensionsToEncrypt)
             {
-                ExtensionsToEncrypt.Add(extension);
+                ExtensionsToEncrypt.Add(NormalizeExtension(extension));
             }
+
+
+
+            PriorityExtensions.Clear();
+
+
+
+            foreach (string extension in settings.PriorityExtensions)
+            {
+                PriorityExtensions.Add(NormalizeExtension(extension));
+            }
+        }
+
+
+
+        private static string NormalizeExtension(string extension)
+        {
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                return string.Empty;
+            }
+
+
+
+            string normalized = extension.Trim();
+
+
+
+            if (!normalized.StartsWith("."))
+            {
+                normalized = "." + normalized;
+            }
+
+
+
+            return normalized.ToLowerInvariant();
         }
     }
 }
