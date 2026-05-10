@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using EasySave.Core.Models;
 
 namespace EasySave.GUI.Converters
 {
@@ -13,15 +14,21 @@ namespace EasySave.GUI.Converters
             object parameter,
             CultureInfo culture)
         {
-            string status = value?.ToString() ?? string.Empty;
-
-            return status switch
+            if (value is JobStatus status)
             {
-                "Actif" => Brushes.Green,
-                "Terminé" => Brushes.Gray,
-                "Erreur" => Brushes.Red,
-                "Interrompu" => Brushes.Orange,
-                _ => Brushes.Black
+                return ConvertStatusToBrush(status);
+            }
+
+            string statusText = value?.ToString() ?? string.Empty;
+
+            return statusText switch
+            {
+                nameof(JobStatus.Actif) => Brushes.Green,
+                nameof(JobStatus.EnPause) => Brushes.Orange,
+                nameof(JobStatus.Terminé) => Brushes.Gray,
+                nameof(JobStatus.Erreur) => Brushes.Red,
+                nameof(JobStatus.Interrompu) => Brushes.DarkRed,
+                _ => Brushes.White
             };
         }
 
@@ -32,6 +39,19 @@ namespace EasySave.GUI.Converters
             CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+
+        private static Brush ConvertStatusToBrush(JobStatus status)
+        {
+            return status switch
+            {
+                JobStatus.Actif => Brushes.Green,
+                JobStatus.EnPause => Brushes.Orange,
+                JobStatus.Terminé => Brushes.Gray,
+                JobStatus.Erreur => Brushes.Red,
+                JobStatus.Interrompu => Brushes.DarkRed,
+                _ => Brushes.White
+            };
         }
     }
 }
