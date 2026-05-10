@@ -1,116 +1,374 @@
+
 <UserControl x:Class="EasySave.GUI.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModels="clr-namespace:EasySave.GUI.ViewModels">
-    <UserControl.DataContext>
-        <viewModels:SettingsViewModel />
-    </UserControl.DataContext>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+ 
 
-        <GroupBox Grid.Row="0"
-                  Header="{DynamicResource SettingsLanguage}"
-                  Padding="12"
-                  Margin="0,0,0,12">
+    <Grid Margin="24">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto" />
+<RowDefinition Height="*" />
+<RowDefinition Height="Auto" />
+</Grid.RowDefinitions>
+
+ 
+
+        <!-- TITLE -->
+<StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,20">
+<TextBlock Text="⚙"
+                       FontSize="28"
+                       Foreground="{StaticResource AccentLightBrush}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0" />
+
+ 
+
             <StackPanel>
-                <TextBlock Text="{DynamicResource SettingsApplicationLanguage}" />
-                <ComboBox ItemsSource="{Binding AvailableLanguages}"
-                          SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
-                          Width="180"
-                          HorizontalAlignment="Left"
-                          Margin="0,6,0,0" />
-            </StackPanel>
-        </GroupBox>
+<TextBlock Text="{DynamicResource SettingsTitle}"
+                           Style="{StaticResource PageTitleStyle}" />
 
-        <GroupBox Grid.Row="1"
-                  Header="{DynamicResource SettingsLogFormat}"
-                  Padding="12"
-                  Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="{DynamicResource SettingsDailyLogFormat}" />
-                <ComboBox ItemsSource="{Binding AvailableFormats}"
-                          SelectedItem="{Binding SelectedLogFormat, Mode=TwoWay}"
-                          Width="180"
-                          HorizontalAlignment="Left"
-                          Margin="0,6,0,0" />
-            </StackPanel>
-        </GroupBox>
+ 
 
-        <GroupBox Grid.Row="2"
-                  Header="{DynamicResource SettingsBusinessSoftware}"
-                  Padding="12"
-                  Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="{DynamicResource SettingsProcessName}" />
-                <TextBox Text="{Binding BusinessSoftware, UpdateSourceTrigger=PropertyChanged}"
-                         Width="250"
-                         HorizontalAlignment="Left"
-                         Margin="0,6,0,0" />
-                <TextBlock Text="{DynamicResource SettingsExample}"
-                           FontStyle="Italic"
-                           Margin="0,4,0,0" />
-            </StackPanel>
-        </GroupBox>
+                <TextBlock Text="{DynamicResource SettingsSubtitle}"
+                           Style="{StaticResource SecondaryTextStyle}" />
+</StackPanel>
+</StackPanel>
 
-        <GroupBox Grid.Row="3"
-                  Header="{DynamicResource SettingsExtensions}"
-                  Padding="12"
-                  Margin="0,0,0,12">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+ 
+
+        <!-- CONTENT -->
+<ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto">
+<StackPanel>
+
+ 
+
+                <!-- LANGUAGE -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<StackPanel>
+<TextBlock Text="{DynamicResource SettingsLanguage}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                                  SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                                  Width="220"
+                                  HorizontalAlignment="Left"
+                                  Style="{StaticResource ReadableComboBoxStyle}" />
+</StackPanel>
+</Border>
+
+ 
+
+                <!-- LOG FORMAT -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<StackPanel>
+<TextBlock Text="{DynamicResource SettingsLogFormat}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <ComboBox ItemsSource="{Binding AvailableFormats}"
+                                  SelectedItem="{Binding SelectedLogFormat, Mode=TwoWay}"
+                                  Width="220"
+                                  HorizontalAlignment="Left"
+                                  Style="{StaticResource ReadableComboBoxStyle}" />
+
+ 
+
+                        <TextBlock Text="{DynamicResource SettingsLogFormatHint}"
+                                   Style="{StaticResource SecondaryTextStyle}"
+                                   Margin="0,8,0,0" />
+</StackPanel>
+</Border>
+
+ 
+
+                <!-- LOG MODE -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<StackPanel>
+<TextBlock Text="{DynamicResource SettingsLogMode}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <ComboBox ItemsSource="{Binding AvailableLogModes}"
+                                  SelectedItem="{Binding SelectedLogMode, Mode=TwoWay}"
+                                  Width="220"
+                                  HorizontalAlignment="Left"
+                                  Style="{StaticResource ReadableComboBoxStyle}" />
+
+ 
+
+                        <StackPanel Margin="0,14,0,0">
+<StackPanel.Style>
+<Style TargetType="StackPanel">
+<Setter Property="Visibility" Value="Collapsed" />
+<Style.Triggers>
+<DataTrigger Binding="{Binding ShowDockerUrl}" Value="True">
+<Setter Property="Visibility" Value="Visible" />
+</DataTrigger>
+</Style.Triggers>
+</Style>
+</StackPanel.Style>
+
+ 
+
+                            <TextBlock Text="{DynamicResource SettingsDockerUrl}"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,6" />
+
+ 
+
+                            <TextBox Text="{Binding DockerLogServerUrl, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="420"
+                                     HorizontalAlignment="Left" />
+
+ 
+
+                            <TextBlock Text="{DynamicResource SettingsDockerExample}"
+                                       Style="{StaticResource SecondaryTextStyle}"
+                                       Margin="0,6,0,0" />
+</StackPanel>
+</StackPanel>
+</Border>
+
+ 
+
+                <!-- BUSINESS SOFTWARE -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<StackPanel>
+<TextBlock Text="{DynamicResource SettingsBusinessSoftware}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <TextBox Text="{Binding BusinessSoftware, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="300"
+                                 HorizontalAlignment="Left" />
+
+ 
+
+                        <TextBlock Text="{DynamicResource SettingsBusinessSoftwareHint}"
+                                   Style="{StaticResource SecondaryTextStyle}"
+                                   Margin="0,8,0,0" />
+</StackPanel>
+</Border>
+
+ 
+
+                <!-- MAX LARGE FILE SIZE -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<StackPanel>
+<TextBlock Text="{DynamicResource SettingsMaxFileSize}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <StackPanel Orientation="Horizontal">
+<TextBox Text="{Binding MaxFileSizeKb, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="160"
+                                     Margin="0,0,10,0" />
+
+ 
+
+                            <TextBlock Text="{DynamicResource SettingsKb}"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold" />
+</StackPanel>
+
+ 
+
+                        <TextBlock Text="{DynamicResource SettingsMaxFileSizeHint}"
+                                   Style="{StaticResource SecondaryTextStyle}"
+                                   Margin="0,8,0,0" />
+</StackPanel>
+</Border>
+
+ 
+
+                <!-- EXTENSIONS TO ENCRYPT -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<Grid>
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto" />
+<RowDefinition Height="Auto" />
+<RowDefinition Height="180" />
+</Grid.RowDefinitions>
+
+ 
+
+                        <TextBlock Grid.Row="0"
+                                   Text="{DynamicResource SettingsExtensions}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,12">
+<TextBox Text="{Binding NewExtensionInput, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="180"
+                                     Margin="0,0,10,0" />
+
+ 
+
+                            <Button Content="{DynamicResource BtnAdd}"
+                                    Width="100"
+                                    Command="{Binding AddExtensionCommand}" />
+</StackPanel>
+
+ 
+
+                        <ListBox Grid.Row="2"
+                                 ItemsSource="{Binding ExtensionsToEncrypt}">
+<ListBox.ItemTemplate>
+<DataTemplate>
+<DockPanel Margin="0,4">
+<Button Content="{DynamicResource BtnRemove}"
+                                                DockPanel.Dock="Right"
+                                                Width="110"
+                                                Height="30"
+                                                Style="{StaticResource DangerButtonStyle}"
+                                                Command="{Binding DataContext.RemoveExtensionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}" />
+
+ 
+
+                                        <TextBlock Text="{Binding}"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold" />
+</DockPanel>
+</DataTemplate>
+</ListBox.ItemTemplate>
+</ListBox>
+</Grid>
+</Border>
+
+ 
+
+                <!-- PRIORITY EXTENSIONS -->
+<Border Style="{StaticResource CardBorderStyle}"
+                        Margin="0,0,0,16">
+<Grid>
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto" />
+<RowDefinition Height="Auto" />
+<RowDefinition Height="180" />
+</Grid.RowDefinitions>
+
+ 
+
+                        <TextBlock Grid.Row="0"
+                                   Text="{DynamicResource SettingsPriorityExtensions}"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,12" />
+
+ 
+
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,12">
+<TextBox Text="{Binding NewPriorityExtensionInput, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="180"
+                                     Margin="0,0,10,0" />
+
+ 
+
+                            <Button Content="{DynamicResource BtnAdd}"
+                                    Width="100"
+                                    Command="{Binding AddPriorityExtensionCommand}" />
+</StackPanel>
+
+ 
+
+                        <ListBox Grid.Row="2"
+                                 ItemsSource="{Binding PriorityExtensions}">
+<ListBox.ItemTemplate>
+<DataTemplate>
+<DockPanel Margin="0,4">
+<Button Content="{DynamicResource BtnRemove}"
+                                                DockPanel.Dock="Right"
+                                                Width="110"
+                                                Height="30"
+                                                Style="{StaticResource DangerButtonStyle}"
+                                                Command="{Binding DataContext.RemovePriorityExtensionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}" />
+
+ 
+
+                                        <TextBlock Text="{Binding}"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold" />
+</DockPanel>
+</DataTemplate>
+</ListBox.ItemTemplate>
+</ListBox>
+</Grid>
+</Border>
+
+ 
+
+            </StackPanel>
+</ScrollViewer>
+
+ 
+
+        <!-- FOOTER -->
+<Border Grid.Row="2"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Margin="0,18,0,0"
+                Padding="0,14,0,0">
+<DockPanel>
+<Button Content="{DynamicResource SettingsSave}"
+                        Width="150"
+                        Style="{StaticResource SuccessButtonStyle}"
+                        Command="{Binding SaveCommand}"
+                        DockPanel.Dock="Left"
+                        Margin="0,0,14,0" />
+
+ 
 
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding NewExtensionInput, UpdateSourceTrigger=PropertyChanged}"
-                             Width="160"
-                             Margin="0,0,8,0" />
+<TextBlock Text="{Binding SuccessMessage}"
+                               Foreground="{StaticResource SuccessBrush}"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,16,0" />
 
-                    <Button Content="{DynamicResource BtnAdd}"
-                            Width="80"
-                            Command="{Binding AddExtensionCommand}" />
-                </StackPanel>
+ 
 
-                <ListBox Grid.Row="1"
-                         Margin="0,10,0,0"
-                         ItemsSource="{Binding ExtensionsToEncrypt}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel>
-                                <Button Content="{DynamicResource BtnRemove}"
-                                        DockPanel.Dock="Right"
-                                        Margin="8,0,0,0"
-                                        Command="{Binding DataContext.RemoveExtensionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                        CommandParameter="{Binding}" />
-                                <TextBlock Text="{Binding}" />
-                            </DockPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Grid>
-        </GroupBox>
-
-        <StackPanel Grid.Row="4"
-                    Orientation="Horizontal">
-            <Button Content="{DynamicResource SettingsSave}"
-                    Width="150"
-                    Command="{Binding SaveCommand}" />
-
-            <TextBlock Text="{Binding SuccessMessage}"
-                       Margin="12,0,0,0"
-                       VerticalAlignment="Center" />
-
-            <TextBlock Text="{Binding ErrorMessage}"
-                       Margin="12,0,0,0"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-    </Grid>
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="{StaticResource DangerBrush}"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+</StackPanel>
+</DockPanel>
+</Border>
+</Grid>
 </UserControl>
+

@@ -10,17 +10,23 @@ namespace EasySave.GUI.ViewModels
     public class JobExecutionViewModel : BaseViewModel
     {
         private readonly System.Timers.Timer _refreshTimer;
+
         private double _globalProgression;
         private string _monitoringStatus = "Monitoring stopped";
+        private bool _isMonitoring;
 
         public JobExecutionViewModel()
         {
             JobStates = new ObservableCollection<JobState>();
 
-            StartMonitoringCommand = new RelayCommand(_ => StartMonitoring());
-            StopMonitoringCommand = new RelayCommand(_ => StopMonitoring());
+            StartMonitoringCommand = new RelayCommand(_ => StartMonitoring(), _ => !IsMonitoring);
+            StopMonitoringCommand = new RelayCommand(_ => StopMonitoring(), _ => IsMonitoring);
 
-            _refreshTimer = new System.Timers.Timer(500);
+            _refreshTimer = new System.Timers.Timer(500)
+            {
+                AutoReset = true
+            };
+
             _refreshTimer.Elapsed += (_, _) => RefreshStates();
         }
 
@@ -46,26 +52,49 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
+        public bool IsMonitoring
+        {
+            get => _isMonitoring;
+            set
+            {
+                _isMonitoring = value;
+                OnPropertyChanged();
+                StartMonitoringCommand.RaiseCanExecuteChanged();
+                StopMonitoringCommand.RaiseCanExecuteChanged();
+            }
+        }
+
         public RelayCommand StartMonitoringCommand { get; }
 
         public RelayCommand StopMonitoringCommand { get; }
 
         private void StartMonitoring()
         {
+            IsMonitoring = true;
             MonitoringStatus = "Monitoring started";
+
             RefreshStates();
             _refreshTimer.Start();
         }
 
         private void StopMonitoring()
         {
-            MonitoringStatus = "Monitoring stopped";
             _refreshTimer.Stop();
+
+            IsMonitoring = false;
+            MonitoringStatus = "Monitoring stopped";
         }
 
         private void RefreshStates()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Application? application = Application.Current;
+
+            if (application?.Dispatcher == null)
+            {
+                return;
+            }
+
+            application.Dispatcher.Invoke(() =>
             {
                 JobStates.Clear();
 
@@ -78,7 +107,9 @@ namespace EasySave.GUI.ViewModels
                     ? 0
                     : Math.Round(JobStates.Average(state => state.Progression), 2);
 
-                MonitoringStatus = $"Last refresh: {DateTime.Now:HH:mm:ss}";
+                MonitoringStatus = IsMonitoring
+                    ? $"Last refresh: {DateTime.Now:HH:mm:ss}"
+                    : "Monitoring stopped";
             });
         }
     }
