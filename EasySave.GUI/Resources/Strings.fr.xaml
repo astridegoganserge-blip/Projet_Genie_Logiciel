@@ -1,57 +1,116 @@
+
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="AppTitle">EasySave v2.0</sys:String>
+ 
+
+    <sys:String x:Key="AppTitle">EasySave v3.0</sys:String>
+<sys:String x:Key="AppSubtitle">ProSoft Backup Manager</sys:String>
+<sys:String x:Key="AppHeaderDescription">Interface graphique WPF — sauvegarde parallèle, pause, reprise, arrêt, priorités et centralisation des logs.</sys:String>
+<sys:String x:Key="AppFooterCompatibility">Console V1.1 compatible</sys:String>
+<sys:String x:Key="AppFooterVersion">WPF MVVM V3.0</sys:String>
+
+ 
 
     <sys:String x:Key="NavBackupJobs">Travaux</sys:String>
-    <sys:String x:Key="NavCreateJob">Créer un job</sys:String>
-    <sys:String x:Key="NavSettings">Paramètres</sys:String>
-    <sys:String x:Key="NavExecution">Exécution</sys:String>
+<sys:String x:Key="NavHistory">Historique</sys:String>
+<sys:String x:Key="NavCreateJob">Créer un job</sys:String>
+<sys:String x:Key="NavSettings">Paramètres</sys:String>
+<sys:String x:Key="NavExecution">Surveillance</sys:String>
+
+ 
 
     <sys:String x:Key="BtnCreate">Créer</sys:String>
-    <sys:String x:Key="BtnExecute">Exécuter</sys:String>
-    <sys:String x:Key="BtnExecuteAll">Tout exécuter</sys:String>
-    <sys:String x:Key="BtnDelete">Supprimer</sys:String>
-    <sys:String x:Key="BtnRefresh">Actualiser</sys:String>
-    <sys:String x:Key="BtnSave">Enregistrer</sys:String>
-    <sys:String x:Key="BtnCancel">Annuler</sys:String>
-    <sys:String x:Key="BtnAdd">Ajouter</sys:String>
-    <sys:String x:Key="BtnRemove">Retirer</sys:String>
-    <sys:String x:Key="BtnStartMonitoring">Démarrer le suivi</sys:String>
-    <sys:String x:Key="BtnStopMonitoring">Arrêter le suivi</sys:String>
+<sys:String x:Key="BtnExecute">Exécuter</sys:String>
+<sys:String x:Key="BtnExecuteAll">Exécuter tout</sys:String>
+<sys:String x:Key="BtnPause">Pause</sys:String>
+<sys:String x:Key="BtnPauseAll">Pause tout</sys:String>
+<sys:String x:Key="BtnPlay">Play</sys:String>
+<sys:String x:Key="BtnPlayAll">Play tout</sys:String>
+<sys:String x:Key="BtnStop">Stop</sys:String>
+<sys:String x:Key="BtnStopAll">Stop tout</sys:String>
+<sys:String x:Key="BtnEdit">Modifier</sys:String>
+<sys:String x:Key="BtnDelete">Supprimer</sys:String>
+<sys:String x:Key="BtnRefresh">Actualiser</sys:String>
+<sys:String x:Key="BtnSave">Enregistrer</sys:String>
+<sys:String x:Key="BtnCancel">Annuler</sys:String>
+<sys:String x:Key="BtnAdd">Ajouter</sys:String>
+<sys:String x:Key="BtnRemove">Supprimer</sys:String>
+<sys:String x:Key="BtnBrowse">Parcourir</sys:String>
+<sys:String x:Key="BtnRestart">Relancer</sys:String>
+<sys:String x:Key="BtnStartMonitoring">Démarrer le suivi</sys:String>
+<sys:String x:Key="BtnStopMonitoring">Arrêter le suivi</sys:String>
 
-    <sys:String x:Key="HeaderId">Id</sys:String>
-    <sys:String x:Key="HeaderName">Nom</sys:String>
-    <sys:String x:Key="HeaderSource">Source</sys:String>
-    <sys:String x:Key="HeaderTarget">Cible</sys:String>
-    <sys:String x:Key="HeaderType">Type</sys:String>
-    <sys:String x:Key="HeaderLastExecution">Dernière exécution</sys:String>
+ 
 
-    <sys:String x:Key="SettingsLanguage">Langue</sys:String>
-    <sys:String x:Key="SettingsApplicationLanguage">Langue de l’application :</sys:String>
-    <sys:String x:Key="SettingsLogFormat">Format du log</sys:String>
-    <sys:String x:Key="SettingsDailyLogFormat">Format du log journalier :</sys:String>
-    <sys:String x:Key="SettingsBusinessSoftware">Logiciel métier</sys:String>
-    <sys:String x:Key="SettingsProcessName">Nom du processus à surveiller :</sys:String>
-    <sys:String x:Key="SettingsExample">Exemple : CalculatorApp</sys:String>
-    <sys:String x:Key="SettingsExtensions">Extensions à chiffrer</sys:String>
-    <sys:String x:Key="SettingsSave">Enregistrer les paramètres</sys:String>
+    <sys:String x:Key="HeaderNumber">#</sys:String>
+<sys:String x:Key="HeaderName">Nom</sys:String>
+<sys:String x:Key="HeaderType">Type</sys:String>
+<sys:String x:Key="HeaderLastExecution">Dernière exécution</sys:String>
+<sys:String x:Key="HeaderStatus">Statut</sys:String>
+<sys:String x:Key="HeaderFinalStatus">Statut final</sys:String>
+<sys:String x:Key="HeaderProgress">Progression</sys:String>
+<sys:String x:Key="HeaderActions">Actions</sys:String>
+<sys:String x:Key="HeaderAction">Action</sys:String>
+
+ 
+
+    <sys:String x:Key="JobsTitle">Travaux de sauvegarde</sys:String>
+<sys:String x:Key="JobsSubtitle">Gérez, exécutez, mettez en pause ou arrêtez vos sauvegardes.</sys:String>
+<sys:String x:Key="JobsEditLockBanner">Édition en cours — toute exécution est bloquée.</sys:String>
+<sys:String x:Key="JobsAvailable">Disponible</sys:String>
+<sys:String x:Key="JobsWaiting">En attente</sys:String>
+
+ 
+
+    <sys:String x:Key="HistoryTitle">Historique des sauvegardes</sys:String>
+<sys:String x:Key="HistorySubtitle">Consultez les dernières exécutions et relancez un travail si nécessaire.</sys:String>
+
+ 
 
     <sys:String x:Key="CreateBackupJob">Créer un travail de sauvegarde</sys:String>
-    <sys:String x:Key="JobName">Nom du job :</sys:String>
-    <sys:String x:Key="SourcePath">Chemin source :</sys:String>
-    <sys:String x:Key="TargetPath">Chemin cible :</sys:String>
-    <sys:String x:Key="BackupType">Type de sauvegarde :</sys:String>
+<sys:String x:Key="EditBackupJob">Modifier un travail de sauvegarde</sys:String>
+<sys:String x:Key="JobEditSubtitle">Créez ou modifiez un travail de sauvegarde.</sys:String>
+<sys:String x:Key="JobName">Nom du job</sys:String>
+<sys:String x:Key="SourcePath">Chemin source</sys:String>
+<sys:String x:Key="TargetPath">Chemin cible</sys:String>
+<sys:String x:Key="BackupType">Type de sauvegarde</sys:String>
 
-    <sys:String x:Key="ExecutionJobStates">États des travaux</sys:String>
-    <sys:String x:Key="ExecutionInfo">Cet écran lit les données temps réel depuis StateTracker.</sys:String>
-    <sys:String x:Key="ExecutionBackup">Sauvegarde</sys:String>
-    <sys:String x:Key="ExecutionStatus">Statut</sys:String>
-    <sys:String x:Key="ExecutionProgress">Progression</sys:String>
-    <sys:String x:Key="ExecutionRemainingFiles">Fichiers restants</sys:String>
-    <sys:String x:Key="ExecutionRemainingSize">Taille restante</sys:String>
-    <sys:String x:Key="ExecutionCurrentSource">Source en cours</sys:String>
-    <sys:String x:Key="ExecutionCurrentTarget">Cible en cours</sys:String>
+ 
+
+    <sys:String x:Key="SettingsTitle">Paramètres</sys:String>
+<sys:String x:Key="SettingsSubtitle">Configurez les logs, la langue, CryptoSoft, les priorités et la surveillance métier.</sys:String>
+<sys:String x:Key="SettingsLanguage">Langue de l'application</sys:String>
+<sys:String x:Key="SettingsLogFormat">Format du journal local</sys:String>
+<sys:String x:Key="SettingsLogFormatHint">Choix du format des fichiers journaliers : JSON ou XML.</sys:String>
+<sys:String x:Key="SettingsLogMode">Centralisation des logs</sys:String>
+<sys:String x:Key="SettingsDockerUrl">URL du serveur Docker</sys:String>
+<sys:String x:Key="SettingsDockerExample">Exemple : http://localhost:5000</sys:String>
+<sys:String x:Key="SettingsBusinessSoftware">Logiciel métier bloquant</sys:String>
+<sys:String x:Key="SettingsBusinessSoftwareHint">Nom du processus Windows à surveiller. Exemple : CalculatorApp</sys:String>
+<sys:String x:Key="SettingsMaxFileSize">Taille maximale des fichiers volumineux</sys:String>
+<sys:String x:Key="SettingsMaxFileSizeHint">0 = aucune limite. Si un fichier dépasse ce seuil, un seul fichier volumineux est traité à la fois.</sys:String>
+<sys:String x:Key="SettingsKb">Ko</sys:String>
+<sys:String x:Key="SettingsExtensions">Extensions à chiffrer</sys:String>
+<sys:String x:Key="SettingsPriorityExtensions">Extensions prioritaires</sys:String>
+<sys:String x:Key="SettingsSave">Enregistrer</sys:String>
+
+ 
+
+    <sys:String x:Key="ExecutionTitle">Surveillance des exécutions</sys:String>
+<sys:String x:Key="ExecutionSubtitle">Suivez en temps réel les sauvegardes actives, en pause ou terminées.</sys:String>
+<sys:String x:Key="ExecutionGlobalProgress">Progression globale : {0}%</sys:String>
+<sys:String x:Key="ExecutionInfo">Le suivi lit les informations temps réel depuis state.json toutes les 500 ms.</sys:String>
+<sys:String x:Key="ExecutionBackup">Sauvegarde</sys:String>
+<sys:String x:Key="ExecutionStatus">Statut</sys:String>
+<sys:String x:Key="ExecutionProgress">Progression</sys:String>
+<sys:String x:Key="ExecutionRemainingFiles">Fichiers restants</sys:String>
+<sys:String x:Key="ExecutionRemainingSize">Taille restante</sys:String>
+<sys:String x:Key="ExecutionCurrentSource">Source en cours</sys:String>
+<sys:String x:Key="ExecutionCurrentTarget">Cible en cours</sys:String>
+
+ 
 
 </ResourceDictionary>
+

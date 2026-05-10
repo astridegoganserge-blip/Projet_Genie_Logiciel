@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -242,9 +243,6 @@ namespace EasySave.GUI.ViewModels
 
 
             BackupJob job = BuildBackupJob();
-
-
-
             bool saved;
 
 
@@ -293,7 +291,7 @@ namespace EasySave.GUI.ViewModels
             }
             else
             {
-                NavigationRequested?.Invoke(new JobListViewModel());
+                NavigationRequested?.Invoke(new JobListViewModel(_backupManager));
             }
         }
 
@@ -368,7 +366,7 @@ namespace EasySave.GUI.ViewModels
 
 
 
-            NavigationRequested?.Invoke(new JobListViewModel());
+            NavigationRequested?.Invoke(new JobListViewModel(_backupManager));
         }
 
 
@@ -437,3 +435,4 @@ namespace EasySave.GUI.ViewModels
         }
     }
 }
+

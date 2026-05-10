@@ -1,5 +1,8 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
 
  
 
@@ -62,29 +65,54 @@
 
  
 
-    <!-- INPUTS -->
+  
+<!-- TEXTBOX -->
 <Style TargetType="TextBox">
 <Setter Property="Height" Value="36" />
 <Setter Property="Padding" Value="10,5" />
-<Setter Property="Background" Value="{StaticResource InputBackgroundBrush}" />
-<Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-<Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+<Setter Property="Background" Value="#F8FAFC" />
+<Setter Property="Foreground" Value="#0F172A" />
+<Setter Property="CaretBrush" Value="#0F172A" />
 <Setter Property="SelectionBrush" Value="{StaticResource AccentLightBrush}" />
 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
 <Setter Property="BorderThickness" Value="1" />
 <Setter Property="VerticalContentAlignment" Value="Center" />
 </Style>
 
+
+
  
 
-    <Style TargetType="ComboBox">
+    
+<!-- COMBOBOX -->
+<Style TargetType="ComboBox">
 <Setter Property="Height" Value="36" />
 <Setter Property="Padding" Value="8,4" />
-<Setter Property="Background" Value="{StaticResource InputBackgroundBrush}" />
-<Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+<Setter Property="Background" Value="#F8FAFC" />
+<Setter Property="Foreground" Value="#0F172A" />
 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
 <Setter Property="BorderThickness" Value="1" />
 </Style>
+
+ 
+
+<Style TargetType="ComboBoxItem">
+<Setter Property="Background" Value="#F8FAFC" />
+<Setter Property="Foreground" Value="#0F172A" />
+<Setter Property="Padding" Value="8,5" />
+<Style.Triggers>
+<Trigger Property="IsMouseOver" Value="True">
+<Setter Property="Background" Value="{StaticResource AccentBrush}" />
+<Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+</Trigger>
+<Trigger Property="IsSelected" Value="True">
+<Setter Property="Background" Value="{StaticResource AccentBrush}" />
+<Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+</Trigger>
+</Style.Triggers>
+</Style>
+
+
 
  
 
@@ -318,6 +346,35 @@
 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
 </Style>
 
+
+                    <!-- READABLE COMBOBOX FOR BLUE UI -->
+<Style x:Key="ReadableComboBoxStyle" TargetType="ComboBox">
+<Setter Property="Height" Value="36" />
+<Setter Property="Padding" Value="8,4" />
+<Setter Property="Background" Value="#F8FAFC" />
+<Setter Property="Foreground" Value="#0F172A" />
+<Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+<Setter Property="BorderThickness" Value="1" />
+<Setter Property="ItemContainerStyle">
+<Setter.Value>
+<Style TargetType="ComboBoxItem">
+<Setter Property="Background" Value="#F8FAFC" />
+<Setter Property="Foreground" Value="#0F172A" />
+<Setter Property="Padding" Value="8,5" />
+<Style.Triggers>
+<Trigger Property="IsMouseOver" Value="True">
+<Setter Property="Background" Value="{StaticResource AccentBrush}" />
+<Setter Property="Foreground" Value="White" />
+</Trigger>
+<Trigger Property="IsSelected" Value="True">
+<Setter Property="Background" Value="{StaticResource AccentBrush}" />
+<Setter Property="Foreground" Value="White" />
+</Trigger>
+</Style.Triggers>
+</Style>
+</Setter.Value>
+</Setter>
+</Style>
  
 
 </ResourceDictionary>

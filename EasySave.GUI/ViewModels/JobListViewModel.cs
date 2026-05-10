@@ -333,13 +333,23 @@ namespace EasySave.GUI.ViewModels
 
         private void CreateJob()
         {
-            NavigationRequested?.Invoke(new JobEditViewModel(isCreation: true));
+            var viewModel = new JobEditViewModel(
+            isCreation: true,
+            job: null,
+            backupManager: _backupManager);
+
+
+
+            NavigationRequested?.Invoke(viewModel);
             StatusMessage = "Create job view requested.";
         }
+
 
         private void EditSelectedJob(object? parameter)
         {
             BackupJob? jobToEdit = GetJobFromParameter(parameter);
+
+
 
             if (jobToEdit == null)
             {
@@ -347,11 +357,22 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            NavigationRequested?.Invoke(new JobEditViewModel(isCreation: false, job: jobToEdit));
+
+
+            var viewModel = new JobEditViewModel(
+            isCreation: false,
+            job: jobToEdit,
+            backupManager: _backupManager);
+
+
+
+            NavigationRequested?.Invoke(viewModel);
             OnPropertyChanged(nameof(IsEditLocked));
             RaiseCommandStates();
             StatusMessage = $"Edit requested: {jobToEdit.Name}";
         }
+
+
 
         private BackupJob? GetJobFromParameter(object? parameter)
         {

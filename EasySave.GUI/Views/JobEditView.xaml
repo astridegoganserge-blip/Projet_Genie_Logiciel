@@ -1,45 +1,45 @@
 <UserControl x:Class="EasySave.GUI.Views.JobEditView"
-
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
  
+
     <Grid Margin="24">
 <Grid.RowDefinitions>
 <RowDefinition Height="Auto" />
 <RowDefinition Height="*" />
 <RowDefinition Height="Auto" />
 </Grid.RowDefinitions>
+
  
+
         <!-- TITLE -->
 <StackPanel Grid.Row="0"
-
                     Orientation="Horizontal"
-
                     Margin="0,0,0,20">
 <TextBlock Text="✎"
-
                        FontSize="26"
-
                        Foreground="{StaticResource AccentLightBrush}"
-
                        VerticalAlignment="Center"
-
                        Margin="0,0,10,0" />
+
  
+
             <StackPanel>
 <TextBlock Text="{Binding FormTitle}"
-
                            Style="{StaticResource PageTitleStyle}" />
-<TextBlock Text="Créez ou modifiez un travail de sauvegarde."
 
+ 
+
+                <TextBlock Text="{DynamicResource JobEditSubtitle}"
                            Style="{StaticResource SecondaryTextStyle}" />
 </StackPanel>
 </StackPanel>
+
  
+
         <!-- FORM CARD -->
 <Border Grid.Row="1"
-
                 Style="{StaticResource CardBorderStyle}">
 <Grid>
 <Grid.ColumnDefinitions>
@@ -47,7 +47,9 @@
 <ColumnDefinition Width="*" />
 <ColumnDefinition Width="Auto" />
 </Grid.ColumnDefinitions>
+
  
+
                 <Grid.RowDefinitions>
 <RowDefinition Height="Auto" />
 <RowDefinition Height="Auto" />
@@ -55,178 +57,140 @@
 <RowDefinition Height="Auto" />
 <RowDefinition Height="Auto" />
 </Grid.RowDefinitions>
+
  
+
                 <!-- JOB NAME -->
 <TextBlock Grid.Row="0"
-
                            Grid.Column="0"
-
-                           Text="Nom du job"
-
+                           Text="{DynamicResource JobName}"
                            VerticalAlignment="Center"
-
                            Margin="0,0,14,14"
-
                            FontWeight="SemiBold" />
+
  
+
                 <TextBox Grid.Row="0"
-
                          Grid.Column="1"
-
                          Grid.ColumnSpan="2"
-
                          Text="{Binding JobName, UpdateSourceTrigger=PropertyChanged}"
-
                          Margin="0,0,0,14" />
+
  
+
                 <!-- SOURCE PATH -->
 <TextBlock Grid.Row="1"
-
                            Grid.Column="0"
-
-                           Text="Chemin source"
-
+                           Text="{DynamicResource SourcePath}"
                            VerticalAlignment="Center"
-
                            Margin="0,0,14,14"
-
                            FontWeight="SemiBold" />
+
  
+
                 <TextBox Grid.Row="1"
-
                          Grid.Column="1"
-
                          Text="{Binding SourcePath, UpdateSourceTrigger=PropertyChanged}"
-
                          Margin="0,0,10,14" />
+
  
+
                 <Button Grid.Row="1"
-
                         Grid.Column="2"
-
-                        Content="Parcourir"
-
+                        Content="{DynamicResource BtnBrowse}"
                         Width="120"
-
                         Margin="0,0,0,14"
-
                         Style="{StaticResource SecondaryActionButtonStyle}"
-
                         Command="{Binding BrowseSourceCommand}" />
+
  
+
                 <!-- TARGET PATH -->
 <TextBlock Grid.Row="2"
-
                            Grid.Column="0"
-
-                           Text="Chemin cible"
-
+                           Text="{DynamicResource TargetPath}"
                            VerticalAlignment="Center"
-
                            Margin="0,0,14,14"
-
                            FontWeight="SemiBold" />
+
  
+
                 <TextBox Grid.Row="2"
-
                          Grid.Column="1"
-
                          Text="{Binding TargetPath, UpdateSourceTrigger=PropertyChanged}"
-
                          Margin="0,0,10,14" />
+
  
+
                 <Button Grid.Row="2"
-
                         Grid.Column="2"
-
-                        Content="Parcourir"
-
+                        Content="{DynamicResource BtnBrowse}"
                         Width="120"
-
                         Margin="0,0,0,14"
-
                         Style="{StaticResource SecondaryActionButtonStyle}"
-
                         Command="{Binding BrowseTargetCommand}" />
+
  
+
                 <!-- TYPE -->
 <TextBlock Grid.Row="3"
-
                            Grid.Column="0"
-
-                           Text="Type de sauvegarde"
-
+                           Text="{DynamicResource BackupType}"
                            VerticalAlignment="Center"
-
                            Margin="0,0,14,14"
-
                            FontWeight="SemiBold" />
+
  
+
                 <ComboBox Grid.Row="3"
-
                           Grid.Column="1"
-
                           ItemsSource="{Binding AvailableTypes}"
-
                           SelectedItem="{Binding SelectedType, Mode=TwoWay}"
-
                           Width="220"
-
                           HorizontalAlignment="Left"
+                          Margin="0,0,0,14"
+                          Style="{StaticResource ReadableComboBoxStyle}" />
 
-                          Margin="0,0,0,14" />
  
+
                 <!-- ACTIONS -->
 <StackPanel Grid.Row="4"
-
                             Grid.Column="1"
-
                             Grid.ColumnSpan="2"
-
                             Orientation="Horizontal"
-
                             HorizontalAlignment="Right"
-
                             Margin="0,20,0,0">
-<Button Content="Enregistrer"
-
+<Button Content="{DynamicResource BtnSave}"
                             Width="140"
-
                             Margin="0,0,10,0"
-
                             Style="{StaticResource SuccessButtonStyle}"
-
                             Command="{Binding SaveCommand}" />
+
  
-                    <Button Content="Annuler"
 
+                    <Button Content="{DynamicResource BtnCancel}"
                             Width="120"
-
                             Style="{StaticResource SecondaryActionButtonStyle}"
-
                             Command="{Binding CancelCommand}" />
 </StackPanel>
 </Grid>
 </Border>
+
  
+
         <!-- MESSAGES -->
 <StackPanel Grid.Row="2"
-
                     Margin="0,18,0,0">
 <TextBlock Text="{Binding SuccessMessage}"
-
                        Foreground="{StaticResource SuccessBrush}"
-
                        FontWeight="SemiBold"
-
                        Margin="0,0,0,6" />
+
  
+
             <TextBlock Text="{Binding ErrorMessage}"
-
                        Foreground="{StaticResource DangerBrush}"
-
                        FontWeight="SemiBold" />
 </StackPanel>
 </Grid>
 </UserControl>
- 

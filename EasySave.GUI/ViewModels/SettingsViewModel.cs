@@ -30,10 +30,15 @@ namespace EasySave.GUI.ViewModels
 
 
         public SettingsViewModel()
+        : this(new BackupManager(new JsonJobRepository(), new JsonSettingsRepository()))
         {
-            _backupManager = new BackupManager(
-            new JsonJobRepository(),
-            new JsonSettingsRepository());
+        }
+
+
+
+        public SettingsViewModel(BackupManager backupManager)
+        {
+            _backupManager = backupManager;
 
 
 
