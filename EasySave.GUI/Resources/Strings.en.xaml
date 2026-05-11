@@ -109,6 +109,9 @@
 <sys:String x:Key="ExecutionCurrentSource">Current source</sys:String>
 <sys:String x:Key="ExecutionCurrentTarget">Current target</sys:String>
 
- 
+ <sys:String x:Key="BtnEditSelectedJob">✏ Edit selected job</sys:String>
+<sys:String x:Key="BtnEditThisJob">✏ Edit this job</sys:String>
+<sys:String x:Key="TooltipEditSelectedJob">Select a job in the table, then click here to edit it.</sys:String>
+<sys:String x:Key="TooltipEditThisJob">Edit this backup job directly.</sys:String>
 
 </ResourceDictionary>

@@ -110,7 +110,10 @@
 <sys:String x:Key="ExecutionCurrentSource">Source en cours</sys:String>
 <sys:String x:Key="ExecutionCurrentTarget">Cible en cours</sys:String>
 
- 
+ <sys:String x:Key="BtnEditSelectedJob">✏ Modifier le job sélectionné</sys:String>
+<sys:String x:Key="BtnEditThisJob">✏ Modifier ce job</sys:String>
+<sys:String x:Key="TooltipEditSelectedJob">Sélectionnez un job dans le tableau, puis cliquez ici pour le modifier.</sys:String>
+<sys:String x:Key="TooltipEditThisJob">Modifier directement ce travail de sauvegarde.</sys:String>
 
 </ResourceDictionary>
 
