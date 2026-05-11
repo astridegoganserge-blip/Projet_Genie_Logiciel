@@ -1,90 +1,213 @@
 <UserControl x:Class="EasySave.GUI.Views.JobExecutionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModels="clr-namespace:EasySave.GUI.ViewModels">
-    <UserControl.DataContext>
-        <viewModels:JobExecutionViewModel />
-    </UserControl.DataContext>
+             xmlns:converters="clr-namespace:EasySave.GUI.Converters">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+ 
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="0,0,0,12">
-            <Button Content="{DynamicResource BtnStartMonitoring}"
-                    Width="140"
-                    Margin="0,0,8,0"
-                    Command="{Binding StartMonitoringCommand}" />
+    <UserControl.Resources>
+<converters:StatusColorConverter x:Key="StatusColorConverter" />
+</UserControl.Resources>
 
-            <Button Content="{DynamicResource BtnStopMonitoring}"
-                    Width="140"
-                    Command="{Binding StopMonitoringCommand}" />
-        </StackPanel>
+ 
 
-        <StackPanel Grid.Row="1"
-                    Margin="0,0,0,12">
-            <TextBlock Text="{Binding MonitoringStatus}"
-                       Margin="0,0,0,6" />
+    <Grid Margin="24">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto" />
+<RowDefinition Height="Auto" />
+<RowDefinition Height="*" />
+<RowDefinition Height="Auto" />
+</Grid.RowDefinitions>
 
-            <ProgressBar Minimum="0"
-                         Maximum="100"
-                         Height="22"
-                         Value="{Binding GlobalProgression}" />
+ 
 
-            <TextBlock Margin="0,6,0,0">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="Progression globale : {0}%">
-                        <Binding Path="GlobalProgression" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
-        </StackPanel>
+        <!-- TITLE -->
+<StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,20">
+<TextBlock Text="↻"
+                       FontSize="28"
+                       Foreground="{StaticResource AccentLightBrush}"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0" />
 
-        <GroupBox Grid.Row="2"
-                  Header="{DynamicResource ExecutionJobStates}"
-                  Padding="12">
-            <DataGrid ItemsSource="{Binding JobStates}"
+ 
+
+            <StackPanel>
+<TextBlock Text="{DynamicResource ExecutionTitle}"
+                           Style="{StaticResource PageTitleStyle}" />
+
+ 
+
+                <TextBlock Text="{DynamicResource ExecutionSubtitle}"
+                           Style="{StaticResource SecondaryTextStyle}" />
+</StackPanel>
+</StackPanel>
+
+ 
+
+        <!-- MONITORING ACTIONS -->
+<Border Grid.Row="1"
+                Style="{StaticResource CardBorderStyle}"
+                Margin="0,0,0,18">
+<Grid>
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto" />
+<RowDefinition Height="Auto" />
+<RowDefinition Height="Auto" />
+</Grid.RowDefinitions>
+
+ 
+
+                <WrapPanel Grid.Row="0"
+                           Margin="0,0,0,16">
+<Button Content="{DynamicResource BtnStartMonitoring}"
+                            Width="160"
+                            Margin="0,0,10,10"
+                            Style="{StaticResource SuccessButtonStyle}"
+                            Command="{Binding StartMonitoringCommand}" />
+
+ 
+
+                    <Button Content="{DynamicResource BtnStopMonitoring}"
+                            Width="160"
+                            Margin="0,0,10,10"
+                            Style="{StaticResource DangerButtonStyle}"
+                            Command="{Binding StopMonitoringCommand}" />
+</WrapPanel>
+
+ 
+
+                <TextBlock Grid.Row="1"
+                           Text="{Binding MonitoringStatus}"
+                           Style="{StaticResource SecondaryTextStyle}"
+                           Margin="0,0,0,8" />
+
+ 
+
+                <StackPanel Grid.Row="2">
+<ProgressBar Minimum="0"
+                                 Maximum="100"
+                                 Height="22"
+                                 Value="{Binding GlobalProgression}" />
+
+ 
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,8,0,0">
+<TextBlock Text="{DynamicResource ExecutionProgress}"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontWeight="SemiBold" />
+
+ 
+
+                        <TextBlock Text=" : "
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontWeight="SemiBold" />
+
+ 
+
+                        <TextBlock Text="{Binding GlobalProgression, StringFormat={}{0}%}"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontWeight="SemiBold" />
+</StackPanel>
+</StackPanel>
+</Grid>
+</Border>
+
+ 
+
+        <!-- STATES TABLE -->
+<Border Grid.Row="2"
+                Style="{StaticResource CardBorderStyle}">
+<DataGrid ItemsSource="{Binding JobStates}"
                       AutoGenerateColumns="False"
-                      IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="{StaticResource ExecutionBackup}"
+                      IsReadOnly="True"
+                      CanUserSortColumns="True">
+<DataGrid.Columns>
+
+ 
+
+                    <DataGridTextColumn Header="{DynamicResource ExecutionBackup}"
                                         Binding="{Binding BackupName}"
-                                        Width="*" />
+                                        Width="2*" />
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionStatus}"
-                                        Binding="{Binding Status}"
-                                        Width="120" />
+ 
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionProgress}"
-                                        Binding="{Binding Progression}"
-                                        Width="100" />
+                    <DataGridTemplateColumn Header="{DynamicResource ExecutionStatus}"
+                                            Width="140">
+<DataGridTemplateColumn.CellTemplate>
+<DataTemplate>
+<TextBlock Text="{Binding Status}"
+                                           Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+</DataTemplate>
+</DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionRemainingFiles}"
+ 
+
+                    <DataGridTemplateColumn Header="{DynamicResource ExecutionProgress}"
+                                            Width="180">
+<DataGridTemplateColumn.CellTemplate>
+<DataTemplate>
+<StackPanel>
+<ProgressBar Minimum="0"
+                                                 Maximum="100"
+                                                 Height="16"
+                                                 Value="{Binding Progression}" />
+
+ 
+
+                                    <TextBlock Text="{Binding Progression, StringFormat={}{0}%}"
+                                               Style="{StaticResource SecondaryTextStyle}"
+                                               Margin="0,4,0,0" />
+</StackPanel>
+</DataTemplate>
+</DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>
+
+ 
+
+                    <DataGridTextColumn Header="{DynamicResource ExecutionRemainingFiles}"
                                         Binding="{Binding RemainingFiles}"
-                                        Width="120" />
+                                        Width="140" />
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionRemainingSize}"
+ 
+
+                    <DataGridTextColumn Header="{DynamicResource ExecutionRemainingSize}"
                                         Binding="{Binding RemainingSize}"
-                                        Width="120" />
+                                        Width="140" />
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionCurrentSource}"
+ 
+
+                    <DataGridTextColumn Header="{DynamicResource ExecutionCurrentSource}"
                                         Binding="{Binding CurrentSourceFile}"
-                                        Width="2*" />
+                                        Width="3*" />
 
-                    <DataGridTextColumn Header="{StaticResource ExecutionCurrentTarget}"
+ 
+
+                    <DataGridTextColumn Header="{DynamicResource ExecutionCurrentTarget}"
                                         Binding="{Binding CurrentTargetFile}"
-                                        Width="2*" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
+                                        Width="3*" />
 
-        <TextBlock Grid.Row="3"
-                   Margin="0,12,0,0"
-                   Text="{DynamicResource ExecutionInfo}" />
-    </Grid>
+ 
+
+                </DataGrid.Columns>
+</DataGrid>
+</Border>
+
+ 
+
+        <!-- INFO -->
+<Border Grid.Row="3"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0"
+                Margin="0,18,0,0"
+                Padding="0,14,0,0">
+<TextBlock Text="{DynamicResource ExecutionInfo}"
+                       Style="{StaticResource SecondaryTextStyle}" />
+</Border>
+</Grid>
 </UserControl>
