@@ -50,8 +50,6 @@ namespace EasySave.Core.Services
                 using HttpResponseMessage response = await Client
                     .PostAsync($"{_serverUrl}/log", content)
                     .ConfigureAwait(false);
-
-                _ = response.IsSuccessStatusCode;
             }
             catch
             {

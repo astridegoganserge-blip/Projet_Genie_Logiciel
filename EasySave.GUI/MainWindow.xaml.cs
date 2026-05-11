@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using EasySave.GUI.ViewModels;
 
 namespace EasySave.GUI
 {
@@ -8,7 +7,7 @@ namespace EasySave.GUI
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            // EN: DataContext is set by App.xaml.cs with the shared BackupManager
         }
     }
 }
