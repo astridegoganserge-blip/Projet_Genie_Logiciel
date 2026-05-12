@@ -199,10 +199,17 @@ namespace EasySave.Core.Managers
 
                 return success;
             }
+            catch (Exception ex)
+            {
+                StateTracker.MarkAsError(job.Name, $"Exception inattendue : {ex.Message}");
+                return false;
+            }
             finally
             {
                 _contexts.TryRemove(job.Name, out _);
+                PriorityFileFilter.ResetJob(job.Name);
             }
+
         }
 
 
