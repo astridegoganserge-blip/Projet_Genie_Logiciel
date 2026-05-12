@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 
@@ -7,6 +8,7 @@ namespace EasySave.Core.Services
     public static class LargeFileThrottle
     {
         private static readonly SemaphoreSlim Semaphore = new(1, 1);
+        private static readonly TimeSpan AcquireTimeout = TimeSpan.FromMinutes(10);
 
 
 
@@ -30,8 +32,7 @@ namespace EasySave.Core.Services
 
 
 
-            Semaphore.Wait();
-            return true;
+            return Semaphore.Wait(AcquireTimeout);
         }
 
 
@@ -45,7 +46,14 @@ namespace EasySave.Core.Services
 
 
 
-            Semaphore.Release();
+            try
+            {
+                Semaphore.Release();
+            }
+            catch (SemaphoreFullException)
+            {
+                // Already released — defensive guard against double-release after recovery
+            }
         }
     }
 }
