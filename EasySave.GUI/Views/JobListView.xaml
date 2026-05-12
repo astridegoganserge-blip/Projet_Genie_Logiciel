@@ -117,8 +117,8 @@
         <Border Grid.Row="3"
                 Style="{StaticResource CardBorderStyle}">
             <DataGrid x:Name="JobsDataGrid"
-                      ItemsSource="{Binding Jobs}"
-                      SelectedItem="{Binding SelectedJob, Mode=TwoWay}"
+                      ItemsSource="{Binding JobItems}"
+                      SelectedItem="{Binding SelectedJobItem, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserSortColumns="True"
@@ -155,8 +155,8 @@
                                             MinWidth="105">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{DynamicResource JobsAvailable}"
-                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                <TextBlock Text="{Binding DisplayStatus}"
+                                           Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
                                            FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
@@ -172,10 +172,10 @@
                                 <StackPanel VerticalAlignment="Center">
                                     <ProgressBar Minimum="0"
                                                  Maximum="100"
-                                                 Value="0"
+                                                 Value="{Binding Progression}"
                                                  Height="14" />
 
-                                    <TextBlock Text="{DynamicResource JobsWaiting}"
+                                    <TextBlock Text="{Binding ProgressText}"
                                                Style="{StaticResource SecondaryTextStyle}"
                                                Margin="0,3,0,0"
                                                TextTrimming="CharacterEllipsis" />
