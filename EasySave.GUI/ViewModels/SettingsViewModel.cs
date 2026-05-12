@@ -26,7 +26,6 @@ namespace EasySave.GUI.ViewModels
         private string _successMessage = string.Empty;
         private string _errorMessage = string.Empty;
         private string _selectedLanguage = "fr";
-        private bool _deleteOrphanFilesInDifferential;
 
 
 
@@ -213,15 +212,7 @@ namespace EasySave.GUI.ViewModels
 
         public bool ShowDockerUrl => SelectedLogMode != LogMode.Local;
 
-        public bool DeleteOrphanFilesInDifferential
-        {
-            get => _deleteOrphanFilesInDifferential;
-            set
-            {
-                _deleteOrphanFilesInDifferential = value;
-                OnPropertyChanged();
-            }
-        }
+
 
         public string SelectedLanguage
         {
@@ -292,6 +283,7 @@ namespace EasySave.GUI.ViewModels
             }
 
 
+
             var settings = new AppSettings
             {
                 LogFormat = SelectedLogFormat,
@@ -301,16 +293,17 @@ namespace EasySave.GUI.ViewModels
                 PriorityExtensions = new List<string>(PriorityExtensions),
                 MaxFileSizeKb = MaxFileSizeKb,
                 LogMode = SelectedLogMode,
-                DockerLogServerUrl = DockerLogServerUrl.Trim(),
-                DeleteOrphanFilesInDifferential = DeleteOrphanFilesInDifferential
+                DockerLogServerUrl = DockerLogServerUrl.Trim()
             };
+
+
 
             _backupManager.SaveSettings(settings);
             LocalizationService.ApplyLanguage(SelectedLanguage);
 
+
+
             SuccessMessage = "Settings saved successfully.";
-
-
         }
 
 
@@ -461,7 +454,6 @@ namespace EasySave.GUI.ViewModels
             MaxFileSizeKb = settings.MaxFileSizeKb;
             SelectedLogMode = settings.LogMode;
             DockerLogServerUrl = settings.DockerLogServerUrl;
-            DeleteOrphanFilesInDifferential = settings.DeleteOrphanFilesInDifferential;
 
 
 
@@ -484,8 +476,6 @@ namespace EasySave.GUI.ViewModels
             {
                 PriorityExtensions.Add(NormalizeExtension(extension));
             }
-
-            
         }
 
 

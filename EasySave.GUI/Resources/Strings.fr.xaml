@@ -115,9 +115,5 @@
 <sys:String x:Key="TooltipEditSelectedJob">Sélectionnez un job dans le tableau, puis cliquez ici pour le modifier.</sys:String>
 <sys:String x:Key="TooltipEditThisJob">Modifier directement ce travail de sauvegarde.</sys:String>
 
-<sys:String x:Key="SettingsDifferentialMirror">Sauvegarde différentielle miroir</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFiles">Supprimer de la cible les fichiers absents de la source</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFilesHint">Si cette option est activée, une sauvegarde différentielle supprimera dans la cible les fichiers qui ont été supprimés de la source.</sys:String>
-
 </ResourceDictionary>
 

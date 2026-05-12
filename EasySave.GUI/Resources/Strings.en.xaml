@@ -114,8 +114,4 @@
 <sys:String x:Key="TooltipEditSelectedJob">Select a job in the table, then click here to edit it.</sys:String>
 <sys:String x:Key="TooltipEditThisJob">Edit this backup job directly.</sys:String>
 
-<sys:String x:Key="SettingsDifferentialMirror">Differential mirror backup</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFiles">Delete from target files missing from source</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFilesHint">When enabled, a differential backup will delete from the target files that were deleted from the source.</sys:String>
-
 </ResourceDictionary>
