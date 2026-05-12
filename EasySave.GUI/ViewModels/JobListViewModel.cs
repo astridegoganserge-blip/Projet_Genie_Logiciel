@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using EasySave.Core.Managers;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
@@ -13,9 +14,12 @@ namespace EasySave.GUI.ViewModels
     public class JobListViewModel : BaseViewModel
     {
         private readonly BackupManager _backupManager;
+        private readonly DispatcherTimer _stateRefreshTimer;
+
         private string _statusMessage = "Ready";
         private bool _isExecuting;
         private BackupJob? _selectedJob;
+        private JobListItemViewModel? _selectedJobItem;
 
         public JobListViewModel()
             : this(new BackupManager(new JsonJobRepository(), new JsonSettingsRepository()))
@@ -27,34 +31,74 @@ namespace EasySave.GUI.ViewModels
             _backupManager = backupManager;
 
             Jobs = new ObservableCollection<BackupJob>();
+            JobItems = new ObservableCollection<JobListItemViewModel>();
             JobStates = new ObservableCollection<JobState>();
 
             RefreshCommand = new RelayCommand(_ => RefreshJobs());
-            ExecuteJobCommand = new RelayCommand(parameter => _ = ExecuteSelectedJobAsync(parameter), _ => CanExecuteJobAction());
-            ExecuteAllCommand = new RelayCommand(_ => _ = ExecuteAllJobsAsync(), _ => Jobs.Count > 0 && !IsExecuting && !IsEditLocked);
+
+            ExecuteJobCommand = new RelayCommand(
+                parameter => _ = ExecuteSelectedJobAsync(parameter),
+                _ => CanExecuteJobAction());
+
+            ExecuteAllCommand = new RelayCommand(
+                _ => _ = ExecuteAllJobsAsync(),
+                _ => Jobs.Count > 0 && !IsExecuting && !IsEditLocked);
+
             DeleteJobCommand = new RelayCommand(
                 parameter => DeleteSelectedJob(parameter),
-                parameter => !IsExecuting && !IsEditLocked && (parameter is BackupJob || SelectedJob != null));
+                parameter => !IsExecuting && !IsEditLocked && (GetJobFromParameter(parameter) != null));
 
             EditJobCommand = new RelayCommand(
                 parameter => EditSelectedJob(parameter),
-                parameter => !IsExecuting && !IsEditLocked && (parameter is BackupJob || SelectedJob != null));
+                parameter => !IsExecuting && !IsEditLocked && (GetJobFromParameter(parameter) != null));
+
             CreateJobCommand = new RelayCommand(_ => CreateJob(), _ => !IsExecuting);
-            PauseJobCommand = new RelayCommand(parameter => PauseJob(parameter), _ => SelectedJob != null);
-            ResumeJobCommand = new RelayCommand(parameter => ResumeJob(parameter), _ => SelectedJob != null);
-            StopJobCommand = new RelayCommand(parameter => StopJob(parameter), _ => SelectedJob != null);
+
+            PauseJobCommand = new RelayCommand(
+                parameter => PauseJob(parameter),
+                parameter => GetJobFromParameter(parameter) != null);
+
+            ResumeJobCommand = new RelayCommand(
+                parameter => ResumeJob(parameter),
+                parameter => GetJobFromParameter(parameter) != null);
+
+            StopJobCommand = new RelayCommand(
+                parameter => StopJob(parameter),
+                parameter => GetJobFromParameter(parameter) != null);
+
             PauseAllCommand = new RelayCommand(_ => PauseAll(), _ => Jobs.Count > 0);
             ResumeAllCommand = new RelayCommand(_ => ResumeAll(), _ => Jobs.Count > 0);
             StopAllCommand = new RelayCommand(_ => StopAll(), _ => Jobs.Count > 0);
 
+            _stateRefreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
+
+            _stateRefreshTimer.Tick += (_, _) => RefreshRuntimeStates();
+
             LoadJobs();
+            RefreshRuntimeStates();
         }
 
         public event Action<object>? NavigationRequested;
 
         public ObservableCollection<BackupJob> Jobs { get; }
 
+        public ObservableCollection<JobListItemViewModel> JobItems { get; }
+
         public ObservableCollection<JobState> JobStates { get; }
+
+        public JobListItemViewModel? SelectedJobItem
+        {
+            get => _selectedJobItem;
+            set
+            {
+                _selectedJobItem = value;
+                SelectedJob = value?.Job;
+                OnPropertyChanged();
+            }
+        }
 
         public BackupJob? SelectedJob
         {
@@ -117,6 +161,7 @@ namespace EasySave.GUI.ViewModels
         private void LoadJobs(bool updateStatusMessage = true)
         {
             Jobs.Clear();
+            JobItems.Clear();
 
             var jobs = _backupManager
                 .GetAllJobs()
@@ -126,9 +171,10 @@ namespace EasySave.GUI.ViewModels
             foreach (BackupJob job in jobs)
             {
                 Jobs.Add(job);
+                JobItems.Add(new JobListItemViewModel(job));
             }
 
-            LoadStates();
+            RefreshRuntimeStates();
 
             OnPropertyChanged(nameof(IsEditLocked));
             RaiseCommandStates();
@@ -139,7 +185,7 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
-        private void LoadStates()
+        private void RefreshRuntimeStates()
         {
             JobStates.Clear();
 
@@ -152,11 +198,20 @@ namespace EasySave.GUI.ViewModels
             {
                 JobStates.Add(state);
             }
+
+            foreach (JobListItemViewModel item in JobItems)
+            {
+                JobState? state = states.FirstOrDefault(s =>
+                    string.Equals(s.BackupName, item.Name, StringComparison.OrdinalIgnoreCase));
+
+                item.UpdateState(state);
+            }
         }
 
         private void RefreshJobs()
         {
             LoadJobs(false);
+            SelectedJobItem = null;
             SelectedJob = null;
             StatusMessage = $"{Jobs.Count} job(s) refreshed.";
         }
@@ -181,6 +236,8 @@ namespace EasySave.GUI.ViewModels
             IsExecuting = true;
             StatusMessage = $"Executing: {jobToExecute.Name}";
 
+            _stateRefreshTimer.Start();
+
             try
             {
                 AppSettings settings = _backupManager.GetSettings();
@@ -188,6 +245,8 @@ namespace EasySave.GUI.ViewModels
 
                 bool success = await Task.Run(() =>
                     _backupManager.ExecuteJob(jobToExecute.Id, logger));
+
+                RefreshRuntimeStates();
 
                 StatusMessage = success
                     ? $"Execution completed: {jobToExecute.Name}"
@@ -202,6 +261,8 @@ namespace EasySave.GUI.ViewModels
             finally
             {
                 IsExecuting = false;
+                _stateRefreshTimer.Stop();
+                RefreshRuntimeStates();
             }
         }
 
@@ -222,6 +283,8 @@ namespace EasySave.GUI.ViewModels
             IsExecuting = true;
             StatusMessage = "Parallel execution started.";
 
+            _stateRefreshTimer.Start();
+
             try
             {
                 AppSettings settings = _backupManager.GetSettings();
@@ -233,6 +296,8 @@ namespace EasySave.GUI.ViewModels
                     .ToList();
 
                 bool success = await _backupManager.ExecuteParallel(jobIds, logger);
+
+                RefreshRuntimeStates();
 
                 StatusMessage = success
                     ? "Parallel execution completed."
@@ -247,6 +312,8 @@ namespace EasySave.GUI.ViewModels
             finally
             {
                 IsExecuting = false;
+                _stateRefreshTimer.Stop();
+                RefreshRuntimeStates();
             }
         }
 
@@ -261,7 +328,7 @@ namespace EasySave.GUI.ViewModels
             }
 
             _backupManager.PauseJob(job.Name);
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = $"Pause requested: {job.Name}";
         }
 
@@ -276,7 +343,7 @@ namespace EasySave.GUI.ViewModels
             }
 
             _backupManager.ResumeJob(job.Name);
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = $"Resume requested: {job.Name}";
         }
 
@@ -291,28 +358,28 @@ namespace EasySave.GUI.ViewModels
             }
 
             _backupManager.StopJob(job.Name);
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = $"Stop requested: {job.Name}";
         }
 
         private void PauseAll()
         {
             _backupManager.PauseAll();
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = "Pause requested for all active jobs.";
         }
 
         private void ResumeAll()
         {
             _backupManager.ResumeAll();
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = "Resume requested for all paused jobs.";
         }
 
         private void StopAll()
         {
             _backupManager.StopAll();
-            LoadStates();
+            RefreshRuntimeStates();
             StatusMessage = "Stop requested for all active jobs.";
         }
 
@@ -334,6 +401,7 @@ namespace EasySave.GUI.ViewModels
 
             _backupManager.RemoveJob(jobToDelete.Id);
             LoadJobs(false);
+            SelectedJobItem = null;
             SelectedJob = null;
             StatusMessage = $"Job deleted: {jobToDelete.Name}";
         }
@@ -341,22 +409,17 @@ namespace EasySave.GUI.ViewModels
         private void CreateJob()
         {
             var viewModel = new JobEditViewModel(
-            isCreation: true,
-            job: null,
-            backupManager: _backupManager);
-
-
+                isCreation: true,
+                job: null,
+                backupManager: _backupManager);
 
             NavigationRequested?.Invoke(viewModel);
             StatusMessage = "Create job view requested.";
         }
 
-
         private void EditSelectedJob(object? parameter)
         {
             BackupJob? jobToEdit = GetJobFromParameter(parameter);
-
-
 
             if (jobToEdit == null)
             {
@@ -364,14 +427,10 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-
-
             var viewModel = new JobEditViewModel(
-            isCreation: false,
-            job: jobToEdit,
-            backupManager: _backupManager);
-
-
+                isCreation: false,
+                job: jobToEdit,
+                backupManager: _backupManager);
 
             NavigationRequested?.Invoke(viewModel);
             OnPropertyChanged(nameof(IsEditLocked));
@@ -379,11 +438,14 @@ namespace EasySave.GUI.ViewModels
             StatusMessage = $"Edit requested: {jobToEdit.Name}";
         }
 
-
-
         private BackupJob? GetJobFromParameter(object? parameter)
         {
-            return parameter as BackupJob ?? SelectedJob;
+            return parameter switch
+            {
+                BackupJob job => job,
+                JobListItemViewModel item => item.Job,
+                _ => SelectedJob
+            };
         }
 
         private bool CanExecuteJobAction()
@@ -410,6 +472,78 @@ namespace EasySave.GUI.ViewModels
             PauseAllCommand.RaiseCanExecuteChanged();
             ResumeAllCommand.RaiseCanExecuteChanged();
             StopAllCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    public class JobListItemViewModel : BaseViewModel
+    {
+        private JobState? _state;
+
+        public JobListItemViewModel(BackupJob job)
+        {
+            Job = job;
+        }
+
+        public BackupJob Job { get; }
+
+        public Guid Id => Job.Id;
+
+        public int Number => Job.Number;
+
+        public string Name => Job.Name;
+
+        public string SourcePath => Job.SourcePath;
+
+        public string TargetPath => Job.TargetPath;
+
+        public BackupType Type => Job.Type;
+
+        public DateTime? LastExecutionTime => Job.LastExecutionTime;
+
+        public JobState? State
+        {
+            get => _state;
+            private set
+            {
+                _state = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DisplayStatus));
+                OnPropertyChanged(nameof(Progression));
+                OnPropertyChanged(nameof(ProgressText));
+            }
+        }
+
+        public string DisplayStatus
+        {
+            get
+            {
+                if (State == null)
+                {
+                    return "Disponible";
+                }
+
+                return State.Status.ToString();
+            }
+        }
+
+        public double Progression => State?.Progression ?? 0;
+
+        public string ProgressText
+        {
+            get
+            {
+                if (State == null)
+                {
+                    return "0 %";
+                }
+
+                return $"{State.Progression:0.##} %";
+            }
+        }
+
+        public void UpdateState(JobState? state)
+        {
+            State = state;
         }
     }
 }
