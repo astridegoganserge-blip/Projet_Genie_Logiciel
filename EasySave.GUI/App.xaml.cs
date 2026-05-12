@@ -18,6 +18,7 @@ namespace EasySave.GUI
     public partial class App : Application
     {
         private readonly CancellationTokenSource _businessSoftwareWatcherTokenSource = new();
+        private EasyLog.EasyLog? _sharedLogger;
 
 
 
