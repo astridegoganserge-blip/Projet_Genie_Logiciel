@@ -117,8 +117,8 @@
         <Border Grid.Row="3"
                 Style="{StaticResource CardBorderStyle}">
             <DataGrid x:Name="JobsDataGrid"
-                      ItemsSource="{Binding Jobs}"
-                      SelectedItem="{Binding SelectedJob, Mode=TwoWay}"
+                      ItemsSource="{Binding JobItems}"
+                      SelectedItem="{Binding SelectedJobItem, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       CanUserSortColumns="True"
@@ -155,8 +155,8 @@
                                             MinWidth="105">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{DynamicResource JobsAvailable}"
-                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                <TextBlock Text="{Binding DisplayStatus}"
+                                           Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
                                            FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
@@ -172,10 +172,10 @@
                                 <StackPanel VerticalAlignment="Center">
                                     <ProgressBar Minimum="0"
                                                  Maximum="100"
-                                                 Value="0"
+                                                 Value="{Binding Progression}"
                                                  Height="14" />
 
-                                    <TextBlock Text="{DynamicResource JobsWaiting}"
+                                    <TextBlock Text="{Binding ProgressText}"
                                                Style="{StaticResource SecondaryTextStyle}"
                                                Margin="0,3,0,0"
                                                TextTrimming="CharacterEllipsis" />
@@ -185,153 +185,153 @@
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Header="{DynamicResource HeaderActions}"
-                        Width="2.1*"
-                        MinWidth="230">
-    <DataGridTemplateColumn.CellTemplate>
-        <DataTemplate>
-            <WrapPanel VerticalAlignment="Center"
-                       HorizontalAlignment="Left">
+                                            Width="2.1*"
+                                            MinWidth="230">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <WrapPanel VerticalAlignment="Center"
+                                           HorizontalAlignment="Left">
 
-                <!-- EXECUTE -->
-                <Button Content="▶"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Command="{Binding DataContext.ExecuteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnExecute}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- EXECUTE -->
+                                    <Button Content="▶"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Command="{Binding DataContext.ExecuteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnExecute}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-                <!-- PAUSE -->
-                <Button Content="⏸"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Style="{StaticResource PauseButtonStyle}"
-                        Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnPause}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- PAUSE -->
+                                    <Button Content="⏸"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Style="{StaticResource PauseButtonStyle}"
+                                            Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnPause}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-                <!-- PLAY -->
-                <Button Content="▶"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Command="{Binding DataContext.ResumeJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnPlay}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- PLAY -->
+                                    <Button Content="▶"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Command="{Binding DataContext.ResumeJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnPlay}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-                <!-- STOP -->
-                <Button Content="■"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Style="{StaticResource DangerButtonStyle}"
-                        Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnStop}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- STOP -->
+                                    <Button Content="■"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnStop}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-                <!-- EDIT -->
-                <Button Content="✏"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Style="{StaticResource SecondaryActionButtonStyle}"
-                        Command="{Binding DataContext.EditJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnEdit}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- EDIT -->
+                                    <Button Content="✏"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Style="{StaticResource SecondaryActionButtonStyle}"
+                                            Command="{Binding DataContext.EditJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnEdit}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-                <!-- DELETE -->
-                <Button Content="🗑"
-                        Width="32"
-                        MinWidth="0"
-                        Height="28"
-                        Margin="0,0,4,4"
-                        FontSize="12"
-                        Padding="0"
-                        Style="{StaticResource DangerButtonStyle}"
-                        Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                        CommandParameter="{Binding}">
-                    <Button.ToolTip>
-                        <ToolTip Background="#0F172A"
-                                 BorderBrush="#60A5FA"
-                                 BorderThickness="1"
-                                 Padding="8,5">
-                            <TextBlock Text="{DynamicResource BtnDelete}"
-                                       Foreground="#FFFFFF"
-                                       FontWeight="SemiBold" />
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
+                                    <!-- DELETE -->
+                                    <Button Content="🗑"
+                                            Width="32"
+                                            MinWidth="0"
+                                            Height="28"
+                                            Margin="0,0,4,4"
+                                            FontSize="12"
+                                            Padding="0"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A"
+                                                     BorderBrush="#60A5FA"
+                                                     BorderThickness="1"
+                                                     Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnDelete}"
+                                                           Foreground="#FFFFFF"
+                                                           FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
 
-            </WrapPanel>
-        </DataTemplate>
-    </DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                 </DataGrid.Columns>
             </DataGrid>
