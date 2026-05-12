@@ -21,6 +21,7 @@ namespace EasySave.Core.Managers
 
 
         private volatile bool _editLock;
+        private EasyLog.EasyLog? _sharedLogger;
 
 
 
@@ -36,7 +37,12 @@ namespace EasySave.Core.Managers
 
         public bool IsEditLocked => _editLock;
 
+        public void SetLogger(EasyLog.EasyLog logger)
+        {
+            _sharedLogger = logger;
+        }
 
+        public EasyLog.EasyLog? SharedLogger => _sharedLogger;
 
         public List<BackupJob> GetAllJobs()
         {
