@@ -3,170 +3,204 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:EasySave.GUI.Converters">
 
- 
-
     <UserControl.Resources>
-<converters:StatusColorConverter x:Key="StatusColorConverter" />
-</UserControl.Resources>
+        <converters:StatusColorConverter x:Key="StatusColorConverter" />
 
- 
+        <!-- Cellule standard alignée verticalement -->
+        <Style x:Key="HistoryCellTextStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <!-- Cellule centrée -->
+        <Style x:Key="HistoryCenteredCellTextStyle" TargetType="TextBlock"
+               BasedOn="{StaticResource HistoryCellTextStyle}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
 
     <Grid Margin="24">
-<Grid.RowDefinitions>
-<RowDefinition Height="Auto" />
-<RowDefinition Height="Auto" />
-<RowDefinition Height="*" />
-<RowDefinition Height="Auto" />
-</Grid.RowDefinitions>
-
- 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <!-- TITLE -->
-<StackPanel Grid.Row="0"
+        <StackPanel Grid.Row="0"
                     Orientation="Horizontal"
+                    VerticalAlignment="Center"
                     Margin="0,0,0,20">
-<TextBlock Text="☷"
-                       FontSize="26"
+
+            <TextBlock Text="☷"
+                       FontSize="30"
                        Foreground="{StaticResource AccentLightBrush}"
                        VerticalAlignment="Center"
-                       Margin="0,0,10,0" />
+                       Margin="0,0,14,0" />
 
- 
-
-            <StackPanel>
-<TextBlock Text="{DynamicResource HistoryTitle}"
-                           Style="{StaticResource PageTitleStyle}" />
-
- 
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{DynamicResource HistoryTitle}"
+                           Style="{StaticResource PageTitleStyle}"
+                           Margin="0,0,0,6" />
 
                 <TextBlock Text="{DynamicResource HistorySubtitle}"
                            Style="{StaticResource SecondaryTextStyle}" />
-</StackPanel>
-</StackPanel>
-
- 
+            </StackPanel>
+        </StackPanel>
 
         <!-- ACTION BAR -->
-<Border Grid.Row="1"
+        <Border Grid.Row="1"
                 Style="{StaticResource CardBorderStyle}"
                 Margin="0,0,0,18">
-<WrapPanel>
-<Button Content="{Binding SortDirectionLabel}"
+
+            <WrapPanel VerticalAlignment="Center">
+                <Button Content="{Binding SortDirectionLabel}"
                         Style="{StaticResource PrimaryActionButtonStyle}"
                         Margin="0,0,10,10"
                         Command="{Binding SortByDateCommand}" />
-
- 
 
                 <Button Content="{DynamicResource BtnRefresh}"
                         Style="{StaticResource SecondaryActionButtonStyle}"
                         Margin="0,0,10,10"
                         Command="{Binding RefreshCommand}" />
-</WrapPanel>
-</Border>
-
- 
+            </WrapPanel>
+        </Border>
 
         <!-- HISTORY TABLE -->
-<Border Grid.Row="2"
+        <Border Grid.Row="2"
                 Style="{StaticResource CardBorderStyle}">
-<DataGrid x:Name="HistoryDataGrid"
+
+            <DataGrid x:Name="HistoryDataGrid"
                       ItemsSource="{Binding History}"
                       SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
-                      CanUserSortColumns="True">
-
- 
+                      CanUserSortColumns="True"
+                      RowHeight="58"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
 
                 <DataGrid.Columns>
 
- 
+                    <!-- NUMBER -->
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderNumber}"
+                                            Width="70"
+                                            MinWidth="60">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Number, StringFormat={}{0:00}}"
+                                           Style="{StaticResource HistoryCenteredCellTextStyle}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderNumber}"
-                                        Binding="{Binding Number, StringFormat={}{0:00}}"
-                                        Width="70" />
+                    <!-- NAME -->
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderName}"
+                                            Width="2.5*"
+                                            MinWidth="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           Style="{StaticResource HistoryCellTextStyle}"
+                                           Margin="10,0,0,0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
- 
+                    <!-- TYPE -->
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderType}"
+                                            Width="1.3*"
+                                            MinWidth="130">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Type}"
+                                           Style="{StaticResource HistoryCenteredCellTextStyle}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderName}"
-                                        Binding="{Binding Name}"
-                                        Width="2*" />
+                    <!-- LAST EXECUTION -->
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderLastExecution}"
+                                            Width="1.8*"
+                                            MinWidth="180">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding LastExecutionTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
+                                           Style="{StaticResource HistoryCenteredCellTextStyle}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
- 
-
-                    <DataGridTextColumn Header="{DynamicResource HeaderType}"
-                                        Binding="{Binding Type}"
-                                        Width="150" />
-
- 
-
-                    <DataGridTextColumn Header="{DynamicResource HeaderLastExecution}"
-                                        Binding="{Binding LastExecutionTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
-                                        Width="210" />
-
- 
-
+                    <!-- FINAL STATUS -->
                     <DataGridTemplateColumn Header="{DynamicResource HeaderFinalStatus}"
-                                            Width="150">
-<DataGridTemplateColumn.CellTemplate>
-<DataTemplate>
-<TextBlock Text="{Binding Status}"
+                                            Width="1.5*"
+                                            MinWidth="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Status}"
                                            Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"
-                                           FontWeight="SemiBold"
-                                           VerticalAlignment="Center" />
-</DataTemplate>
-</DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
- 
-
+                    <!-- ACTION -->
                     <DataGridTemplateColumn Header="{DynamicResource HeaderAction}"
-                                            Width="160">
-<DataGridTemplateColumn.CellTemplate>
-<DataTemplate>
-<Button Content="{DynamicResource BtnRestart}"
-                                        Height="32"
-                                        Width="110"
+                                            Width="1.4*"
+                                            MinWidth="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="{DynamicResource BtnRestart}"
+                                        Height="34"
+                                        Width="120"
+                                        MinWidth="0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Style="{StaticResource SecondaryActionButtonStyle}"
                                         Command="{Binding DataContext.ReExecuteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                         CommandParameter="{Binding}" />
-</DataTemplate>
-</DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
-
- 
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                 </DataGrid.Columns>
-</DataGrid>
-</Border>
-
- 
+            </DataGrid>
+        </Border>
 
         <!-- STATUS -->
-<Border Grid.Row="3"
+        <Border Grid.Row="3"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,1,0,0"
                 Margin="0,18,0,0"
                 Padding="0,14,0,0">
-<StackPanel Orientation="Horizontal">
-<Border Width="28"
+
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+
+                <Border Width="28"
                         Height="28"
                         CornerRadius="14"
                         Background="{StaticResource AccentBrush}"
                         Margin="0,0,10,0">
-<TextBlock Text="i"
+
+                    <TextBlock Text="i"
                                Foreground="{StaticResource TextPrimaryBrush}"
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" />
-</Border>
-
- 
+                </Border>
 
                 <TextBlock Text="{Binding StatusMessage}"
                            VerticalAlignment="Center"
                            Foreground="{StaticResource TextPrimaryBrush}" />
-</StackPanel>
-</Border>
-</Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

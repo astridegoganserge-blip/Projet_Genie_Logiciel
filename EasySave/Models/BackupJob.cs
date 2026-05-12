@@ -14,7 +14,7 @@ namespace EasySave.Models
 
         public bool ValidatePaths()
         {
-            return Directory.Exists(SourcePath) && Directory.Exists(TargetPath);
+            return Directory.Exists(SourcePath);
         }
 
         public override string ToString()

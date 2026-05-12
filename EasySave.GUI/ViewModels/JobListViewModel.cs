@@ -32,8 +32,13 @@ namespace EasySave.GUI.ViewModels
             RefreshCommand = new RelayCommand(_ => RefreshJobs());
             ExecuteJobCommand = new RelayCommand(parameter => _ = ExecuteSelectedJobAsync(parameter), _ => CanExecuteJobAction());
             ExecuteAllCommand = new RelayCommand(_ => _ = ExecuteAllJobsAsync(), _ => Jobs.Count > 0 && !IsExecuting && !IsEditLocked);
-            DeleteJobCommand = new RelayCommand(_ => DeleteSelectedJob(), _ => SelectedJob != null && !IsExecuting && !IsEditLocked);
-            EditJobCommand = new RelayCommand(parameter => EditSelectedJob(parameter), _ => SelectedJob != null && !IsExecuting);
+            DeleteJobCommand = new RelayCommand(
+                parameter => DeleteSelectedJob(parameter),
+                parameter => !IsExecuting && !IsEditLocked && (parameter is BackupJob || SelectedJob != null));
+
+            EditJobCommand = new RelayCommand(
+                parameter => EditSelectedJob(parameter),
+                parameter => !IsExecuting && !IsEditLocked && (parameter is BackupJob || SelectedJob != null));
             CreateJobCommand = new RelayCommand(_ => CreateJob(), _ => !IsExecuting);
             PauseJobCommand = new RelayCommand(parameter => PauseJob(parameter), _ => SelectedJob != null);
             ResumeJobCommand = new RelayCommand(parameter => ResumeJob(parameter), _ => SelectedJob != null);
@@ -311,9 +316,11 @@ namespace EasySave.GUI.ViewModels
             StatusMessage = "Stop requested for all active jobs.";
         }
 
-        private void DeleteSelectedJob()
+        private void DeleteSelectedJob(object? parameter)
         {
-            if (SelectedJob == null)
+            BackupJob? jobToDelete = GetJobFromParameter(parameter);
+
+            if (jobToDelete == null)
             {
                 StatusMessage = "No job selected.";
                 return;
@@ -325,10 +332,10 @@ namespace EasySave.GUI.ViewModels
                 return;
             }
 
-            _backupManager.RemoveJob(SelectedJob.Id);
+            _backupManager.RemoveJob(jobToDelete.Id);
             LoadJobs(false);
             SelectedJob = null;
-            StatusMessage = "Job deleted.";
+            StatusMessage = $"Job deleted: {jobToDelete.Name}";
         }
 
         private void CreateJob()
