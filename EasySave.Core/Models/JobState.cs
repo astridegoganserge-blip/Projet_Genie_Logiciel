@@ -47,5 +47,8 @@ namespace EasySave.Core.Models
 
 
         public bool IsPaused { get; set; }
+
+
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }

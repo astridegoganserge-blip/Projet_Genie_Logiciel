@@ -11,13 +11,13 @@ namespace EasySave.Core.Services
     public static class PriorityFileFilter
     {
         private static readonly object Lock = new();
-        private static int _pendingPriorityFiles;
+        private static readonly Dictionary<string, int> _pendingPerJob = new();
 
 
 
-        public static void RegisterPriorityFiles(int count)
+        public static void RegisterPriorityFiles(string jobName, int count)
         {
-            if (count <= 0)
+            if (count <= 0 || string.IsNullOrWhiteSpace(jobName))
             {
                 return;
             }
@@ -26,17 +26,53 @@ namespace EasySave.Core.Services
 
             lock (Lock)
             {
-                _pendingPriorityFiles += count;
+                _pendingPerJob[jobName] = count;
             }
         }
 
 
 
-        public static void NotifyPriorityFileCompleted()
+        public static void NotifyPriorityFileCompleted(string jobName)
         {
+            if (string.IsNullOrWhiteSpace(jobName))
+            {
+                return;
+            }
+
+
+
             lock (Lock)
             {
-                _pendingPriorityFiles = Math.Max(0, _pendingPriorityFiles - 1);
+                if (_pendingPerJob.TryGetValue(jobName, out int current))
+                {
+                    int remaining = Math.Max(0, current - 1);
+
+                    if (remaining == 0)
+                    {
+                        _pendingPerJob.Remove(jobName);
+                    }
+                    else
+                    {
+                        _pendingPerJob[jobName] = remaining;
+                    }
+                }
+            }
+        }
+
+
+
+        public static void ResetJob(string jobName)
+        {
+            if (string.IsNullOrWhiteSpace(jobName))
+            {
+                return;
+            }
+
+
+
+            lock (Lock)
+            {
+                _pendingPerJob.Remove(jobName);
             }
         }
 
@@ -113,7 +149,7 @@ namespace EasySave.Core.Services
         {
             lock (Lock)
             {
-                return _pendingPriorityFiles > 0;
+                return _pendingPerJob.Values.Any(count => count > 0);
             }
         }
 
