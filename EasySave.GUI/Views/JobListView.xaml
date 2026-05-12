@@ -193,7 +193,7 @@
                                            HorizontalAlignment="Left">
 
                                     <!-- EXECUTE -->
-                                    <Button Content="▶"
+                                    <Button Content="⚡"
                                             Width="32"
                                             MinWidth="0"
                                             Height="28"
