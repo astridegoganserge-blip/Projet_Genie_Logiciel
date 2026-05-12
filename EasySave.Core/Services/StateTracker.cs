@@ -179,7 +179,18 @@ namespace EasySave.Core.Services
             });
         }
 
+        public static void RemoveJob(string jobName)
+        {
+            if (string.IsNullOrWhiteSpace(jobName))
+            {
+                return;
+            }
 
+
+
+            States.TryRemove(jobName, out _);
+            SaveState();
+        }
 
         public static JobState? GetState(string jobName)
         {
