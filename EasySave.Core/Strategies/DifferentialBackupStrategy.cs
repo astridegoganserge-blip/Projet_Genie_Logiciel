@@ -341,7 +341,8 @@ namespace EasySave.Core.Strategies
 
 
 
-            return sourceInfo.LastWriteTime > targetInfo.LastWriteTime;
+            return sourceInfo.LastWriteTime > targetInfo.LastWriteTime
+            || sourceInfo.Length != targetInfo.Length;
         }
 
 
