@@ -97,6 +97,12 @@
 
  
 
+    <sys:String x:Key="SettingsDifferentialMirror">Differential mirror backup</sys:String>
+<sys:String x:Key="SettingsDeleteOrphanFiles">Delete from target files missing from source</sys:String>
+<sys:String x:Key="SettingsDeleteOrphanFilesHint">When enabled, a differential backup will delete from the target files that were deleted from the source.</sys:String>
+
+ 
+
     <sys:String x:Key="ExecutionTitle">Execution monitoring</sys:String>
 <sys:String x:Key="ExecutionSubtitle">Track active, paused or completed backups in real time.</sys:String>
 <sys:String x:Key="ExecutionGlobalProgress">Global progress: {0}%</sys:String>

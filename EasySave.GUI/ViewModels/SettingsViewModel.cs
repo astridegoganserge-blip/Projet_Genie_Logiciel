@@ -26,6 +26,7 @@ namespace EasySave.GUI.ViewModels
         private string _successMessage = string.Empty;
         private string _errorMessage = string.Empty;
         private string _selectedLanguage = "fr";
+        private bool _deleteOrphanFilesInDifferential;
 
 
 
@@ -214,6 +215,18 @@ namespace EasySave.GUI.ViewModels
 
 
 
+        public bool DeleteOrphanFilesInDifferential
+        {
+            get => _deleteOrphanFilesInDifferential;
+            set
+            {
+                _deleteOrphanFilesInDifferential = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         public string SelectedLanguage
         {
             get => _selectedLanguage;
@@ -293,7 +306,8 @@ namespace EasySave.GUI.ViewModels
                 PriorityExtensions = new List<string>(PriorityExtensions),
                 MaxFileSizeKb = MaxFileSizeKb,
                 LogMode = SelectedLogMode,
-                DockerLogServerUrl = DockerLogServerUrl.Trim()
+                DockerLogServerUrl = DockerLogServerUrl.Trim(),
+                DeleteOrphanFilesInDifferential = DeleteOrphanFilesInDifferential
             };
 
 
@@ -454,6 +468,7 @@ namespace EasySave.GUI.ViewModels
             MaxFileSizeKb = settings.MaxFileSizeKb;
             SelectedLogMode = settings.LogMode;
             DockerLogServerUrl = settings.DockerLogServerUrl;
+            DeleteOrphanFilesInDifferential = settings.DeleteOrphanFilesInDifferential;
 
 
 

@@ -36,5 +36,9 @@ namespace EasySave.Core.Models
 
 
         public string DockerLogServerUrl { get; set; } = string.Empty;
+
+
+
+        public bool DeleteOrphanFilesInDifferential { get; set; } = false;
     }
 }
