@@ -18,6 +18,7 @@ namespace EasySave.GUI
     public partial class App : Application
     {
         private readonly CancellationTokenSource _businessSoftwareWatcherTokenSource = new();
+        private EasyLog.EasyLog? _sharedLogger;
 
 
 
@@ -43,6 +44,12 @@ namespace EasySave.GUI
 
 
             AppSettings settings = settingsRepository.Load();
+
+
+
+            string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+            _sharedLogger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+            backupManager.SetLogger(_sharedLogger);
 
 
 
@@ -79,6 +86,14 @@ namespace EasySave.GUI
         {
             _businessSoftwareWatcherTokenSource.Cancel();
             _businessSoftwareWatcherTokenSource.Dispose();
+
+
+
+            if (_sharedLogger != null)
+            {
+                _sharedLogger.Flush();
+                _sharedLogger.Dispose();
+            }
 
 
 

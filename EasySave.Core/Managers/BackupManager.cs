@@ -21,6 +21,7 @@ namespace EasySave.Core.Managers
 
 
         private volatile bool _editLock;
+        private EasyLog.EasyLog? _sharedLogger;
 
 
 
@@ -36,7 +37,12 @@ namespace EasySave.Core.Managers
 
         public bool IsEditLocked => _editLock;
 
+        public void SetLogger(EasyLog.EasyLog logger)
+        {
+            _sharedLogger = logger;
+        }
 
+        public EasyLog.EasyLog? SharedLogger => _sharedLogger;
 
         public List<BackupJob> GetAllJobs()
         {
@@ -113,6 +119,7 @@ namespace EasySave.Core.Managers
 
 
             _jobRepository.Delete(id);
+            StateTracker.RemoveJob(job.Name);
             return true;
         }
 
@@ -199,10 +206,17 @@ namespace EasySave.Core.Managers
 
                 return success;
             }
+            catch (Exception ex)
+            {
+                StateTracker.MarkAsError(job.Name, $"Exception inattendue : {ex.Message}");
+                return false;
+            }
             finally
             {
                 _contexts.TryRemove(job.Name, out _);
+                PriorityFileFilter.ResetJob(job.Name);
             }
+
         }
 
 

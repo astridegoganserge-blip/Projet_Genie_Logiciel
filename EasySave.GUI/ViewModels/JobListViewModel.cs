@@ -254,8 +254,13 @@ namespace EasySave.GUI.ViewModels
 
             try
             {
-                AppSettings settings = _backupManager.GetSettings();
-                EasyLog.EasyLog logger = CreateLogger(settings);
+                EasyLog.EasyLog? logger = _backupManager.SharedLogger;
+
+                if (logger == null)
+                {
+                    StatusMessage = "Logger not initialized.";
+                    return;
+                }
 
                 bool success = await Task.Run(() =>
                     _backupManager.ExecuteJob(jobToExecute.Id, logger));
@@ -301,8 +306,13 @@ namespace EasySave.GUI.ViewModels
 
             try
             {
-                AppSettings settings = _backupManager.GetSettings();
-                EasyLog.EasyLog logger = CreateLogger(settings);
+                EasyLog.EasyLog? logger = _backupManager.SharedLogger;
+
+                if (logger == null)
+                {
+                    StatusMessage = "Logger not initialized.";
+                    return;
+                }
 
                 var jobIds = Jobs
                     .OrderBy(job => job.Number)
@@ -460,12 +470,6 @@ namespace EasySave.GUI.ViewModels
                 JobListItemViewModel item => item.Job,
                 _ => SelectedJob
             };
-        }
-
-        private EasyLog.EasyLog CreateLogger(AppSettings settings)
-        {
-            string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-            return new EasyLog.EasyLog(logDirectory, settings.LogFormat);
         }
 
         private void RaiseCommandStates()

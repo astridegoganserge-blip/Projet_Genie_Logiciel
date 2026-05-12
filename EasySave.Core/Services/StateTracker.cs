@@ -114,13 +114,14 @@ namespace EasySave.Core.Services
 
 
 
-        public static void MarkAsError(string jobName)
+        public static void MarkAsError(string jobName, string errorMessage = "")
         {
             UpdateState(jobName, state =>
             {
                 state.LastActionTime = DateTime.Now;
                 state.Status = JobStatus.Erreur;
                 state.IsPaused = false;
+                state.ErrorMessage = errorMessage;
 
 
 
@@ -178,7 +179,18 @@ namespace EasySave.Core.Services
             });
         }
 
+        public static void RemoveJob(string jobName)
+        {
+            if (string.IsNullOrWhiteSpace(jobName))
+            {
+                return;
+            }
 
+
+
+            States.TryRemove(jobName, out _);
+            SaveState();
+        }
 
         public static JobState? GetState(string jobName)
         {
@@ -360,7 +372,9 @@ namespace EasySave.Core.Services
                 Progression = state.Progression,
                 CurrentSourceFile = state.CurrentSourceFile,
                 CurrentTargetFile = state.CurrentTargetFile,
-                IsPaused = state.IsPaused
+                IsPaused = state.IsPaused,
+                ErrorMessage = state.ErrorMessage
+
             };
         }
     }
