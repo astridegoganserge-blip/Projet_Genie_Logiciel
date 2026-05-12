@@ -472,12 +472,6 @@ namespace EasySave.GUI.ViewModels
             };
         }
 
-        private EasyLog.EasyLog CreateLogger(AppSettings settings)
-        {
-            string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-            return new EasyLog.EasyLog(logDirectory, settings.LogFormat);
-        }
-
         private void RaiseCommandStates()
         {
             ExecuteJobCommand.RaiseCanExecuteChanged();
