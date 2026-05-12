@@ -135,7 +135,26 @@ namespace EasySave.Core.Repositories
 
 
 
-            return JsonSerializer.Deserialize<List<BackupJob>>(json) ?? new List<BackupJob>();
+            try
+            {
+                return JsonSerializer.Deserialize<List<BackupJob>>(json) ?? new List<BackupJob>();
+            }
+            catch (JsonException)
+            {
+                // jobs.config.json is corrupted (partial write from a previous crash).
+                // Quarantine it and start fresh rather than crashing the app at startup.
+                try
+                {
+                    string corruptedPath = _filePath + ".corrupted";
+                    File.Copy(_filePath, corruptedPath, true);
+                }
+                catch
+                {
+                    // Best-effort quarantine.
+                }
+
+                return new List<BackupJob>();
+            }
         }
 
 
@@ -154,7 +173,19 @@ namespace EasySave.Core.Repositories
 
 
             string json = JsonSerializer.Serialize(jobs, JsonOptions);
-            File.WriteAllText(_filePath, json);
+
+            // Atomic write to avoid leaving the file half-written on a crash.
+            string tempFilePath = _filePath + ".tmp";
+            File.WriteAllText(tempFilePath, json);
+
+            if (File.Exists(_filePath))
+            {
+                File.Replace(tempFilePath, _filePath, null);
+            }
+            else
+            {
+                File.Move(tempFilePath, _filePath);
+            }
         }
     }
 }

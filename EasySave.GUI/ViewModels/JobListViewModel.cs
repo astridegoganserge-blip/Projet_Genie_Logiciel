@@ -75,7 +75,21 @@ namespace EasySave.GUI.ViewModels
                 Interval = TimeSpan.FromMilliseconds(500)
             };
 
-            _stateRefreshTimer.Tick += (_, _) => RefreshRuntimeStates();
+            // IMPORTANT: any unhandled exception thrown from a DispatcherTimer.Tick
+            // handler terminates the WPF process silently. We swallow exceptions here
+            // so that a transient I/O / serialization glitch on state.json never
+            // crashes the application.
+            _stateRefreshTimer.Tick += (_, _) =>
+            {
+                try
+                {
+                    RefreshRuntimeStates();
+                }
+                catch (Exception ex)
+                {
+                    StatusMessage = $"Progress refresh error (ignored): {ex.Message}";
+                }
+            };
 
             LoadJobs();
             RefreshRuntimeStates();
