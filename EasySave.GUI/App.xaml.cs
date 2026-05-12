@@ -1,7 +1,9 @@
-﻿
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using EasySave.Core.Managers;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
@@ -22,6 +24,10 @@ namespace EasySave.GUI
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            DispatcherUnhandledException += OnDispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
 
 
@@ -81,6 +87,62 @@ namespace EasySave.GUI
 
 
 
+        private void OnDispatcherUnhandledException(
+            object sender,
+            DispatcherUnhandledExceptionEventArgs e)
+        {
+            LogFatalException("Dispatcher", e.Exception);
+
+            MessageBox.Show(
+                $"An unexpected error occurred:\n\n{e.Exception.Message}\n\n" +
+                "The application will keep running. See crash.log for details.",
+                "EasySave - Unexpected error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+
+            e.Handled = true;
+        }
+
+
+
+        private static void OnAppDomainUnhandledException(
+            object sender,
+            UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                LogFatalException("AppDomain", ex);
+            }
+        }
+
+
+
+        private static void OnUnobservedTaskException(
+            object? sender,
+            UnobservedTaskExceptionEventArgs e)
+        {
+            LogFatalException("UnobservedTask", e.Exception);
+            e.SetObserved();
+        }
+
+
+
+        private static void LogFatalException(string source, Exception ex)
+        {
+            try
+            {
+                string logPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
+                string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{source}] {ex}\n\n";
+                File.AppendAllText(logPath, line);
+            }
+            catch
+            {
+                // If we can't even log, there is nothing more to do.
+            }
+        }
+
+
+
         private void StartBusinessSoftwareWatcherIfNeeded(
         BackupManager backupManager,
         AppSettings settings)
@@ -101,4 +163,3 @@ namespace EasySave.GUI
         }
     }
 }
-

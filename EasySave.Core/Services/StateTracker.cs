@@ -249,7 +249,18 @@ namespace EasySave.Core.Services
 
 
                 string json = JsonSerializer.Serialize(states, JsonOptions);
-                File.WriteAllText(StateFilePath, json);
+
+                string tempFilePath = StateFilePath + ".tmp";
+                File.WriteAllText(tempFilePath, json);
+
+                if (File.Exists(StateFilePath))
+                {
+                    File.Replace(tempFilePath, StateFilePath, null);
+                }
+                else
+                {
+                    File.Move(tempFilePath, StateFilePath);
+                }
             }
             finally
             {
@@ -306,8 +317,26 @@ namespace EasySave.Core.Services
 
 
 
-                return JsonSerializer.Deserialize<List<JobState>>(json, JsonOptions)
-                ?? new List<JobState>();
+                try
+                {
+                    return JsonSerializer.Deserialize<List<JobState>>(json, JsonOptions)
+                    ?? new List<JobState>();
+                }
+                catch (JsonException)
+                {
+
+                    try
+                    {
+                        string corruptedPath = StateFilePath + ".corrupted";
+                        File.Copy(StateFilePath, corruptedPath, true);
+                    }
+                    catch
+                    {
+                        // Best-effort quarantine; ignore secondary I/O errors.
+                    }
+
+                    return new List<JobState>();
+                }
             }
             finally
             {

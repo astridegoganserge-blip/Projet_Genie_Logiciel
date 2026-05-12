@@ -172,10 +172,10 @@
                                 <StackPanel VerticalAlignment="Center">
                                     <ProgressBar Minimum="0"
                                                  Maximum="100"
-                                                 Value="{Binding Progression}"
+                                                 Value="{Binding Progression, Mode=OneWay}"
                                                  Height="14" />
 
-                                    <TextBlock Text="{Binding ProgressText}"
+                                    <TextBlock Text="{Binding ProgressText, Mode=OneWay}"
                                                Style="{StaticResource SecondaryTextStyle}"
                                                Margin="0,3,0,0"
                                                TextTrimming="CharacterEllipsis" />
@@ -193,7 +193,7 @@
                                            HorizontalAlignment="Left">
 
                                     <!-- EXECUTE -->
-                                    <Button Content="▶"
+                                    <Button Content="⚡"
                                             Width="32"
                                             MinWidth="0"
                                             Height="28"
