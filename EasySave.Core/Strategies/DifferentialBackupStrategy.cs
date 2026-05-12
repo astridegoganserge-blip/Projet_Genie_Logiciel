@@ -43,7 +43,7 @@ namespace EasySave.Core.Strategies
 
 
 
-            PriorityFileFilter.RegisterPriorityFiles(priorityFilesCount);
+            PriorityFileFilter.RegisterPriorityFiles(job.Name, priorityFilesCount);
             StateTracker.Initialize(job, files.Length, totalSize);
 
 
@@ -52,7 +52,7 @@ namespace EasySave.Core.Strategies
             {
                 if (!context.WaitIfPaused())
                 {
-                    NotifyRemainingPriorityFiles(pendingPriorityFilesForCurrentJob);
+                    PriorityFileFilter.ResetJob(job.Name);
                     StateTracker.MarkAsInterrupted(job.Name);
                     return false;
                 }
@@ -61,7 +61,7 @@ namespace EasySave.Core.Strategies
 
                 if (context.StopToken.IsCancellationRequested)
                 {
-                    NotifyRemainingPriorityFiles(pendingPriorityFilesForCurrentJob);
+                    PriorityFileFilter.ResetJob(job.Name);
                     StateTracker.MarkAsInterrupted(job.Name);
                     return false;
                 }
@@ -70,7 +70,7 @@ namespace EasySave.Core.Strategies
 
                 if (!PriorityFileFilter.CanProcess(sourceFile, settings.PriorityExtensions, context))
                 {
-                    NotifyRemainingPriorityFiles(pendingPriorityFilesForCurrentJob);
+                    PriorityFileFilter.ResetJob(job.Name);
                     StateTracker.MarkAsInterrupted(job.Name);
                     return false;
                 }
@@ -174,7 +174,7 @@ namespace EasySave.Core.Strategies
 
                     if (isPriorityFile)
                     {
-                        PriorityFileFilter.NotifyPriorityFileCompleted();
+                        PriorityFileFilter.NotifyPriorityFileCompleted(job.Name);
                         pendingPriorityFilesForCurrentJob = Math.Max(
                         0,
                         pendingPriorityFilesForCurrentJob - 1);
@@ -375,15 +375,6 @@ namespace EasySave.Core.Strategies
             : 0;
         }
 
-
-
-        private static void NotifyRemainingPriorityFiles(int remainingPriorityFiles)
-        {
-            for (int index = 0; index < remainingPriorityFiles; index++)
-            {
-                PriorityFileFilter.NotifyPriorityFileCompleted();
-            }
-        }
 
 
 
