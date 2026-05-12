@@ -119,6 +119,7 @@ namespace EasySave.Core.Managers
 
 
             _jobRepository.Delete(id);
+            StateTracker.RemoveJob(job.Name);
             return true;
         }
 
