@@ -47,6 +47,12 @@ namespace EasySave.GUI
 
 
 
+            string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+            _sharedLogger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+            backupManager.SetLogger(_sharedLogger);
+
+
+
             LocalizationService.ApplyLanguage(settings.Language);
 
 
