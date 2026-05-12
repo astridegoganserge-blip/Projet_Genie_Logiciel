@@ -205,6 +205,25 @@
 
  
 
+ <!-- DIFFERENTIAL MIRROR MODE -->
+<Border Style="{StaticResource CardBorderStyle}"
+        Margin="0,0,0,16">
+    <StackPanel>
+        <TextBlock Text="{DynamicResource SettingsDifferentialMirror}"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,12" />
+
+        <CheckBox IsChecked="{Binding DeleteOrphanFilesInDifferential, Mode=TwoWay}"
+                  Content="{DynamicResource SettingsDeleteOrphanFiles}" />
+
+        <TextBlock Text="{DynamicResource SettingsDeleteOrphanFilesHint}"
+                   Style="{StaticResource SecondaryTextStyle}"
+                   Margin="0,8,0,0"
+                   TextWrapping="Wrap" />
+    </StackPanel>
+</Border>
+
                 <!-- EXTENSIONS TO ENCRYPT -->
 <Border Style="{StaticResource CardBorderStyle}"
                         Margin="0,0,0,16">
