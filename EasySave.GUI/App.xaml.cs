@@ -89,6 +89,14 @@ namespace EasySave.GUI
 
 
 
+            if (_sharedLogger != null)
+            {
+                _sharedLogger.Flush();
+                _sharedLogger.Dispose();
+            }
+
+
+
             base.OnExit(e);
         }
 
