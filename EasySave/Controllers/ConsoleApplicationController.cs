@@ -1,5 +1,6 @@
 using System;
 using EasyLog;
+using EasySave.Core.Models;
 using EasySave.Services;
 using EasySave.Views;
 
@@ -40,7 +41,7 @@ namespace EasySave.Controllers
 
         private void LoadSavedLanguage()
         {
-            var settings = _settingsController.GetSettings();
+            AppSettings settings = _settingsController.GetSettings();
             LanguageManager.LoadLanguage(settings.Language);
         }
 

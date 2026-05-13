@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using EasySave.Models;
+using EasySave.Core.Models;
 using EasySave.Services;
-
-
 
 namespace EasySave.Views
 {
@@ -23,14 +21,10 @@ namespace EasySave.Views
             Console.Write(LanguageManager.T("ChoicePrompt"));
         }
 
-
-
         public static void ShowJobList(List<BackupJob> jobs)
         {
             Console.WriteLine();
             Console.WriteLine("--- " + LanguageManager.T("AppTitle") + " ---");
-
-
 
             if (jobs.Count == 0)
             {
@@ -40,83 +34,59 @@ namespace EasySave.Views
             {
                 foreach (BackupJob job in jobs)
                 {
-                    Console.WriteLine(job);
+                    Console.WriteLine(FormatJob(job));
                 }
             }
 
-
-
             Console.WriteLine("---");
         }
-
-
 
         public static void ShowJobCreated()
         {
             Console.WriteLine(LanguageManager.T("JobCreated"));
         }
 
-
-
         public static void ShowJobDeleted()
         {
             Console.WriteLine(LanguageManager.T("JobDeleted"));
         }
-
-
 
         public static void ShowJobNotFound()
         {
             Console.WriteLine(LanguageManager.T("JobNotFound"));
         }
 
-
-
         public static void ShowMaxJobsReached()
         {
             Console.WriteLine(LanguageManager.T("MaxJobsReached"));
         }
-
-
 
         public static void ShowBackupCompleted()
         {
             Console.WriteLine(LanguageManager.T("BackupCompleted"));
         }
 
-
-
         public static void ShowBackupFailed()
         {
             Console.WriteLine(LanguageManager.T("BackupFailed"));
         }
-
-
 
         public static void ShowError(string message)
         {
             Console.WriteLine(message);
         }
 
-
-
         public static int ReadJobId()
         {
             Console.Write(LanguageManager.T("EnterJobId"));
-
-
 
             if (int.TryParse(Console.ReadLine(), out int id))
             {
                 return id;
             }
 
-
-
             return -1;
         }
-
-
 
         public static string ReadSequentialCommand()
         {
@@ -124,57 +94,48 @@ namespace EasySave.Views
             return Console.ReadLine() ?? string.Empty;
         }
 
-
-
         public static (int id, string name, string source, string target, BackupType type) ReadCreateJobForm()
         {
             Console.Write(LanguageManager.T("EnterJobId"));
             int.TryParse(Console.ReadLine(), out int id);
 
-
-
             Console.Write(LanguageManager.T("EnterName"));
             string name = Console.ReadLine() ?? string.Empty;
-
-
 
             if (string.IsNullOrWhiteSpace(name))
             {
                 name = "Unnamed";
             }
 
-
-
             Console.Write(LanguageManager.T("EnterSource"));
             string source = Console.ReadLine() ?? string.Empty;
-
-
 
             Console.Write(LanguageManager.T("EnterTarget"));
             string target = Console.ReadLine() ?? string.Empty;
 
-
-
             Console.Write(LanguageManager.T("EnterType"));
             string typeChoice = Console.ReadLine() ?? "1";
 
-
-
             BackupType type = typeChoice == "2"
-            ? BackupType.Differential
-            : BackupType.Complete;
-
-
+                ? BackupType.Differential
+                : BackupType.Complete;
 
             return (id, name, source, target, type);
         }
-
-
 
         public static void Pause()
         {
             Console.WriteLine(LanguageManager.T("PressAnyKey"));
             Console.ReadKey();
+        }
+
+        private static string FormatJob(BackupJob job)
+        {
+            string lastExecution = job.LastExecutionTime.HasValue
+                ? job.LastExecutionTime.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                : "-";
+
+            return $"[{job.Number}] {job.Name} | {job.Type} | Source: {job.SourcePath} | Target: {job.TargetPath} | Last: {lastExecution}";
         }
     }
 }

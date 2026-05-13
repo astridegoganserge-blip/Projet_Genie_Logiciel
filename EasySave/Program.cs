@@ -1,7 +1,8 @@
 using System;
 using System.IO;
 using EasySave.Controllers;
-using EasySave.Repositories;
+using EasySave.Core.Managers;
+using EasySave.Core.Repositories;
 
 namespace EasySave
 {
@@ -10,15 +11,20 @@ namespace EasySave
         static void Main(string[] args)
         {
             var settingsRepository = new JsonSettingsRepository();
-            var settingsController = new SettingsController(settingsRepository);
-
-            string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-
             var jobRepository = new JsonJobRepository();
 
-            var jobController = new JobController(
+            var backupManager = new BackupManager(
                 jobRepository,
-                settingsRepository,
+                settingsRepository);
+
+            var settingsController = new SettingsController();
+
+            string logDirectory = Path.Combine(
+                AppContext.BaseDirectory,
+                "logs");
+
+            var jobController = new JobController(
+                backupManager,
                 logDirectory);
 
             var applicationController = new ConsoleApplicationController(
