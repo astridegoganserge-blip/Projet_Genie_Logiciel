@@ -18,7 +18,7 @@ namespace EasySave.GUI.ViewModels
         private readonly BackupManager _backupManager;
         private bool _sortDescending = true;
         private string _sortDirectionLabel = "↓ Plus récent";
-        private string _statusMessage = "History ready";
+        private string _statusMessage = string.Empty;
         private JobHistoryItem? _selectedHistoryItem;
         private bool _isExecuting;
 
@@ -50,6 +50,15 @@ namespace EasySave.GUI.ViewModels
 
 
             LoadHistory();
+        }
+
+
+
+        private static string Tr(string key, params object[] args)
+        {
+            object? resource = System.Windows.Application.Current?.TryFindResource(key);
+            string template = resource?.ToString() ?? key;
+            return args.Length > 0 ? string.Format(template, args) : template;
         }
 
 
@@ -169,7 +178,7 @@ namespace EasySave.GUI.ViewModels
 
 
 
-            StatusMessage = $"{History.Count} historical job(s) loaded.";
+            StatusMessage = Tr("MsgHistoryLoaded", History.Count);
         }
 
 
@@ -196,7 +205,7 @@ namespace EasySave.GUI.ViewModels
 
             if (item == null)
             {
-                StatusMessage = "No history item selected.";
+                StatusMessage = Tr("MsgHistoryNoSelection");
                 return;
             }
 
@@ -204,22 +213,27 @@ namespace EasySave.GUI.ViewModels
 
             if (_backupManager.IsEditLocked)
             {
-                StatusMessage = "Execution blocked: a job is currently being edited.";
+                StatusMessage = Tr("MsgHistoryExecutionLocked");
                 return;
             }
 
 
 
             IsExecuting = true;
-            StatusMessage = $"Re-executing: {item.Name}";
+            StatusMessage = Tr("MsgHistoryReExecuting", item.Name);
 
 
 
             try
             {
-                AppSettings settings = _backupManager.GetSettings();
-                string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
-                var logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+                EasyLog.EasyLog? logger = _backupManager.SharedLogger;
+
+                if (logger == null)
+                {
+                    AppSettings settings = _backupManager.GetSettings();
+                    string logDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+                    logger = new EasyLog.EasyLog(logDirectory, settings.LogFormat);
+                }
 
 
 
@@ -229,8 +243,8 @@ namespace EasySave.GUI.ViewModels
 
 
                 StatusMessage = success
-                ? $"Re-execution completed: {item.Name}"
-                : $"Re-execution failed, stopped or interrupted: {item.Name}";
+                ? Tr("MsgHistoryReExecutionCompleted", item.Name)
+                : Tr("MsgHistoryReExecutionFailed", item.Name);
 
 
 
@@ -238,7 +252,7 @@ namespace EasySave.GUI.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Re-execution error: {ex.Message}";
+                StatusMessage = Tr("MsgHistoryReExecutionError", ex.Message);
             }
             finally
             {
