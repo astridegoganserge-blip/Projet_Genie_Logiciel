@@ -6,6 +6,8 @@ var app = builder.Build();
 string logDirectory = Path.Combine(AppContext.BaseDirectory, "centralized-logs");
 Directory.CreateDirectory(logDirectory);
 
+var writeLock = new SemaphoreSlim(1, 1);
+
 app.MapGet("/", () => Results.Ok(new
 {
     Service = "EasySave Log Server",
@@ -37,9 +39,17 @@ app.MapPost("/log", async (HttpRequest request) =>
 
         string line = JsonSerializer.Serialize(centralizedEntry);
 
-        await File.AppendAllTextAsync(
-            filePath,
-            line + Environment.NewLine);
+        await writeLock.WaitAsync();
+        try
+        {
+            await File.AppendAllTextAsync(
+                filePath,
+                line + Environment.NewLine);
+        }
+        finally
+        {
+            writeLock.Release();
+        }
 
         return Results.Ok(new
         {
