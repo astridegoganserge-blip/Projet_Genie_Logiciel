@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasySave.Services
+namespace EasySave.Infrastructure
 {
     public sealed class CommandLineParser
     {

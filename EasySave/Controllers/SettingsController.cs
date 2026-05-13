@@ -1,7 +1,7 @@
 using EasyLog;
 using EasySave.Core.Models;
 using EasySave.Core.Repositories;
-using EasySave.Services;
+using EasySave.Infrastructure;
 
 namespace EasySave.Controllers
 {
