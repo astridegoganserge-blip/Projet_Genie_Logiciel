@@ -2,122 +2,158 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
- 
-
     <sys:String x:Key="AppTitle">EasySave v3.0</sys:String>
-<sys:String x:Key="AppSubtitle">ProSoft Backup Manager</sys:String>
-<sys:String x:Key="AppHeaderDescription">WPF interface — parallel backup, pause, resume, stop, priorities and log centralization.</sys:String>
-<sys:String x:Key="AppFooterCompatibility">V1.1 console compatible</sys:String>
-<sys:String x:Key="AppFooterVersion">WPF MVVM V3.0</sys:String>
-
- 
+    <sys:String x:Key="AppSubtitle">ProSoft Backup Manager</sys:String>
+    <sys:String x:Key="AppHeaderDescription">WPF interface — parallel backup, pause, resume, stop, priorities and log centralization.</sys:String>
+    <sys:String x:Key="AppFooterCompatibility">V1.1 console compatible</sys:String>
+    <sys:String x:Key="AppFooterVersion">WPF MVVM V3.0</sys:String>
 
     <sys:String x:Key="NavBackupJobs">Jobs</sys:String>
-<sys:String x:Key="NavHistory">History</sys:String>
-<sys:String x:Key="NavCreateJob">Create job</sys:String>
-<sys:String x:Key="NavSettings">Settings</sys:String>
-<sys:String x:Key="NavExecution">Monitoring</sys:String>
-
- 
+    <sys:String x:Key="NavHistory">History</sys:String>
+    <sys:String x:Key="NavCreateJob">Create job</sys:String>
+    <sys:String x:Key="NavSettings">Settings</sys:String>
+    <sys:String x:Key="NavExecution">Monitoring</sys:String>
 
     <sys:String x:Key="BtnCreate">Create</sys:String>
-<sys:String x:Key="BtnExecute">Execute</sys:String>
-<sys:String x:Key="BtnExecuteAll">Execute all</sys:String>
-<sys:String x:Key="BtnPause">Pause</sys:String>
-<sys:String x:Key="BtnPauseAll">Pause all</sys:String>
-<sys:String x:Key="BtnPlay">Play</sys:String>
-<sys:String x:Key="BtnPlayAll">Play all</sys:String>
-<sys:String x:Key="BtnStop">Stop</sys:String>
-<sys:String x:Key="BtnStopAll">Stop all</sys:String>
-<sys:String x:Key="BtnEdit">Edit</sys:String>
-<sys:String x:Key="BtnDelete">Delete</sys:String>
-<sys:String x:Key="BtnRefresh">Refresh</sys:String>
-<sys:String x:Key="BtnSave">Save</sys:String>
-<sys:String x:Key="BtnCancel">Cancel</sys:String>
-<sys:String x:Key="BtnAdd">Add</sys:String>
-<sys:String x:Key="BtnRemove">Remove</sys:String>
-<sys:String x:Key="BtnBrowse">Browse</sys:String>
-<sys:String x:Key="BtnRestart">Restart</sys:String>
-<sys:String x:Key="BtnStartMonitoring">Start monitoring</sys:String>
-<sys:String x:Key="BtnStopMonitoring">Stop monitoring</sys:String>
-
- 
+    <sys:String x:Key="BtnExecute">Execute</sys:String>
+    <sys:String x:Key="BtnExecuteAll">Execute all</sys:String>
+    <sys:String x:Key="BtnPause">Pause</sys:String>
+    <sys:String x:Key="BtnPauseAll">Pause all</sys:String>
+    <sys:String x:Key="BtnPlay">Play</sys:String>
+    <sys:String x:Key="BtnPlayAll">Play all</sys:String>
+    <sys:String x:Key="BtnStop">Stop</sys:String>
+    <sys:String x:Key="BtnStopAll">Stop all</sys:String>
+    <sys:String x:Key="BtnEdit">Edit</sys:String>
+    <sys:String x:Key="BtnDelete">Delete</sys:String>
+    <sys:String x:Key="BtnRefresh">Refresh</sys:String>
+    <sys:String x:Key="BtnSave">Save</sys:String>
+    <sys:String x:Key="BtnCancel">Cancel</sys:String>
+    <sys:String x:Key="BtnAdd">Add</sys:String>
+    <sys:String x:Key="BtnRemove">Remove</sys:String>
+    <sys:String x:Key="BtnBrowse">Browse</sys:String>
+    <sys:String x:Key="BtnRestart">Restart</sys:String>
+    <sys:String x:Key="BtnStartMonitoring">Start monitoring</sys:String>
+    <sys:String x:Key="BtnStopMonitoring">Stop monitoring</sys:String>
 
     <sys:String x:Key="HeaderNumber">#</sys:String>
-<sys:String x:Key="HeaderName">Name</sys:String>
-<sys:String x:Key="HeaderType">Type</sys:String>
-<sys:String x:Key="HeaderLastExecution">Last execution</sys:String>
-<sys:String x:Key="HeaderStatus">Status</sys:String>
-<sys:String x:Key="HeaderFinalStatus">Final status</sys:String>
-<sys:String x:Key="HeaderProgress">Progress</sys:String>
-<sys:String x:Key="HeaderActions">Actions</sys:String>
-<sys:String x:Key="HeaderAction">Action</sys:String>
-
- 
+    <sys:String x:Key="HeaderName">Name</sys:String>
+    <sys:String x:Key="HeaderType">Type</sys:String>
+    <sys:String x:Key="HeaderLastExecution">Last execution</sys:String>
+    <sys:String x:Key="HeaderStatus">Status</sys:String>
+    <sys:String x:Key="HeaderFinalStatus">Final status</sys:String>
+    <sys:String x:Key="HeaderProgress">Progress</sys:String>
+    <sys:String x:Key="HeaderActions">Actions</sys:String>
+    <sys:String x:Key="HeaderAction">Action</sys:String>
 
     <sys:String x:Key="JobsTitle">Backup jobs</sys:String>
-<sys:String x:Key="JobsSubtitle">Manage, execute, pause or stop your backups.</sys:String>
-<sys:String x:Key="JobsEditLockBanner">Editing in progress — all executions are blocked.</sys:String>
-<sys:String x:Key="JobsAvailable">Available</sys:String>
-<sys:String x:Key="JobsWaiting">Waiting</sys:String>
-
- 
+    <sys:String x:Key="JobsSubtitle">Manage, execute, pause or stop your backups.</sys:String>
+    <sys:String x:Key="JobsEditLockBanner">Editing in progress — all executions are blocked.</sys:String>
+    <sys:String x:Key="JobsAvailable">Available</sys:String>
+    <sys:String x:Key="JobsWaiting">Waiting</sys:String>
 
     <sys:String x:Key="HistoryTitle">Backup history</sys:String>
-<sys:String x:Key="HistorySubtitle">Review previous executions and restart a job if needed.</sys:String>
-
- 
+    <sys:String x:Key="HistorySubtitle">Review previous executions and restart a job if needed.</sys:String>
 
     <sys:String x:Key="CreateBackupJob">Create backup job</sys:String>
-<sys:String x:Key="EditBackupJob">Edit backup job</sys:String>
-<sys:String x:Key="JobEditSubtitle">Create or edit a backup job.</sys:String>
-<sys:String x:Key="JobName">Job name</sys:String>
-<sys:String x:Key="SourcePath">Source path</sys:String>
-<sys:String x:Key="TargetPath">Target path</sys:String>
-<sys:String x:Key="BackupType">Backup type</sys:String>
-
- 
+    <sys:String x:Key="EditBackupJob">Edit backup job</sys:String>
+    <sys:String x:Key="JobEditSubtitle">Create or edit a backup job.</sys:String>
+    <sys:String x:Key="JobName">Job name</sys:String>
+    <sys:String x:Key="SourcePath">Source path</sys:String>
+    <sys:String x:Key="TargetPath">Target path</sys:String>
+    <sys:String x:Key="BackupType">Backup type</sys:String>
 
     <sys:String x:Key="SettingsTitle">Settings</sys:String>
-<sys:String x:Key="SettingsSubtitle">Configure logs, language, CryptoSoft, priorities and business software monitoring.</sys:String>
-<sys:String x:Key="SettingsLanguage">Application language</sys:String>
-<sys:String x:Key="SettingsLogFormat">Local log format</sys:String>
-<sys:String x:Key="SettingsLogFormatHint">Choose the daily log file format: JSON or XML.</sys:String>
-<sys:String x:Key="SettingsLogMode">Log centralization</sys:String>
-<sys:String x:Key="SettingsDockerUrl">Docker server URL</sys:String>
-<sys:String x:Key="SettingsDockerExample">Example: http://localhost:5000</sys:String>
-<sys:String x:Key="SettingsBusinessSoftware">Blocking business software</sys:String>
-<sys:String x:Key="SettingsBusinessSoftwareHint">Windows process name to monitor. Example: CalculatorApp</sys:String>
-<sys:String x:Key="SettingsMaxFileSize">Maximum large file size</sys:String>
-<sys:String x:Key="SettingsMaxFileSizeHint">0 = no limit. If a file exceeds this threshold, only one large file is processed at a time.</sys:String>
-<sys:String x:Key="SettingsKb">KB</sys:String>
-<sys:String x:Key="SettingsExtensions">Extensions to encrypt</sys:String>
-<sys:String x:Key="SettingsPriorityExtensions">Priority extensions</sys:String>
-<sys:String x:Key="SettingsSave">Save</sys:String>
-
- 
+    <sys:String x:Key="SettingsSubtitle">Configure logs, language, CryptoSoft, priorities and business software monitoring.</sys:String>
+    <sys:String x:Key="SettingsLanguage">Application language</sys:String>
+    <sys:String x:Key="SettingsLogFormat">Local log format</sys:String>
+    <sys:String x:Key="SettingsLogFormatHint">Choose the daily log file format: JSON or XML.</sys:String>
+    <sys:String x:Key="SettingsLogMode">Log centralization</sys:String>
+    <sys:String x:Key="SettingsDockerUrl">Docker server URL</sys:String>
+    <sys:String x:Key="SettingsDockerExample">Example: http://localhost:5000</sys:String>
+    <sys:String x:Key="SettingsBusinessSoftware">Blocking business software</sys:String>
+    <sys:String x:Key="SettingsBusinessSoftwareHint">Windows process name to monitor. Example: CalculatorApp</sys:String>
+    <sys:String x:Key="SettingsMaxFileSize">Maximum large file size</sys:String>
+    <sys:String x:Key="SettingsMaxFileSizeHint">0 = no limit. If a file exceeds this threshold, only one large file is processed at a time.</sys:String>
+    <sys:String x:Key="SettingsKb">KB</sys:String>
+    <sys:String x:Key="SettingsExtensions">Extensions to encrypt</sys:String>
+    <sys:String x:Key="SettingsPriorityExtensions">Priority extensions</sys:String>
+    <sys:String x:Key="SettingsSave">Save</sys:String>
 
     <sys:String x:Key="SettingsDifferentialMirror">Differential mirror backup</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFiles">Delete from target files missing from source</sys:String>
-<sys:String x:Key="SettingsDeleteOrphanFilesHint">When enabled, a differential backup will delete from the target files that were deleted from the source.</sys:String>
-
- 
+    <sys:String x:Key="SettingsDeleteOrphanFiles">Delete from target files missing from source</sys:String>
+    <sys:String x:Key="SettingsDeleteOrphanFilesHint">When enabled, a differential backup will delete from the target files that were deleted from the source.</sys:String>
 
     <sys:String x:Key="ExecutionTitle">Execution monitoring</sys:String>
-<sys:String x:Key="ExecutionSubtitle">Track active, paused or completed backups in real time.</sys:String>
-<sys:String x:Key="ExecutionGlobalProgress">Global progress: {0}%</sys:String>
-<sys:String x:Key="ExecutionInfo">Monitoring reads real-time information from state.json every 500 ms.</sys:String>
-<sys:String x:Key="ExecutionBackup">Backup</sys:String>
-<sys:String x:Key="ExecutionStatus">Status</sys:String>
-<sys:String x:Key="ExecutionProgress">Progress</sys:String>
-<sys:String x:Key="ExecutionRemainingFiles">Remaining files</sys:String>
-<sys:String x:Key="ExecutionRemainingSize">Remaining size</sys:String>
-<sys:String x:Key="ExecutionCurrentSource">Current source</sys:String>
-<sys:String x:Key="ExecutionCurrentTarget">Current target</sys:String>
+    <sys:String x:Key="ExecutionSubtitle">Track active, paused or completed backups in real time.</sys:String>
+    <sys:String x:Key="ExecutionGlobalProgress">Global progress: {0}%</sys:String>
+    <sys:String x:Key="ExecutionInfo">Monitoring reads real-time information from state.json every 500 ms.</sys:String>
+    <sys:String x:Key="ExecutionBackup">Backup</sys:String>
+    <sys:String x:Key="ExecutionStatus">Status</sys:String>
+    <sys:String x:Key="ExecutionProgress">Progress</sys:String>
+    <sys:String x:Key="ExecutionRemainingFiles">Remaining files</sys:String>
+    <sys:String x:Key="ExecutionRemainingSize">Remaining size</sys:String>
+    <sys:String x:Key="ExecutionCurrentSource">Current source</sys:String>
+    <sys:String x:Key="ExecutionCurrentTarget">Current target</sys:String>
 
- <sys:String x:Key="BtnEditSelectedJob">✏ Edit selected job</sys:String>
-<sys:String x:Key="BtnEditThisJob">✏ Edit this job</sys:String>
-<sys:String x:Key="TooltipEditSelectedJob">Select a job in the table, then click here to edit it.</sys:String>
-<sys:String x:Key="TooltipEditThisJob">Edit this backup job directly.</sys:String>
+    <sys:String x:Key="BtnEditSelectedJob">✏ Edit selected job</sys:String>
+    <sys:String x:Key="BtnEditThisJob">✏ Edit this job</sys:String>
+    <sys:String x:Key="TooltipEditSelectedJob">Select a job in the table, then click here to edit it.</sys:String>
+    <sys:String x:Key="TooltipEditThisJob">Edit this backup job directly.</sys:String>
+
+    <sys:String x:Key="StatusActif">Running</sys:String>
+    <sys:String x:Key="StatusEnPause">Paused</sys:String>
+    <sys:String x:Key="StatusTerminé">Completed</sys:String>
+    <sys:String x:Key="StatusErreur">Error</sys:String>
+    <sys:String x:Key="StatusInterrompu">Interrupted</sys:String>
+    <sys:String x:Key="StatusDisponible">Available</sys:String>
+
+    <sys:String x:Key="MsgReady">Ready</sys:String>
+    <sys:String x:Key="MsgJobsLoaded">{0} job(s) loaded.</sys:String>
+    <sys:String x:Key="MsgJobsRefreshed">{0} job(s) refreshed.</sys:String>
+    <sys:String x:Key="MsgSelectJob">Please select a backup job before execution.</sys:String>
+    <sys:String x:Key="MsgExecutionLocked">Execution blocked: a job is currently being edited.</sys:String>
+    <sys:String x:Key="MsgExecuting">Executing: {0}</sys:String>
+    <sys:String x:Key="MsgExecutionCompleted">Execution completed: {0}</sys:String>
+    <sys:String x:Key="MsgExecutionFailed">Execution failed, paused, stopped or blocked: {0}</sys:String>
+    <sys:String x:Key="MsgExecutionError">Execution error: {0}</sys:String>
+    <sys:String x:Key="MsgNoJobAvailable">No backup job available for execution.</sys:String>
+    <sys:String x:Key="MsgParallelStarted">Parallel execution started.</sys:String>
+    <sys:String x:Key="MsgParallelCompleted">Parallel execution completed.</sys:String>
+    <sys:String x:Key="MsgParallelCompletedErrors">Parallel execution completed with errors, stops or interruptions.</sys:String>
+    <sys:String x:Key="MsgParallelError">Parallel execution error: {0}</sys:String>
+    <sys:String x:Key="MsgLoggerNotInit">Logger not initialized.</sys:String>
+    <sys:String x:Key="MsgNoJobSelected">No job selected.</sys:String>
+    <sys:String x:Key="MsgPauseRequested">Pause requested: {0}</sys:String>
+    <sys:String x:Key="MsgResumeRequested">Resume requested: {0}</sys:String>
+    <sys:String x:Key="MsgStopRequested">Stop requested: {0}</sys:String>
+    <sys:String x:Key="MsgPauseAllRequested">Pause requested for all active jobs.</sys:String>
+    <sys:String x:Key="MsgResumeAllRequested">Resume requested for all paused jobs.</sys:String>
+    <sys:String x:Key="MsgStopAllRequested">Stop requested for all active jobs.</sys:String>
+    <sys:String x:Key="MsgDeleteLocked">Delete blocked: a job is currently being edited.</sys:String>
+    <sys:String x:Key="MsgJobDeleted">Job deleted: {0}</sys:String>
+    <sys:String x:Key="MsgCreateRequested">Create job view requested.</sys:String>
+    <sys:String x:Key="MsgEditRequested">Edit requested: {0}</sys:String>
+    <sys:String x:Key="MsgProgressError">Progress refresh error (ignored): {0}</sys:String>
+    <sys:String x:Key="MsgSettingsSaved">Settings saved successfully.</sys:String>
+    <sys:String x:Key="MsgCreateJobError">Unable to create backup job. Check the source path.</sys:String>
+    <sys:String x:Key="MsgUpdateJobError">Unable to update backup job. Check the source path.</sys:String>
+    <sys:String x:Key="MsgCreateJobSuccess">Backup job created successfully.</sys:String>
+    <sys:String x:Key="MsgUpdateJobSuccess">Backup job updated successfully.</sys:String>
+    <sys:String x:Key="MsgJobNameRequired">Job name is required.</sys:String>
+    <sys:String x:Key="MsgSourcePathRequired">Source path is required.</sys:String>
+    <sys:String x:Key="MsgSourcePathNotFound">Source path does not exist.</sys:String>
+    <sys:String x:Key="MsgTargetPathRequired">Target path is required.</sys:String>
+    <sys:String x:Key="MsgBrowseSource">Select source folder</sys:String>
+    <sys:String x:Key="MsgBrowseTarget">Select target folder</sys:String>
+    <sys:String x:Key="MsgMonitoringStopped">Monitoring stopped.</sys:String>
+    <sys:String x:Key="MsgMonitoringStarted">Monitoring started.</sys:String>
+    <sys:String x:Key="MsgLastRefresh">Last refresh: {0}</sys:String>
+    <sys:String x:Key="MsgHistoryLoaded">{0} historical job(s) loaded.</sys:String>
+    <sys:String x:Key="MsgHistoryNoSelection">No history item selected.</sys:String>
+    <sys:String x:Key="MsgHistoryExecutionLocked">Execution blocked: a job is currently being edited.</sys:String>
+    <sys:String x:Key="MsgHistoryReExecuting">Re-executing: {0}</sys:String>
+    <sys:String x:Key="MsgHistoryReExecutionCompleted">Re-execution completed: {0}</sys:String>
+    <sys:String x:Key="MsgHistoryReExecutionFailed">Re-execution failed: {0}</sys:String>
+    <sys:String x:Key="MsgHistoryReExecutionError">Re-execution error: {0}</sys:String>
 
 </ResourceDictionary>

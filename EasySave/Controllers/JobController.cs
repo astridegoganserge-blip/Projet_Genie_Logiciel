@@ -1,204 +1,215 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using EasyLog;
-using EasySave.Models;
-using EasySave.Repositories;
-using EasySave.Services;
-using EasySave.Strategies;
-
-
+using EasySave.Core.Managers;
+using EasySave.Core.Models;
 
 namespace EasySave.Controllers
 {
     public class JobController
     {
-        private readonly IJobRepository _jobRepository;
-        private readonly ISettingsRepository _settingsRepository;
+        private readonly BackupManager _backupManager;
         private readonly string _logDirectory;
         private const int MaxJobs = 5;
 
-
-
-        public JobController(IJobRepository jobRepository, ISettingsRepository settingsRepository, string logDirectory)
+        public JobController(
+            BackupManager backupManager,
+            string logDirectory)
         {
-            _jobRepository = jobRepository;
-            _settingsRepository = settingsRepository;
+            _backupManager = backupManager;
             _logDirectory = logDirectory;
         }
 
-
-
-        public bool CreateJob(int id, string name, string source, string target, BackupType type)
+        public bool CreateJob(
+            int number,
+            string name,
+            string source,
+            string target,
+            BackupType type)
         {
-            List<BackupJob> jobs = _jobRepository.GetAll();
-
-
+            List<BackupJob> jobs = _backupManager.GetAllJobs();
 
             if (jobs.Count >= MaxJobs)
             {
                 return false;
             }
 
-
-
-            if (id <= 0 || id > MaxJobs)
+            if (number <= 0 || number > MaxJobs)
             {
                 return false;
             }
 
-
-
-            if (_jobRepository.GetById(id) != null)
+            if (jobs.Any(job => job.Number == number))
             {
                 return false;
             }
-
-
 
             var job = new BackupJob
             {
-                Id = id,
-                Name = name,
+                Id = Guid.NewGuid(),
+                Number = number,
+                Name = string.IsNullOrWhiteSpace(name) ? "Unnamed" : name.Trim(),
                 SourcePath = source,
                 TargetPath = target,
                 Type = type
             };
 
-
-
-            if (!job.ValidatePaths())
-            {
-                return false;
-            }
-
-
-
-            jobs.Add(job);
-            _jobRepository.Save(jobs);
-            return true;
+            return _backupManager.AddJob(job);
         }
 
-
-
-        public bool DeleteJob(int id)
+        public bool DeleteJob(int number)
         {
-            BackupJob? job = _jobRepository.GetById(id);
-
-
+            BackupJob? job = GetJobByNumber(number);
 
             if (job == null)
             {
                 return false;
             }
 
-
-
-            _jobRepository.Delete(id);
-            return true;
+            return _backupManager.RemoveJob(job.Id);
         }
-
-
 
         public List<BackupJob> GetAllJobs()
         {
-            return _jobRepository.GetAll();
+            return _backupManager.GetAllJobs();
         }
 
-
-
-        public bool ExecuteJob(int id)
+        public bool ExecuteJob(int number)
         {
-            BackupJob? job = _jobRepository.GetById(id);
-
-
+            BackupJob? job = GetJobByNumber(number);
 
             if (job == null)
             {
                 return false;
             }
 
-
-
-            IBackupStrategy strategy = SelectStrategy(job.Type);
             EasyLog.EasyLog logger = CreateLogger();
 
-
-
-            try
-            {
-                strategy.Execute(job, logger);
-                job.LastExecutionTime = System.DateTime.Now;
-
-
-
-                List<BackupJob> jobs = _jobRepository.GetAll();
-                int index = jobs.FindIndex(currentJob => currentJob.Id == id);
-
-
-
-                if (index >= 0)
-                {
-                    jobs[index] = job;
-                    _jobRepository.Save(jobs);
-                }
-
-
-
-                return true;
-            }
-            catch
-            {
-                StateTracker.MarkAsError("Backup execution failed");
-                return false;
-            }
+            return _backupManager.ExecuteJob(job.Id, logger);
         }
-
-
 
         public bool ExecuteSequential(string command)
         {
-            var parser = new CommandLineParser(new[] { command });
-            List<int> ids = parser.ParseJobIds();
+            List<int> numbers = ParseJobNumbers(command);
 
+            if (numbers.Count == 0)
+            {
+                return false;
+            }
 
+            EasyLog.EasyLog logger = CreateLogger();
+
+            List<Guid> ids = numbers
+                .Select(GetJobByNumber)
+                .Where(job => job != null)
+                .Select(job => job!.Id)
+                .ToList();
 
             if (ids.Count == 0)
             {
                 return false;
             }
 
-
-
-            bool allSuccess = true;
-
-
-
-            foreach (int id in ids)
-            {
-                if (!ExecuteJob(id))
-                {
-                    allSuccess = false;
-                }
-            }
-
-
-
-            return allSuccess;
+            return _backupManager.ExecuteSequential(ids, logger);
         }
 
+        public bool ExecuteParallel()
+        {
+            List<Guid> ids = _backupManager
+                .GetAllJobs()
+                .OrderBy(job => job.Number)
+                .Select(job => job.Id)
+                .ToList();
+
+            if (ids.Count == 0)
+            {
+                return false;
+            }
+
+            EasyLog.EasyLog logger = CreateLogger();
+
+            return _backupManager
+                .ExecuteParallel(ids, logger)
+                .GetAwaiter()
+                .GetResult();
+        }
+
+        public void PauseJob(int number)
+        {
+            BackupJob? job = GetJobByNumber(number);
+
+            if (job != null)
+            {
+                _backupManager.PauseJob(job.Name);
+            }
+        }
+
+        public void ResumeJob(int number)
+        {
+            BackupJob? job = GetJobByNumber(number);
+
+            if (job != null)
+            {
+                _backupManager.ResumeJob(job.Name);
+            }
+        }
+
+        public void StopJob(int number)
+        {
+            BackupJob? job = GetJobByNumber(number);
+
+            if (job != null)
+            {
+                _backupManager.StopJob(job.Name);
+            }
+        }
+
+        public void PauseAll()
+        {
+            _backupManager.PauseAll();
+        }
+
+        public void ResumeAll()
+        {
+            _backupManager.ResumeAll();
+        }
+
+        public void StopAll()
+        {
+            _backupManager.StopAll();
+        }
+
+        private BackupJob? GetJobByNumber(int number)
+        {
+            return _backupManager
+                .GetAllJobs()
+                .FirstOrDefault(job => job.Number == number);
+        }
 
         private EasyLog.EasyLog CreateLogger()
         {
-            AppSettings settings = _settingsRepository.Load();
-            return new EasyLog.EasyLog(_logDirectory, settings.LogFormat);
+            AppSettings settings = _backupManager.GetSettings();
+
+            return new EasyLog.EasyLog(
+                _logDirectory,
+                settings.LogFormat);
         }
 
-        private static IBackupStrategy SelectStrategy(BackupType type)
+        private static List<int> ParseJobNumbers(string command)
         {
-            return type switch
+            if (string.IsNullOrWhiteSpace(command))
             {
-                BackupType.Differential => new DifferentialBackupStrategy(),
-                _ => new CompleteBackupStrategy()
-            };
+                return new List<int>();
+            }
+
+            return command
+                .Split(new[] { ';', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(value => int.TryParse(value, out int number) ? number : -1)
+                .Where(number => number > 0)
+                .Distinct()
+                .ToList();
         }
     }
 }

@@ -108,18 +108,29 @@ namespace EasySave.Core.Managers
         public bool RemoveJob(Guid id)
         {
             BackupJob? job = _jobRepository.GetById(id);
-
-
-
             if (job == null)
             {
                 return false;
             }
-
-
-
             _jobRepository.Delete(id);
             StateTracker.RemoveJob(job.Name);
+
+            var remainingJobs = _jobRepository
+                .GetAll()
+                .OrderBy(j => j.Number)
+                .ToList();
+
+            int number = 1;
+            foreach (BackupJob remaining in remainingJobs)
+            {
+                if (remaining.Number != number)
+                {
+                    remaining.Number = number;
+                    UpdateJobInternal(remaining);
+                }
+                number++;
+            }
+
             return true;
         }
 
