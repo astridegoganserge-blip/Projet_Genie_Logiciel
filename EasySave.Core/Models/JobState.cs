@@ -1,12 +1,24 @@
 using System;
+using System.Windows;
 
 
 
 namespace EasySave.Core.Models
 {
+
     public class JobState
     {
         public string BackupName { get; set; } = string.Empty;
+
+        public string DisplayStatus
+        {
+            get
+            {
+                string key = $"Status{Status}";
+                object? resource = Application.Current?.TryFindResource(key);
+                return resource?.ToString() ?? Status.ToString();
+            }
+        }
 
 
 

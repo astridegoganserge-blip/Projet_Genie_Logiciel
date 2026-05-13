@@ -8,23 +8,44 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
         <Style x:Key="JobsCellStyle" TargetType="DataGridCell">
-            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Padding" Value="10,0" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridCell">
                         <Border Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}">
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                ClipToBounds="True">
                             <ContentPresenter VerticalAlignment="Center"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="JobsHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#1E3A5F" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="10,12" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+        </Style>
+
+        <Style x:Key="JobsRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
         </Style>
     </UserControl.Resources>
 
@@ -37,30 +58,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- TITLE -->
-        <StackPanel Grid.Row="0"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,16">
-            <TextBlock Text="▣"
-                       FontSize="26"
-                       Foreground="{StaticResource AccentLightBrush}"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0" />
-
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="▣" FontSize="26" Foreground="{StaticResource AccentLightBrush}" VerticalAlignment="Center" Margin="0,0,10,0" />
             <StackPanel>
-                <TextBlock Text="{DynamicResource JobsTitle}"
-                           Style="{StaticResource PageTitleStyle}" />
-
-                <TextBlock Text="{DynamicResource JobsSubtitle}"
-                           Style="{StaticResource SecondaryTextStyle}" />
+                <TextBlock Text="{DynamicResource JobsTitle}" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="{DynamicResource JobsSubtitle}" Style="{StaticResource SecondaryTextStyle}" />
             </StackPanel>
         </StackPanel>
 
-        <!-- EDIT LOCK BANNER -->
         <Border Grid.Row="1">
             <Border.Style>
-                <Style TargetType="Border"
-                       BasedOn="{StaticResource ErrorBannerStyle}">
+                <Style TargetType="Border" BasedOn="{StaticResource ErrorBannerStyle}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsEditLocked}" Value="True">
@@ -69,54 +77,21 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-
-            <TextBlock Text="{DynamicResource JobsEditLockBanner}"
-                       Foreground="{StaticResource TextPrimaryBrush}"
-                       FontWeight="SemiBold" />
+            <TextBlock Text="{DynamicResource JobsEditLockBanner}" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
         </Border>
 
-        <!-- GLOBAL ACTION BAR -->
-        <Border Grid.Row="2"
-                Style="{StaticResource CardBorderStyle}"
-                Margin="0,0,0,16">
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16">
             <WrapPanel>
-
-                <Button Content="{DynamicResource NavCreateJob}"
-                        Style="{StaticResource PrimaryActionButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding CreateJobCommand}" />
-
-                <Button Content="{DynamicResource BtnExecuteAll}"
-                        Style="{StaticResource SuccessButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding ExecuteAllCommand}" />
-
-                <Button Content="{DynamicResource BtnPauseAll}"
-                        Style="{StaticResource PauseButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding PauseAllCommand}" />
-
-                <Button Content="{DynamicResource BtnPlayAll}"
-                        Style="{StaticResource PrimaryActionButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding ResumeAllCommand}" />
-
-                <Button Content="{DynamicResource BtnStopAll}"
-                        Style="{StaticResource DangerButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding StopAllCommand}" />
-
-                <Button Content="{DynamicResource BtnRefresh}"
-                        Style="{StaticResource SecondaryActionButtonStyle}"
-                        Margin="0,0,10,10"
-                        Command="{Binding RefreshCommand}" />
-
+                <Button Content="{DynamicResource NavCreateJob}" Style="{StaticResource PrimaryActionButtonStyle}" Margin="0,0,10,10" Command="{Binding CreateJobCommand}" />
+                <Button Content="{DynamicResource BtnExecuteAll}" Style="{StaticResource SuccessButtonStyle}" Margin="0,0,10,10" Command="{Binding ExecuteAllCommand}" />
+                <Button Content="{DynamicResource BtnPauseAll}" Style="{StaticResource PauseButtonStyle}" Margin="0,0,10,10" Command="{Binding PauseAllCommand}" />
+                <Button Content="{DynamicResource BtnPlayAll}" Style="{StaticResource PrimaryActionButtonStyle}" Margin="0,0,10,10" Command="{Binding ResumeAllCommand}" />
+                <Button Content="{DynamicResource BtnStopAll}" Style="{StaticResource DangerButtonStyle}" Margin="0,0,10,10" Command="{Binding StopAllCommand}" />
+                <Button Content="{DynamicResource BtnRefresh}" Style="{StaticResource SecondaryActionButtonStyle}" Margin="0,0,10,10" Command="{Binding RefreshCommand}" />
             </WrapPanel>
         </Border>
 
-        <!-- TABLE -->
-        <Border Grid.Row="3"
-                Style="{StaticResource CardBorderStyle}">
+        <Border Grid.Row="3" Style="{StaticResource CardBorderStyle}">
             <DataGrid x:Name="JobsDataGrid"
                       ItemsSource="{Binding JobItems}"
                       SelectedItem="{Binding SelectedJobItem, Mode=TwoWay}"
@@ -124,222 +99,133 @@
                       IsReadOnly="True"
                       CanUserSortColumns="True"
                       CanUserResizeColumns="True"
+                      GridLinesVisibility="None"
+                      HeadersVisibility="Column"
                       RowHeight="58"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
-                      CellStyle="{StaticResource JobsCellStyle}">
-
+                      CellStyle="{StaticResource JobsCellStyle}"
+                      ColumnHeaderStyle="{StaticResource JobsHeaderStyle}"
+                      RowStyle="{StaticResource JobsRowStyle}">
                 <DataGrid.Columns>
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderNumber}"
-                                        Binding="{Binding Number, StringFormat={}{0:00}}"
-                                        Width="55"
-                                        MinWidth="45" />
+                    <DataGridTextColumn Header="{DynamicResource HeaderNumber}" Binding="{Binding Number, StringFormat={}{0:00}}" Width="55" MinWidth="45" />
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderName}"
-                                        Binding="{Binding Name}"
-                                        Width="2.4*"
-                                        MinWidth="120" />
+                    <DataGridTextColumn Header="{DynamicResource HeaderName}" Binding="{Binding Name}" Width="1.5*" MinWidth="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="4,0" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding Name}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderType}"
-                                        Binding="{Binding Type}"
-                                        Width="1.1*"
-                                        MinWidth="95" />
+                    <DataGridTextColumn Header="{DynamicResource HeaderType}" Binding="{Binding Type}" Width="100" MinWidth="80" />
 
-                    <DataGridTextColumn Header="{DynamicResource HeaderLastExecution}"
-                                        Binding="{Binding LastExecutionTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}"
-                                        Width="1.5*"
-                                        MinWidth="130" />
+                    <DataGridTextColumn Header="{DynamicResource HeaderLastExecution}" Binding="{Binding LastExecutionTime, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="140" MinWidth="130" />
 
-                    <DataGridTemplateColumn Header="{DynamicResource HeaderStatus}"
-                                            Width="1.6*"
-                                            MinWidth="150">
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderStatus}" Width="110" MinWidth="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding DisplayStatus}"
-                                               Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
-                                               FontWeight="SemiBold"
-                                               TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding DisplayStatus}"
+                                           Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasError}" Value="True">
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                                <TextBlock Text="{Binding ErrorMessage}" Foreground="#FFFFFF" FontWeight="SemiBold" TextWrapping="Wrap" MaxWidth="400" />
+                                                            </ToolTip>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                                    <TextBlock Text="{Binding ErrorMessage}"
-                                               Foreground="OrangeRed"
-                                               FontSize="11"
-                                               TextWrapping="Wrap"
-                                               TextTrimming="CharacterEllipsis"
-                                               MaxHeight="32"
-                                               Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
-                                               ToolTip="{Binding ErrorMessage}" />
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderProgress}" Width="160" MinWidth="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Center" Margin="6,0">
+                                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progression, Mode=OneWay}" Height="14" />
+                                    <TextBlock Text="{Binding ProgressText, Mode=OneWay}" Style="{StaticResource SecondaryTextStyle}" HorizontalAlignment="Center" Margin="0,3,0,0" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{DynamicResource HeaderProgress}"
-                                            Width="1.7*"
-                                            MinWidth="130">
+                    <DataGridTemplateColumn Header="{DynamicResource HeaderActions}" Width="240" MinWidth="240">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel VerticalAlignment="Center">
-                                    <ProgressBar Minimum="0"
-                                                 Maximum="100"
-                                                 Value="{Binding Progression, Mode=OneWay}"
-                                                 Height="14" />
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
 
-                                    <TextBlock Text="{Binding ProgressText, Mode=OneWay}"
-                                               Style="{StaticResource SecondaryTextStyle}"
-                                               Margin="0,3,0,0"
-                                               TextTrimming="CharacterEllipsis" />
+                                    <Button Content="⚡" Width="32" MinWidth="0" Height="28" Margin="0,0,4,0" FontSize="12" Padding="0"
+                                            Command="{Binding DataContext.ExecuteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnExecute}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
+                                    <Button Content="⏸" Width="32" MinWidth="0" Height="28" Margin="0,0,4,0" FontSize="12" Padding="0" Style="{StaticResource PauseButtonStyle}"
+                                            Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnPause}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
+                                    <Button Content="▶" Width="32" MinWidth="0" Height="28" Margin="0,0,4,0" FontSize="12" Padding="0"
+                                            Command="{Binding DataContext.ResumeJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnPlay}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
+                                    <Button Content="■" Width="32" MinWidth="0" Height="28" Margin="0,0,4,0" FontSize="12" Padding="0" Style="{StaticResource DangerButtonStyle}"
+                                            Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnStop}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
+                                    <Button Content="✏" Width="32" MinWidth="0" Height="28" Margin="0,0,4,0" FontSize="12" Padding="0" Style="{StaticResource SecondaryActionButtonStyle}"
+                                            Command="{Binding DataContext.EditJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnEdit}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
+                                    <Button Content="🗑" Width="32" MinWidth="0" Height="28" Margin="0,0,0,0" FontSize="12" Padding="0" Style="{StaticResource DangerButtonStyle}"
+                                            Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Job}">
+                                        <Button.ToolTip>
+                                            <ToolTip Background="#0F172A" BorderBrush="#60A5FA" BorderThickness="1" Padding="8,5">
+                                                <TextBlock Text="{DynamicResource BtnDelete}" Foreground="#FFFFFF" FontWeight="SemiBold" />
+                                            </ToolTip>
+                                        </Button.ToolTip>
+                                    </Button>
+
                                 </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn Header="{DynamicResource HeaderActions}"
-                                            Width="2.1*"
-                                            MinWidth="230">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <WrapPanel VerticalAlignment="Center"
-                                           HorizontalAlignment="Left">
-
-                                    <!-- EXECUTE -->
-                                    <Button Content="⚡"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Command="{Binding DataContext.ExecuteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnExecute}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                    <!-- PAUSE -->
-                                    <Button Content="⏸"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Style="{StaticResource PauseButtonStyle}"
-                                            Command="{Binding DataContext.PauseJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnPause}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                    <!-- PLAY -->
-                                    <Button Content="▶"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Command="{Binding DataContext.ResumeJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnPlay}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                    <!-- STOP -->
-                                    <Button Content="■"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Style="{StaticResource DangerButtonStyle}"
-                                            Command="{Binding DataContext.StopJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnStop}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                    <!-- EDIT -->
-                                    <Button Content="✏"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Style="{StaticResource SecondaryActionButtonStyle}"
-                                            Command="{Binding DataContext.EditJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnEdit}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                    <!-- DELETE -->
-                                    <Button Content="🗑"
-                                            Width="32"
-                                            MinWidth="0"
-                                            Height="28"
-                                            Margin="0,0,4,4"
-                                            FontSize="12"
-                                            Padding="0"
-                                            Style="{StaticResource DangerButtonStyle}"
-                                            Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding Job}">
-                                        <Button.ToolTip>
-                                            <ToolTip Background="#0F172A"
-                                                     BorderBrush="#60A5FA"
-                                                     BorderThickness="1"
-                                                     Padding="8,5">
-                                                <TextBlock Text="{DynamicResource BtnDelete}"
-                                                           Foreground="#FFFFFF"
-                                                           FontWeight="SemiBold" />
-                                            </ToolTip>
-                                        </Button.ToolTip>
-                                    </Button>
-
-                                </WrapPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -348,28 +234,12 @@
             </DataGrid>
         </Border>
 
-        <!-- STATUS -->
-        <Border Grid.Row="4"
-                BorderBrush="{StaticResource BorderBrush}"
-                BorderThickness="0,1,0,0"
-                Margin="0,16,0,0"
-                Padding="0,14,0,0">
+        <Border Grid.Row="4" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,14,0,0">
             <StackPanel Orientation="Horizontal">
-                <Border Width="28"
-                        Height="28"
-                        CornerRadius="14"
-                        Background="{StaticResource AccentBrush}"
-                        Margin="0,0,10,0">
-                    <TextBlock Text="i"
-                               Foreground="{StaticResource TextPrimaryBrush}"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                <Border Width="28" Height="28" CornerRadius="14" Background="{StaticResource AccentBrush}" Margin="0,0,10,0">
+                    <TextBlock Text="i" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-
-                <TextBlock Text="{Binding StatusMessage}"
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource TextPrimaryBrush}" />
+                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Foreground="{StaticResource TextPrimaryBrush}" />
             </StackPanel>
         </Border>
     </Grid>

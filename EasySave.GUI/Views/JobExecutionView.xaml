@@ -3,211 +3,224 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:EasySave.GUI.Converters">
 
- 
-
     <UserControl.Resources>
-<converters:StatusColorConverter x:Key="StatusColorConverter" />
-</UserControl.Resources>
+        <converters:StatusColorConverter x:Key="StatusColorConverter" />
 
- 
+        <Style x:Key="ExecCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,1,0" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                ClipToBounds="True">
+                            <ContentPresenter VerticalAlignment="Center"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ExecHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#1E3A5F" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="10,12" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+        </Style>
+
+        <Style x:Key="ExecRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#3B5478" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+        </Style>
+    </UserControl.Resources>
 
     <Grid Margin="24">
-<Grid.RowDefinitions>
-<RowDefinition Height="Auto" />
-<RowDefinition Height="Auto" />
-<RowDefinition Height="*" />
-<RowDefinition Height="Auto" />
-</Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
- 
-
-        <!-- TITLE -->
-<StackPanel Grid.Row="0"
+        <StackPanel Grid.Row="0"
                     Orientation="Horizontal"
                     Margin="0,0,0,20">
-<TextBlock Text="↻"
+            <TextBlock Text="↻"
                        FontSize="28"
                        Foreground="{StaticResource AccentLightBrush}"
                        VerticalAlignment="Center"
                        Margin="0,0,10,0" />
-
- 
-
             <StackPanel>
-<TextBlock Text="{DynamicResource ExecutionTitle}"
+                <TextBlock Text="{DynamicResource ExecutionTitle}"
                            Style="{StaticResource PageTitleStyle}" />
-
- 
-
                 <TextBlock Text="{DynamicResource ExecutionSubtitle}"
                            Style="{StaticResource SecondaryTextStyle}" />
-</StackPanel>
-</StackPanel>
+            </StackPanel>
+        </StackPanel>
 
- 
-
-        <!-- MONITORING ACTIONS -->
-<Border Grid.Row="1"
+        <Border Grid.Row="1"
                 Style="{StaticResource CardBorderStyle}"
                 Margin="0,0,0,18">
-<Grid>
-<Grid.RowDefinitions>
-<RowDefinition Height="Auto" />
-<RowDefinition Height="Auto" />
-<RowDefinition Height="Auto" />
-</Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
- 
-
-                <WrapPanel Grid.Row="0"
-                           Margin="0,0,0,16">
-<Button Content="{DynamicResource BtnStartMonitoring}"
-                            Width="160"
-                            Margin="0,0,10,10"
+                <WrapPanel Grid.Row="0" Margin="0,0,0,16">
+                    <Button Content="{DynamicResource BtnStartMonitoring}"
+                            Width="160" Margin="0,0,10,10"
                             Style="{StaticResource SuccessButtonStyle}"
                             Command="{Binding StartMonitoringCommand}" />
-
- 
-
                     <Button Content="{DynamicResource BtnStopMonitoring}"
-                            Width="160"
-                            Margin="0,0,10,10"
+                            Width="160" Margin="0,0,10,10"
                             Style="{StaticResource DangerButtonStyle}"
                             Command="{Binding StopMonitoringCommand}" />
-</WrapPanel>
-
- 
+                </WrapPanel>
 
                 <TextBlock Grid.Row="1"
                            Text="{Binding MonitoringStatus}"
                            Style="{StaticResource SecondaryTextStyle}"
                            Margin="0,0,0,8" />
 
- 
-
                 <StackPanel Grid.Row="2">
-<ProgressBar Minimum="0"
-                                 Maximum="100"
-                                 Height="22"
+                    <ProgressBar Minimum="0" Maximum="100" Height="22"
                                  Value="{Binding GlobalProgression, Mode=OneWay}" />
-
- 
-
-                    <StackPanel Orientation="Horizontal"
-                                Margin="0,8,0,0">
-<TextBlock Text="{DynamicResource ExecutionProgress}"
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Text="{DynamicResource ExecutionProgress}"
                                    Foreground="{StaticResource TextPrimaryBrush}"
                                    FontWeight="SemiBold" />
-
- 
-
                         <TextBlock Text=" : "
                                    Foreground="{StaticResource TextPrimaryBrush}"
                                    FontWeight="SemiBold" />
-
- 
-
                         <TextBlock Text="{Binding GlobalProgression, StringFormat={}{0}%}"
                                    Foreground="{StaticResource TextPrimaryBrush}"
                                    FontWeight="SemiBold" />
-</StackPanel>
-</StackPanel>
-</Grid>
-</Border>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
 
- 
-
-        <!-- STATES TABLE -->
-<Border Grid.Row="2"
-                Style="{StaticResource CardBorderStyle}">
-<DataGrid ItemsSource="{Binding JobStates}"
+        <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}">
+            <DataGrid ItemsSource="{Binding JobStates}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
-                      CanUserSortColumns="True">
-<DataGrid.Columns>
-
- 
+                      CanUserSortColumns="True"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="None"
+                      HeadersVisibility="Column"
+                      RowHeight="56"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      CellStyle="{StaticResource ExecCellStyle}"
+                      ColumnHeaderStyle="{StaticResource ExecHeaderStyle}"
+                      RowStyle="{StaticResource ExecRowStyle}">
+                <DataGrid.Columns>
 
                     <DataGridTextColumn Header="{DynamicResource ExecutionBackup}"
                                         Binding="{Binding BackupName}"
-                                        Width="2*" />
-
- 
+                                        Width="1.4*" MinWidth="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="4,0" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding BackupName}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                     <DataGridTemplateColumn Header="{DynamicResource ExecutionStatus}"
-                                            Width="140">
-<DataGridTemplateColumn.CellTemplate>
-<DataTemplate>
-<TextBlock Text="{Binding Status}"
+                                            Width="110" MinWidth="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayStatus}"
                                            Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"
                                            FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
-</DataTemplate>
-</DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
-
- 
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Header="{DynamicResource ExecutionProgress}"
-                                            Width="180">
-<DataGridTemplateColumn.CellTemplate>
-<DataTemplate>
-<StackPanel>
-<ProgressBar Minimum="0"
-                                                 Maximum="100"
-                                                 Height="16"
+                                            Width="160" MinWidth="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel VerticalAlignment="Center" Margin="6,0">
+                                    <ProgressBar Minimum="0" Maximum="100" Height="14"
                                                  Value="{Binding Progression, Mode=OneWay}" />
-
- 
-
                                     <TextBlock Text="{Binding Progression, StringFormat={}{0}%}"
                                                Style="{StaticResource SecondaryTextStyle}"
+                                               HorizontalAlignment="Center"
                                                Margin="0,4,0,0" />
-</StackPanel>
-</DataTemplate>
-</DataGridTemplateColumn.CellTemplate>
-</DataGridTemplateColumn>
-
- 
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
                     <DataGridTextColumn Header="{DynamicResource ExecutionRemainingFiles}"
                                         Binding="{Binding RemainingFiles}"
-                                        Width="140" />
-
- 
+                                        Width="100" MinWidth="90" />
 
                     <DataGridTextColumn Header="{DynamicResource ExecutionRemainingSize}"
                                         Binding="{Binding RemainingSize}"
-                                        Width="140" />
-
- 
+                                        Width="110" MinWidth="100" />
 
                     <DataGridTextColumn Header="{DynamicResource ExecutionCurrentSource}"
                                         Binding="{Binding CurrentSourceFile}"
-                                        Width="3*" />
-
- 
+                                        Width="2*" MinWidth="160">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="4,0" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding CurrentSourceFile}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                     <DataGridTextColumn Header="{DynamicResource ExecutionCurrentTarget}"
                                         Binding="{Binding CurrentTargetFile}"
-                                        Width="3*" />
-
- 
+                                        Width="2*" MinWidth="160">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Padding" Value="4,0" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                <Setter Property="ToolTip" Value="{Binding CurrentTargetFile}" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
 
                 </DataGrid.Columns>
-</DataGrid>
-</Border>
+            </DataGrid>
+        </Border>
 
- 
-
-        <!-- INFO -->
-<Border Grid.Row="3"
+        <Border Grid.Row="3"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,1,0,0"
-                Margin="0,18,0,0"
-                Padding="0,14,0,0">
-<TextBlock Text="{DynamicResource ExecutionInfo}"
+                Margin="0,18,0,0" Padding="0,14,0,0">
+            <TextBlock Text="{DynamicResource ExecutionInfo}"
                        Style="{StaticResource SecondaryTextStyle}" />
-</Border>
-</Grid>
+        </Border>
+    </Grid>
 </UserControl>

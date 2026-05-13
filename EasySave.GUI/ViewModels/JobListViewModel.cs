@@ -528,9 +528,15 @@ namespace EasySave.GUI.ViewModels
             }
         }
 
-        public string DisplayStatus => State == null
-            ? "Disponible"
-            : State.Status.ToString();
+        public string DisplayStatus
+        {
+            get
+            {
+                string key = State == null ? "StatusDisponible" : $"Status{State.Status}";
+                object? resource = System.Windows.Application.Current?.TryFindResource(key);
+                return resource?.ToString() ?? (State?.Status.ToString() ?? "Disponible");
+            }
+        }
 
         public double Progression => State?.Progression ?? 0;
 
