@@ -66,6 +66,7 @@ state.json
 jobs.config.json
 settings.json
 *.log
+.ndjson
 
 ###############################
 #     BUILD ARTIFACTS        #
