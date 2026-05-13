@@ -1,7 +1,6 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using EasyLog;
 using EasySave.Core.Models;
 using EasySave.Core.Services;
 
@@ -9,299 +8,171 @@ using EasySave.Core.Services;
 
 namespace EasySave.Core.Strategies
 {
-    public sealed class DifferentialBackupStrategy : IBackupStrategy
+    /// <summary>
+    /// Differential backup: copies only files that are new or have changed
+    /// since the last backup. Optionally deletes orphan files from the target
+    /// (files present in target but no longer in source).
+    /// All shared logic (priority files, pause/stop, throttle, encrypt, log,
+    /// state tracking) lives in BackupStrategyBase.
+    /// </summary>
+    public sealed class DifferentialBackupStrategy : BackupStrategyBase
     {
-        public bool Execute(
-        BackupJob job,
-        EasyLog.EasyLog logger,
-        AppSettings settings,
-        JobExecutionContext context)
+        protected override IEnumerable<string> SelectSourceFiles(
+            BackupJob job,
+            AppSettings settings)
         {
+            return Directory
+                .GetFiles(job.SourcePath, "*", SearchOption.AllDirectories)
+                .Where(file => ShouldCopyFile(file, job.SourcePath, job.TargetPath));
+        }
 
-            if (!job.ValidatePaths())
+
+
+        protected override bool RunPostCopyStep(
+            BackupJob job,
+            AppSettings settings,
+            EasyLog.EasyLog logger,
+            JobExecutionContext context)
+        {
+            if (!settings.DeleteOrphanFilesInDifferential)
             {
-                StateTracker.MarkAsError(job.Name, $"Chemin source introuvable : {job.SourcePath}");
-                return false;
+                return true;
             }
 
-
-            string[] files = Directory
-            .GetFiles(job.SourcePath, "*", SearchOption.AllDirectories)
-            .Where(file => ShouldCopyFile(file, job.SourcePath, job.TargetPath))
-            .OrderByDescending(file => PriorityFileFilter.IsPriorityFile(file, settings.PriorityExtensions))
-            .ThenBy(file => file, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+            return DeleteOrphanFiles(job, settings, logger, context);
+        }
 
 
 
-            long totalSize = files.Sum(GetFileSize);
-            int priorityFilesCount = files.Count(file =>
-            PriorityFileFilter.IsPriorityFile(file, settings.PriorityExtensions));
+        private static bool ShouldCopyFile(
+            string sourceFile,
+            string sourcePath,
+            string targetPath)
+        {
+            string relativePath = Path.GetRelativePath(sourcePath, sourceFile);
+            string targetFile = Path.Combine(targetPath, relativePath);
 
-
-
-            int pendingPriorityFilesForCurrentJob = priorityFilesCount;
-
-
-
-            PriorityFileFilter.RegisterPriorityFiles(job.Name, priorityFilesCount);
-            StateTracker.Initialize(job, files.Length, totalSize);
-
-
-
-            foreach (string sourceFile in files)
+            if (!File.Exists(targetFile))
             {
-                if (!context.WaitIfPaused())
-                {
-                    PriorityFileFilter.ResetJob(job.Name);
-                    StateTracker.MarkAsInterrupted(job.Name);
-                    return false;
-                }
-
-
-
-                if (context.StopToken.IsCancellationRequested)
-                {
-                    PriorityFileFilter.ResetJob(job.Name);
-                    StateTracker.MarkAsInterrupted(job.Name);
-                    return false;
-                }
-
-
-
-                if (!PriorityFileFilter.CanProcess(sourceFile, settings.PriorityExtensions, context))
-                {
-                    PriorityFileFilter.ResetJob(job.Name);
-                    StateTracker.MarkAsInterrupted(job.Name);
-                    return false;
-                }
-
-
-
-                bool isPriorityFile = PriorityFileFilter.IsPriorityFile(sourceFile, settings.PriorityExtensions);
-                bool wasLargeFileSlotAcquired = false;
-
-
-
-                string targetFile = BuildTargetPath(job, sourceFile);
-                long fileSize = GetFileSize(sourceFile);
-
-
-
-                try
-                {
-                    wasLargeFileSlotAcquired = LargeFileThrottle.Acquire(
-                    fileSize,
-                    settings.MaxFileSizeKb);
-
-
-
-                    EnsureTargetDirectoryExists(targetFile);
-
-
-
-                    DateTime transferStartTime = DateTime.Now;
-                    File.Copy(sourceFile, targetFile, true);
-                    long transferTimeMs = Math.Max(
-                    0,
-                    (long)(DateTime.Now - transferStartTime).TotalMilliseconds);
-
-
-
-                    long encryptionTimeMs = CryptoService.Encrypt(
-                    targetFile,
-                    settings.ExtensionsToEncrypt);
-
-
-
-                    logger.LogFileTransfer(
-                    job.Name,
-                    sourceFile,
-                    targetFile,
-                    fileSize,
-                    transferTimeMs,
-                    encryptionTimeMs);
-
-
-
-                    SendCentralizedLogIfRequired(
-                    settings,
-                    job.Name,
-                    sourceFile,
-                    targetFile,
-                    fileSize,
-                    transferTimeMs,
-                    encryptionTimeMs);
-
-
-
-                    StateTracker.UpdateProgress(
-                    job.Name,
-                    sourceFile,
-                    targetFile,
-                    fileSize);
-                }
-                catch
-                {
-                    logger.LogFileTransfer(
-                    job.Name,
-                    sourceFile,
-                    targetFile,
-                    fileSize,
-                    -1,
-                    0);
-
-
-
-                    SendCentralizedLogIfRequired(
-                    settings,
-                    job.Name,
-                    sourceFile,
-                    targetFile,
-                    fileSize,
-                    -1,
-                    0);
-
-
-
-                    StateTracker.MarkAsError(job.Name, $"Erreur lors du transfert : {sourceFile}");
-                    return false;
-                }
-                finally
-                {
-                    LargeFileThrottle.Release(wasLargeFileSlotAcquired);
-
-
-
-                    if (isPriorityFile)
-                    {
-                        PriorityFileFilter.NotifyPriorityFileCompleted(job.Name);
-                        pendingPriorityFilesForCurrentJob = Math.Max(
-                        0,
-                        pendingPriorityFilesForCurrentJob - 1);
-                    }
-                }
+                return true;
             }
 
+            var sourceInfo = new FileInfo(sourceFile);
+            var targetInfo = new FileInfo(targetFile);
 
-
-            if (settings.DeleteOrphanFilesInDifferential)
-            {
-                bool deleteSuccess = DeleteOrphanFiles(job, settings, logger, context);
-
-                if (!deleteSuccess)
-                {
-                    return false;
-                }
-            }
-
-
-
-            StateTracker.MarkAsCompleted(job.Name);
-            return true;
+            return sourceInfo.LastWriteTime > targetInfo.LastWriteTime
+                || sourceInfo.Length != targetInfo.Length;
         }
 
 
 
         private static bool DeleteOrphanFiles(
-        BackupJob job,
-        AppSettings settings,
-        EasyLog.EasyLog logger,
-        JobExecutionContext context)
+            BackupJob job,
+            AppSettings settings,
+            EasyLog.EasyLog logger,
+            JobExecutionContext context)
         {
             if (!Directory.Exists(job.TargetPath))
             {
                 return true;
             }
 
-
-
             string[] targetFiles = Directory.GetFiles(
-            job.TargetPath,
-            "*",
-            SearchOption.AllDirectories);
-
-
+                job.TargetPath,
+                "*",
+                SearchOption.AllDirectories);
 
             foreach (string targetFile in targetFiles)
             {
-                if (!context.WaitIfPaused())
+                if (!context.WaitIfPaused() || context.StopToken.IsCancellationRequested)
                 {
                     return false;
                 }
-
-
-
-                if (context.StopToken.IsCancellationRequested)
-                {
-                    return false;
-                }
-
-
 
                 string relativePath = Path.GetRelativePath(job.TargetPath, targetFile);
                 string expectedSourceFile = Path.Combine(job.SourcePath, relativePath);
 
-
-
-                if (!File.Exists(expectedSourceFile))
+                if (File.Exists(expectedSourceFile))
                 {
-                    try
-                    {
-                        long fileSize = GetFileSize(targetFile);
+                    continue;
+                }
 
-                        File.Delete(targetFile);
-
-                        logger.LogFileTransfer(
-                        job.Name,
-                        "[DELETED_FROM_TARGET_ORPHAN]",
-                        targetFile,
-                        fileSize,
-                        0,
-                        0);
-
-                        SendCentralizedLogIfRequired(
-                        settings,
-                        job.Name,
-                        "[DELETED_FROM_TARGET_ORPHAN]",
-                        targetFile,
-                        fileSize,
-                        0,
-                        0);
-                    }
-                    catch
-                    {
-                        logger.LogFileTransfer(
-                        job.Name,
-                        "[DELETE_ORPHAN_FAILED]",
-                        targetFile,
-                        0,
-                        -1,
-                        0);
-
-                        SendCentralizedLogIfRequired(
-                        settings,
-                        job.Name,
-                        "[DELETE_ORPHAN_FAILED]",
-                        targetFile,
-                        0,
-                        -1,
-                        0);
-
-                        StateTracker.MarkAsError(job.Name);
-                        return false;
-                    }
+                if (!TryDeleteOrphan(job, settings, logger, targetFile))
+                {
+                    return false;
                 }
             }
 
+            RemoveEmptyDirectories(job.TargetPath);
+            return true;
+        }
 
 
+
+        private static bool TryDeleteOrphan(
+            BackupJob job,
+            AppSettings settings,
+            EasyLog.EasyLog logger,
+            string targetFile)
+        {
+            try
+            {
+                long fileSize = GetFileSize(targetFile);
+                File.Delete(targetFile);
+
+                logger.LogFileTransfer(
+                    job.Name,
+                    "[DELETED_FROM_TARGET_ORPHAN]",
+                    targetFile,
+                    fileSize,
+                    0,
+                    0);
+
+                SendCentralizedLogIfRequired(
+                    settings,
+                    job.Name,
+                    "[DELETED_FROM_TARGET_ORPHAN]",
+                    targetFile,
+                    fileSize,
+                    0,
+                    0);
+
+                return true;
+            }
+            catch
+            {
+                logger.LogFileTransfer(
+                    job.Name,
+                    "[DELETE_ORPHAN_FAILED]",
+                    targetFile,
+                    0,
+                    -1,
+                    0);
+
+                SendCentralizedLogIfRequired(
+                    settings,
+                    job.Name,
+                    "[DELETE_ORPHAN_FAILED]",
+                    targetFile,
+                    0,
+                    -1,
+                    0);
+
+                StateTracker.MarkAsError(job.Name);
+                return false;
+            }
+        }
+
+
+
+        private static void RemoveEmptyDirectories(string targetPath)
+        {
             foreach (string directory in Directory
-            .GetDirectories(job.TargetPath, "*", SearchOption.AllDirectories)
-            .OrderByDescending(d => d.Length))
+                .GetDirectories(targetPath, "*", SearchOption.AllDirectories)
+                .OrderByDescending(d => d.Length))
             {
                 if (Directory.Exists(directory) &&
-                !Directory.EnumerateFileSystemEntries(directory).Any())
+                    !Directory.EnumerateFileSystemEntries(directory).Any())
                 {
                     try
                     {
@@ -309,107 +180,10 @@ namespace EasySave.Core.Strategies
                     }
                     catch
                     {
+                        // Best-effort cleanup of empty target subdirectories.
                     }
                 }
             }
-
-
-
-            return true;
-        }
-
-
-
-        private static bool ShouldCopyFile(
-        string sourceFile,
-        string sourcePath,
-        string targetPath)
-        {
-            string relativePath = Path.GetRelativePath(sourcePath, sourceFile);
-            string targetFile = Path.Combine(targetPath, relativePath);
-
-
-
-            if (!File.Exists(targetFile))
-            {
-                return true;
-            }
-
-
-
-            var sourceInfo = new FileInfo(sourceFile);
-            var targetInfo = new FileInfo(targetFile);
-
-
-
-            return sourceInfo.LastWriteTime > targetInfo.LastWriteTime
-            || sourceInfo.Length != targetInfo.Length;
-        }
-
-
-
-        private static string BuildTargetPath(BackupJob job, string sourceFile)
-        {
-            string relativePath = Path.GetRelativePath(job.SourcePath, sourceFile);
-            return Path.Combine(job.TargetPath, relativePath);
-        }
-
-
-
-        private static void EnsureTargetDirectoryExists(string targetFile)
-        {
-            string? targetDirectory = Path.GetDirectoryName(targetFile);
-
-
-
-            if (!string.IsNullOrWhiteSpace(targetDirectory) && !Directory.Exists(targetDirectory))
-            {
-                Directory.CreateDirectory(targetDirectory);
-            }
-        }
-
-
-
-        private static long GetFileSize(string filePath)
-        {
-            return File.Exists(filePath)
-            ? new FileInfo(filePath).Length
-            : 0;
-        }
-
-
-
-
-        private static void SendCentralizedLogIfRequired(
-        AppSettings settings,
-        string backupName,
-        string sourceFile,
-        string targetFile,
-        long fileSize,
-        long transferTimeMs,
-        long encryptionTimeMs)
-        {
-            if (settings.LogMode == LogMode.Local)
-            {
-                return;
-            }
-
-
-
-            var entry = new LogEntry
-            {
-                Timestamp = DateTime.Now,
-                BackupName = backupName,
-                SourceFile = sourceFile,
-                TargetFile = targetFile,
-                FileSize = fileSize,
-                TransferTimeMs = transferTimeMs,
-                EncryptionTimeMs = encryptionTimeMs
-            };
-
-
-
-            _ = LogCentralizer.SendAsync(entry, Environment.MachineName);
         }
     }
 }
