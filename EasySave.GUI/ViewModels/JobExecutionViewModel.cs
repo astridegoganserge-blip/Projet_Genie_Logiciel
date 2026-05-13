@@ -12,7 +12,7 @@ namespace EasySave.GUI.ViewModels
         private readonly System.Timers.Timer _refreshTimer;
 
         private double _globalProgression;
-        private string _monitoringStatus = "Monitoring stopped";
+        private string _monitoringStatus = string.Empty;
         private bool _isMonitoring;
 
         public JobExecutionViewModel()
@@ -71,7 +71,7 @@ namespace EasySave.GUI.ViewModels
         private void StartMonitoring()
         {
             IsMonitoring = true;
-            MonitoringStatus = "Monitoring started";
+            MonitoringStatus = Tr("MsgMonitoringStarted");
 
             RefreshStates();
             _refreshTimer.Start();
@@ -80,9 +80,15 @@ namespace EasySave.GUI.ViewModels
         private void StopMonitoring()
         {
             _refreshTimer.Stop();
-
             IsMonitoring = false;
-            MonitoringStatus = "Monitoring stopped";
+            MonitoringStatus = Tr("MsgMonitoringStopped");
+        }
+
+        private static string Tr(string key, params object[] args)
+        {
+            object? resource = System.Windows.Application.Current?.TryFindResource(key);
+            string template = resource?.ToString() ?? key;
+            return args.Length > 0 ? string.Format(template, args) : template;
         }
 
         private void RefreshStates()
@@ -108,8 +114,8 @@ namespace EasySave.GUI.ViewModels
                     : Math.Round(JobStates.Average(state => state.Progression), 2);
 
                 MonitoringStatus = IsMonitoring
-                    ? $"Last refresh: {DateTime.Now:HH:mm:ss}"
-                    : "Monitoring stopped";
+                    ? Tr("MsgLastRefresh", DateTime.Now.ToString("HH:mm:ss"))
+                    : Tr("MsgMonitoringStopped");
             });
         }
     }

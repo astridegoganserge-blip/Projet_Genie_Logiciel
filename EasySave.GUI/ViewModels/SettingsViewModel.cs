@@ -317,7 +317,8 @@ namespace EasySave.GUI.ViewModels
 
 
 
-            SuccessMessage = "Settings saved successfully.";
+            object? resource = System.Windows.Application.Current?.TryFindResource("MsgSettingsSaved");
+            SuccessMessage = resource?.ToString() ?? "Settings saved successfully.";
         }
 
 

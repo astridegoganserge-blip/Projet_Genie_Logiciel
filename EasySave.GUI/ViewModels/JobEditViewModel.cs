@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +29,7 @@ namespace EasySave.GUI.ViewModels
         private BackupType _selectedType = BackupType.Complete;
         private string _errorMessage = string.Empty;
         private string _successMessage = string.Empty;
-        private string _formTitle = "Create backup job";
+        private string _formTitle = string.Empty;
 
 
 
@@ -62,10 +61,10 @@ namespace EasySave.GUI.ViewModels
 
 
             AvailableTypes = new List<BackupType>
- {
- BackupType.Complete,
- BackupType.Differential
- };
+            {
+                BackupType.Complete,
+                BackupType.Differential
+            };
 
 
 
@@ -76,10 +75,14 @@ namespace EasySave.GUI.ViewModels
 
 
 
-            if (!_isCreation)
+            if (_isCreation)
+            {
+                FormTitle = Tr("CreateBackupJob");
+            }
+            else
             {
                 _backupManager.LockForEdit();
-                FormTitle = "Edit backup job";
+                FormTitle = Tr("EditBackupJob");
             }
 
 
@@ -88,6 +91,15 @@ namespace EasySave.GUI.ViewModels
             {
                 LoadJob(job);
             }
+        }
+
+
+
+        private static string Tr(string key, params object[] args)
+        {
+            object? resource = System.Windows.Application.Current?.TryFindResource(key);
+            string template = resource?.ToString() ?? key;
+            return args.Length > 0 ? string.Format(template, args) : template;
         }
 
 
@@ -269,8 +281,8 @@ namespace EasySave.GUI.ViewModels
             if (!saved)
             {
                 ErrorMessage = _isCreation
-                ? "Unable to create backup job. Check the source path."
-                : "Unable to update backup job. Check the source path.";
+                ? Tr("MsgCreateJobError")
+                : Tr("MsgUpdateJobError");
 
 
 
@@ -280,8 +292,8 @@ namespace EasySave.GUI.ViewModels
 
 
             SuccessMessage = _isCreation
-            ? "Backup job created successfully."
-            : "Backup job updated successfully.";
+            ? Tr("MsgCreateJobSuccess")
+            : Tr("MsgUpdateJobSuccess");
 
 
 
@@ -317,7 +329,7 @@ namespace EasySave.GUI.ViewModels
         {
             if (string.IsNullOrWhiteSpace(JobName))
             {
-                ErrorMessage = "Job name is required.";
+                ErrorMessage = Tr("MsgJobNameRequired");
                 return false;
             }
 
@@ -325,7 +337,7 @@ namespace EasySave.GUI.ViewModels
 
             if (string.IsNullOrWhiteSpace(SourcePath))
             {
-                ErrorMessage = "Source path is required.";
+                ErrorMessage = Tr("MsgSourcePathRequired");
                 return false;
             }
 
@@ -333,7 +345,7 @@ namespace EasySave.GUI.ViewModels
 
             if (!Directory.Exists(SourcePath))
             {
-                ErrorMessage = "Source path does not exist.";
+                ErrorMessage = Tr("MsgSourcePathNotFound");
                 return false;
             }
 
@@ -341,7 +353,7 @@ namespace EasySave.GUI.ViewModels
 
             if (string.IsNullOrWhiteSpace(TargetPath))
             {
-                ErrorMessage = "Target path is required.";
+                ErrorMessage = Tr("MsgTargetPathRequired");
                 return false;
             }
 
@@ -373,7 +385,7 @@ namespace EasySave.GUI.ViewModels
 
         private void BrowseSource()
         {
-            string? selectedPath = BrowseFolder("Select source folder");
+            string? selectedPath = BrowseFolder(Tr("MsgBrowseSource"));
 
 
 
@@ -387,7 +399,7 @@ namespace EasySave.GUI.ViewModels
 
         private void BrowseTarget()
         {
-            string? selectedPath = BrowseFolder("Select target folder");
+            string? selectedPath = BrowseFolder(Tr("MsgBrowseTarget"));
 
 
 
@@ -435,4 +447,3 @@ namespace EasySave.GUI.ViewModels
         }
     }
 }
-

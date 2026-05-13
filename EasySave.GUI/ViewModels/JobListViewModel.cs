@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -75,10 +74,6 @@ namespace EasySave.GUI.ViewModels
                 Interval = TimeSpan.FromMilliseconds(500)
             };
 
-            // IMPORTANT: any unhandled exception thrown from a DispatcherTimer.Tick
-            // handler terminates the WPF process silently. We swallow exceptions here
-            // so that a transient I/O / serialization glitch on state.json never
-            // crashes the application.
             _stateRefreshTimer.Tick += (_, _) =>
             {
                 try
@@ -87,12 +82,19 @@ namespace EasySave.GUI.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    StatusMessage = $"Progress refresh error (ignored): {ex.Message}";
+                    StatusMessage = Tr("MsgProgressError", ex.Message);
                 }
             };
 
             LoadJobs();
             RefreshRuntimeStates();
+        }
+
+        private static string Tr(string key, params object[] args)
+        {
+            object? resource = System.Windows.Application.Current?.TryFindResource(key);
+            string template = resource?.ToString() ?? key;
+            return args.Length > 0 ? string.Format(template, args) : template;
         }
 
         public event Action<object>? NavigationRequested;
@@ -149,27 +151,16 @@ namespace EasySave.GUI.ViewModels
         public bool IsEditLocked => _backupManager.IsEditLocked;
 
         public RelayCommand RefreshCommand { get; }
-
         public RelayCommand ExecuteJobCommand { get; }
-
         public RelayCommand ExecuteAllCommand { get; }
-
         public RelayCommand DeleteJobCommand { get; }
-
         public RelayCommand EditJobCommand { get; }
-
         public RelayCommand CreateJobCommand { get; }
-
         public RelayCommand PauseJobCommand { get; }
-
         public RelayCommand ResumeJobCommand { get; }
-
         public RelayCommand StopJobCommand { get; }
-
         public RelayCommand PauseAllCommand { get; }
-
         public RelayCommand ResumeAllCommand { get; }
-
         public RelayCommand StopAllCommand { get; }
 
         private void LoadJobs(bool updateStatusMessage = true)
@@ -189,13 +180,12 @@ namespace EasySave.GUI.ViewModels
             }
 
             RefreshRuntimeStates();
-
             OnPropertyChanged(nameof(IsEditLocked));
             RaiseCommandStates();
 
             if (updateStatusMessage)
             {
-                StatusMessage = $"{Jobs.Count} job(s) loaded.";
+                StatusMessage = Tr("MsgJobsLoaded", Jobs.Count);
             }
         }
 
@@ -227,7 +217,7 @@ namespace EasySave.GUI.ViewModels
             LoadJobs(false);
             SelectedJobItem = null;
             SelectedJob = null;
-            StatusMessage = $"{Jobs.Count} job(s) refreshed.";
+            StatusMessage = Tr("MsgJobsRefreshed", Jobs.Count);
         }
 
         private async Task ExecuteSelectedJobAsync(object? parameter)
@@ -236,19 +226,19 @@ namespace EasySave.GUI.ViewModels
 
             if (jobToExecute == null)
             {
-                StatusMessage = "Please select a backup job before execution.";
+                StatusMessage = Tr("MsgSelectJob");
                 return;
             }
 
             if (IsEditLocked)
             {
-                StatusMessage = "Execution blocked: a job is currently being edited.";
+                StatusMessage = Tr("MsgExecutionLocked");
                 return;
             }
 
             SelectedJob = jobToExecute;
             IsExecuting = true;
-            StatusMessage = $"Executing: {jobToExecute.Name}";
+            StatusMessage = Tr("MsgExecuting", jobToExecute.Name);
 
             _stateRefreshTimer.Start();
 
@@ -258,7 +248,7 @@ namespace EasySave.GUI.ViewModels
 
                 if (logger == null)
                 {
-                    StatusMessage = "Logger not initialized.";
+                    StatusMessage = Tr("MsgLoggerNotInit");
                     return;
                 }
 
@@ -268,14 +258,14 @@ namespace EasySave.GUI.ViewModels
                 RefreshRuntimeStates();
 
                 StatusMessage = success
-                    ? $"Execution completed: {jobToExecute.Name}"
-                    : $"Execution failed, paused, stopped or blocked: {jobToExecute.Name}";
+                    ? Tr("MsgExecutionCompleted", jobToExecute.Name)
+                    : Tr("MsgExecutionFailed", jobToExecute.Name);
 
                 LoadJobs(false);
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Execution error: {ex.Message}";
+                StatusMessage = Tr("MsgExecutionError", ex.Message);
             }
             finally
             {
@@ -289,18 +279,18 @@ namespace EasySave.GUI.ViewModels
         {
             if (Jobs.Count == 0)
             {
-                StatusMessage = "No backup job available for execution.";
+                StatusMessage = Tr("MsgNoJobAvailable");
                 return;
             }
 
             if (IsEditLocked)
             {
-                StatusMessage = "Execution blocked: a job is currently being edited.";
+                StatusMessage = Tr("MsgExecutionLocked");
                 return;
             }
 
             IsExecuting = true;
-            StatusMessage = "Parallel execution started.";
+            StatusMessage = Tr("MsgParallelStarted");
 
             _stateRefreshTimer.Start();
 
@@ -310,7 +300,7 @@ namespace EasySave.GUI.ViewModels
 
                 if (logger == null)
                 {
-                    StatusMessage = "Logger not initialized.";
+                    StatusMessage = Tr("MsgLoggerNotInit");
                     return;
                 }
 
@@ -324,14 +314,14 @@ namespace EasySave.GUI.ViewModels
                 RefreshRuntimeStates();
 
                 StatusMessage = success
-                    ? "Parallel execution completed."
-                    : "Parallel execution completed with errors, stops or interruptions.";
+                    ? Tr("MsgParallelCompleted")
+                    : Tr("MsgParallelCompletedErrors");
 
                 LoadJobs(false);
             }
             catch (Exception ex)
             {
-                StatusMessage = $"Parallel execution error: {ex.Message}";
+                StatusMessage = Tr("MsgParallelError", ex.Message);
             }
             finally
             {
@@ -347,13 +337,13 @@ namespace EasySave.GUI.ViewModels
 
             if (job == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = Tr("MsgNoJobSelected");
                 return;
             }
 
             _backupManager.PauseJob(job.Name);
             RefreshRuntimeStates();
-            StatusMessage = $"Pause requested: {job.Name}";
+            StatusMessage = Tr("MsgPauseRequested", job.Name);
         }
 
         private void ResumeJob(object? parameter)
@@ -362,13 +352,13 @@ namespace EasySave.GUI.ViewModels
 
             if (job == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = Tr("MsgNoJobSelected");
                 return;
             }
 
             _backupManager.ResumeJob(job.Name);
             RefreshRuntimeStates();
-            StatusMessage = $"Resume requested: {job.Name}";
+            StatusMessage = Tr("MsgResumeRequested", job.Name);
         }
 
         private void StopJob(object? parameter)
@@ -377,34 +367,34 @@ namespace EasySave.GUI.ViewModels
 
             if (job == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = Tr("MsgNoJobSelected");
                 return;
             }
 
             _backupManager.StopJob(job.Name);
             RefreshRuntimeStates();
-            StatusMessage = $"Stop requested: {job.Name}";
+            StatusMessage = Tr("MsgStopRequested", job.Name);
         }
 
         private void PauseAll()
         {
             _backupManager.PauseAll();
             RefreshRuntimeStates();
-            StatusMessage = "Pause requested for all active jobs.";
+            StatusMessage = Tr("MsgPauseAllRequested");
         }
 
         private void ResumeAll()
         {
             _backupManager.ResumeAll();
             RefreshRuntimeStates();
-            StatusMessage = "Resume requested for all paused jobs.";
+            StatusMessage = Tr("MsgResumeAllRequested");
         }
 
         private void StopAll()
         {
             _backupManager.StopAll();
             RefreshRuntimeStates();
-            StatusMessage = "Stop requested for all active jobs.";
+            StatusMessage = Tr("MsgStopAllRequested");
         }
 
         private void DeleteSelectedJob(object? parameter)
@@ -413,13 +403,13 @@ namespace EasySave.GUI.ViewModels
 
             if (jobToDelete == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = Tr("MsgNoJobSelected");
                 return;
             }
 
             if (IsEditLocked)
             {
-                StatusMessage = "Delete blocked: a job is currently being edited.";
+                StatusMessage = Tr("MsgDeleteLocked");
                 return;
             }
 
@@ -427,7 +417,7 @@ namespace EasySave.GUI.ViewModels
             LoadJobs(false);
             SelectedJobItem = null;
             SelectedJob = null;
-            StatusMessage = $"Job deleted: {jobToDelete.Name}";
+            StatusMessage = Tr("MsgJobDeleted", jobToDelete.Name);
         }
 
         private void CreateJob()
@@ -438,7 +428,7 @@ namespace EasySave.GUI.ViewModels
                 backupManager: _backupManager);
 
             NavigationRequested?.Invoke(viewModel);
-            StatusMessage = "Create job view requested.";
+            StatusMessage = Tr("MsgCreateRequested");
         }
 
         private void EditSelectedJob(object? parameter)
@@ -447,7 +437,7 @@ namespace EasySave.GUI.ViewModels
 
             if (jobToEdit == null)
             {
-                StatusMessage = "No job selected.";
+                StatusMessage = Tr("MsgNoJobSelected");
                 return;
             }
 
@@ -459,7 +449,7 @@ namespace EasySave.GUI.ViewModels
             NavigationRequested?.Invoke(viewModel);
             OnPropertyChanged(nameof(IsEditLocked));
             RaiseCommandStates();
-            StatusMessage = $"Edit requested: {jobToEdit.Name}";
+            StatusMessage = Tr("MsgEditRequested", jobToEdit.Name);
         }
 
         private BackupJob? GetJobFromParameter(object? parameter)
@@ -498,19 +488,12 @@ namespace EasySave.GUI.ViewModels
         }
 
         public BackupJob Job { get; }
-
         public Guid Id => Job.Id;
-
         public int Number => Job.Number;
-
         public string Name => Job.Name;
-
         public string SourcePath => Job.SourcePath;
-
         public string TargetPath => Job.TargetPath;
-
         public BackupType Type => Job.Type;
-
         public DateTime? LastExecutionTime => Job.LastExecutionTime;
 
         public JobState? State
@@ -523,18 +506,31 @@ namespace EasySave.GUI.ViewModels
                 OnPropertyChanged(nameof(DisplayStatus));
                 OnPropertyChanged(nameof(Progression));
                 OnPropertyChanged(nameof(ProgressText));
+                OnPropertyChanged(nameof(ErrorMessage));
+                OnPropertyChanged(nameof(HasError));
             }
         }
 
-        public string DisplayStatus => State == null
-            ? "Disponible"
-            : State.Status.ToString();
+        public string DisplayStatus
+        {
+            get
+            {
+                string key = State == null ? "StatusDisponible" : $"Status{State.Status}";
+                object? resource = System.Windows.Application.Current?.TryFindResource(key);
+                return resource?.ToString() ?? (State?.Status.ToString() ?? "Disponible");
+            }
+        }
 
         public double Progression => State?.Progression ?? 0;
 
         public string ProgressText => State == null
             ? "0 %"
             : $"{State.Progression:0.##} %";
+
+        public string ErrorMessage => State?.ErrorMessage ?? string.Empty;
+
+        public bool HasError => State?.Status == JobStatus.Erreur
+            && !string.IsNullOrEmpty(ErrorMessage);
 
         public void UpdateState(JobState? state)
         {

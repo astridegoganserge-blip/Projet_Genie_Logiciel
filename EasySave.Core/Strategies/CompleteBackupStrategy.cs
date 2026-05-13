@@ -17,8 +17,10 @@ namespace EasySave.Core.Strategies
         AppSettings settings,
         JobExecutionContext context)
         {
+
             if (!job.ValidatePaths())
             {
+                StateTracker.MarkAsError(job.Name, $"Chemin source introuvable : {job.SourcePath}");
                 return false;
             }
 
@@ -162,7 +164,7 @@ namespace EasySave.Core.Strategies
 
 
 
-                    StateTracker.MarkAsError(job.Name);
+                    StateTracker.MarkAsError(job.Name, $"Erreur lors du transfert : {sourceFile}");
                     return false;
                 }
                 finally
