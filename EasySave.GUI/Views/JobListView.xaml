@@ -5,6 +5,7 @@
 
     <UserControl.Resources>
         <converters:StatusColorConverter x:Key="StatusColorConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
         <Style x:Key="JobsCellStyle" TargetType="DataGridCell">
             <Setter Property="Padding" Value="12,0" />
@@ -151,15 +152,25 @@
                                         MinWidth="130" />
 
                     <DataGridTemplateColumn Header="{DynamicResource HeaderStatus}"
-                                            Width="1.1*"
-                                            MinWidth="105">
+                                            Width="1.6*"
+                                            MinWidth="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding DisplayStatus}"
-                                           Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
-                                           FontWeight="SemiBold"
-                                           VerticalAlignment="Center"
-                                           TextTrimming="CharacterEllipsis" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding DisplayStatus}"
+                                               Foreground="{Binding DisplayStatus, Converter={StaticResource StatusColorConverter}}"
+                                               FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+
+                                    <TextBlock Text="{Binding ErrorMessage}"
+                                               Foreground="OrangeRed"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxHeight="32"
+                                               Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
+                                               ToolTip="{Binding ErrorMessage}" />
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

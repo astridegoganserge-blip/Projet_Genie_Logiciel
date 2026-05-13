@@ -523,6 +523,8 @@ namespace EasySave.GUI.ViewModels
                 OnPropertyChanged(nameof(DisplayStatus));
                 OnPropertyChanged(nameof(Progression));
                 OnPropertyChanged(nameof(ProgressText));
+                OnPropertyChanged(nameof(ErrorMessage));
+                OnPropertyChanged(nameof(HasError));
             }
         }
 
@@ -535,6 +537,12 @@ namespace EasySave.GUI.ViewModels
         public string ProgressText => State == null
             ? "0 %"
             : $"{State.Progression:0.##} %";
+
+        public string ErrorMessage => State?.ErrorMessage ?? string.Empty;
+
+        public bool HasError => State?.Status == JobStatus.Erreur
+            && !string.IsNullOrEmpty(ErrorMessage);
+
 
         public void UpdateState(JobState? state)
         {
