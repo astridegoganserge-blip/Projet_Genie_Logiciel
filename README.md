@@ -5,12 +5,13 @@ EasySave est un logiciel de sauvegarde développé en C# dans le cadre du projet
 Le projet contient plusieurs versions évolutives :
 
 - **EasySave v1.0 / v1.1** : application console ;
-- **EasySave v2.0** : interface graphique WPF fondée sur une architecture MVVM.
+- **EasySave v2.0** : interface graphique WPF fondée sur une architecture MVVM ;
+- **EasySave v3.0** : exécution parallèle, fichiers prioritaires, contrôles Play/Pause/Stop, centralisation Docker des logs.
 
 La version actuelle du projet est :
 
-```text
-EasySave v2.0.0
+```
+EasySave v3.0.0
 ```
 
 ---
@@ -63,6 +64,20 @@ La version graphique ajoute :
 - la détection d’un logiciel métier bloquant ;
 - un suivi d’état enrichi ;
 - une interface graphique modernisée.
+
+### EasySave v3.0 — Exécution parallèle et centralisation
+
+La version 3.0 ajoute :
+
+- l'exécution parallèle des travaux (remplace le mode séquentiel) ;
+- la gestion des fichiers prioritaires (barrière globale) ;
+- la limitation des transferts simultanés de fichiers volumineux ;
+- les contrôles Play / Pause / Stop par travail et globaux ;
+- la mise en pause automatique sur détection d'un logiciel métier, avec reprise automatique ;
+- CryptoSoft mono-instance via mutex global ;
+- la centralisation des logs sur un service Docker `EasySave.LogServer` ;
+- trois modes de log : Local, Docker, Both.
+
 
 ---
 
@@ -543,6 +558,13 @@ Les points suivants ont été validés :
 - L’interface pourra encore être enrichie dans une version future.
 - Le packaging installable n’est pas encore fourni.
 
+## Résultat attendu
+
+Après ces 3 éditions :
+- la version affichée est `EasySave v3.0.0`,
+- la liste en tête de README mentionne la v3.0,
+- la section "Versions disponibles" décrit les apports v3.0,
+- le reste du README (stack technique, arborescence, compilation, etc.) reste inchangé.
 ---
 
 ## Équipe
