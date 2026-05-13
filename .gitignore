@@ -62,6 +62,7 @@ TestResults/
 ###############################
 
 logs/
+centralized-logs/
 state.json
 jobs.config.json
 settings.json
