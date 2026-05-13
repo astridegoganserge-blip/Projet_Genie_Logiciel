@@ -17,6 +17,18 @@ namespace EasySave.Views
             Console.WriteLine("4. " + LanguageManager.T("MenuShow"));
             Console.WriteLine("5. " + LanguageManager.T("MenuDelete"));
             Console.WriteLine("6. " + LanguageManager.T("MenuSettings"));
+
+            Console.WriteLine();
+            Console.WriteLine("--- " + LanguageManager.T("MenuAdvancedExecution") + " ---");
+            Console.WriteLine("7. " + LanguageManager.T("MenuExecuteParallel"));
+            Console.WriteLine("8. " + LanguageManager.T("MenuPauseJob"));
+            Console.WriteLine("9. " + LanguageManager.T("MenuResumeJob"));
+            Console.WriteLine("10. " + LanguageManager.T("MenuStopJob"));
+            Console.WriteLine("11. " + LanguageManager.T("MenuPauseAll"));
+            Console.WriteLine("12. " + LanguageManager.T("MenuResumeAll"));
+            Console.WriteLine("13. " + LanguageManager.T("MenuStopAll"));
+
+            Console.WriteLine();
             Console.WriteLine("0. " + LanguageManager.T("MenuExit"));
             Console.Write(LanguageManager.T("ChoicePrompt"));
         }
@@ -72,6 +84,11 @@ namespace EasySave.Views
         }
 
         public static void ShowError(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        public static void ShowInfo(string message)
         {
             Console.WriteLine(message);
         }

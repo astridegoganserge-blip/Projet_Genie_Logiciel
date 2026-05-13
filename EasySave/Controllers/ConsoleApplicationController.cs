@@ -93,6 +93,34 @@ namespace EasySave.Controllers
                         UpdateSettings();
                         break;
 
+                    case "7":
+                        ExecuteParallel();
+                        break;
+
+                    case "8":
+                        PauseSingleJob();
+                        break;
+
+                    case "9":
+                        ResumeSingleJob();
+                        break;
+
+                    case "10":
+                        StopSingleJob();
+                        break;
+
+                    case "11":
+                        PauseAllJobs();
+                        break;
+
+                    case "12":
+                        ResumeAllJobs();
+                        break;
+
+                    case "13":
+                        StopAllJobs();
+                        break;
+
                     case "0":
                         return;
 
@@ -165,6 +193,24 @@ namespace EasySave.Controllers
             JobView.Pause();
         }
 
+        private void ExecuteParallel()
+        {
+            JobView.ShowJobList(_jobController.GetAllJobs());
+
+            bool success = _jobController.ExecuteParallel();
+
+            if (success)
+            {
+                JobView.ShowBackupCompleted();
+            }
+            else
+            {
+                JobView.ShowBackupFailed();
+            }
+
+            JobView.Pause();
+        }
+
         private void DeleteJob()
         {
             JobView.ShowJobList(_jobController.GetAllJobs());
@@ -185,12 +231,172 @@ namespace EasySave.Controllers
             JobView.Pause();
         }
 
+        private void PauseSingleJob()
+        {
+            JobView.ShowJobList(_jobController.GetAllJobs());
+
+            int id = JobView.ReadJobId();
+
+            _jobController.PauseJob(id);
+
+            JobView.ShowInfo(LanguageManager.T("PauseRequested"));
+            JobView.Pause();
+        }
+
+        private void ResumeSingleJob()
+        {
+            JobView.ShowJobList(_jobController.GetAllJobs());
+
+            int id = JobView.ReadJobId();
+
+            _jobController.ResumeJob(id);
+
+            JobView.ShowInfo(LanguageManager.T("ResumeRequested"));
+            JobView.Pause();
+        }
+
+        private void StopSingleJob()
+        {
+            JobView.ShowJobList(_jobController.GetAllJobs());
+
+            int id = JobView.ReadJobId();
+
+            _jobController.StopJob(id);
+
+            JobView.ShowInfo(LanguageManager.T("StopRequested"));
+            JobView.Pause();
+        }
+
+        private void PauseAllJobs()
+        {
+            _jobController.PauseAll();
+            JobView.ShowInfo(LanguageManager.T("PauseAllRequested"));
+            JobView.Pause();
+        }
+
+        private void ResumeAllJobs()
+        {
+            _jobController.ResumeAll();
+            JobView.ShowInfo(LanguageManager.T("ResumeAllRequested"));
+            JobView.Pause();
+        }
+
+        private void StopAllJobs()
+        {
+            _jobController.StopAll();
+            JobView.ShowInfo(LanguageManager.T("StopAllRequested"));
+            JobView.Pause();
+        }
+
         private void UpdateSettings()
         {
-            LogFormat format = SettingsView.AskLogFormat();
-            _settingsController.UpdateLogFormat(format);
-            SettingsView.ShowSettingsSaved();
-            JobView.Pause();
+            while (true)
+            {
+                AppSettings settings = _settingsController.GetSettings();
+
+                SettingsView.ShowSettingsMenu(settings);
+
+                string? choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        _settingsController.UpdateLogFormat(SettingsView.AskLogFormat());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "2":
+                        _settingsController.UpdateLogMode(SettingsView.AskLogMode());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "3":
+                        _settingsController.UpdateDockerLogServerUrl(SettingsView.AskDockerUrl());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "4":
+                        _settingsController.UpdateBusinessSoftware(SettingsView.AskBusinessSoftware());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "5":
+                        _settingsController.UpdateMaxFileSizeKb(SettingsView.AskMaxFileSizeKb());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "6":
+                        _settingsController.UpdateDeleteOrphanFilesInDifferential(SettingsView.AskDifferentialMirror());
+                        SettingsView.ShowSettingsSaved();
+                        JobView.Pause();
+                        break;
+
+                    case "7":
+                        if (_settingsController.AddEncryptionExtension(SettingsView.AskExtension()))
+                        {
+                            SettingsView.ShowSettingsSaved();
+                        }
+                        else
+                        {
+                            SettingsView.ShowExtensionAlreadyExists();
+                        }
+
+                        JobView.Pause();
+                        break;
+
+                    case "8":
+                        if (_settingsController.RemoveEncryptionExtension(SettingsView.AskExtension()))
+                        {
+                            SettingsView.ShowSettingsSaved();
+                        }
+                        else
+                        {
+                            SettingsView.ShowExtensionNotFound();
+                        }
+
+                        JobView.Pause();
+                        break;
+
+                    case "9":
+                        if (_settingsController.AddPriorityExtension(SettingsView.AskExtension()))
+                        {
+                            SettingsView.ShowSettingsSaved();
+                        }
+                        else
+                        {
+                            SettingsView.ShowExtensionAlreadyExists();
+                        }
+
+                        JobView.Pause();
+                        break;
+
+                    case "10":
+                        if (_settingsController.RemovePriorityExtension(SettingsView.AskExtension()))
+                        {
+                            SettingsView.ShowSettingsSaved();
+                        }
+                        else
+                        {
+                            SettingsView.ShowExtensionNotFound();
+                        }
+
+                        JobView.Pause();
+                        break;
+
+                    case "0":
+                        return;
+
+                    default:
+                        SettingsView.ShowInvalidChoice();
+                        JobView.Pause();
+                        break;
+                }
+            }
         }
     }
 }
